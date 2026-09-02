@@ -3349,5 +3349,48 @@ function openOwnerOrderDetail(json){const o=typeof json==='string'?JSON.parse(js
 function closeOwnerOrderDetail(){document.getElementById('crmOrderDetailOverlay')?.classList.remove('active')}
 async function deleteOwnerOrder(json){const o=typeof json==='string'?JSON.parse(json):json;if(!confirm('Bu siparişi kalıcı olarak silmek istediğinize emin misiniz?'))return;let remoteError=null;try{const{error}=await supabaseClient.from('orders').delete().eq('id',o.id);if(error)remoteError=error}catch(e){remoteError=e}try{const db=await openLocalDB();await new Promise((resolve,reject)=>{const req=db.transaction(LOCAL_ORDERS_STORE,'readwrite').objectStore(LOCAL_ORDERS_STORE).delete(o.id);req.onsuccess=()=>resolve();req.onerror=()=>reject(req.error)})}catch(e){}crmOrders=crmOrders.filter(x=>String(x.id)!==String(o.id));closeOwnerOrderDetail();renderOwnerOrders();if(remoteError)alert('Sipariş ekrandan kaldırıldı ancak Supabase silme izni engelledi: '+(remoteError.message||remoteError));else alert('Sipariş silindi.')}
 </script>
+
+<style>
+.crm-order-status-box{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end;margin-top:12px}
+.crm-order-status-box label{display:block;color:#d9b866;font-size:10px;letter-spacing:1px;margin-bottom:6px}
+.crm-order-status-select{width:100%;background:#270910;color:#fff1d0;border:1px solid rgba(226,185,98,.35);border-radius:10px;padding:11px 12px}
+.crm-order-save-status{border:1px solid #e3bd67;background:linear-gradient(135deg,#b78b34,#e4c575);color:#2a1118;border-radius:10px;padding:11px 15px;cursor:pointer;font-weight:700}
+@media(max-width:700px){.crm-order-status-box{grid-template-columns:1fr}}
+</style>
+<script>
+function crmStatusText(s){return ({new:'Yeni',pending:'Bekliyor',processing:'Hazırlanıyor',shipped:'Kargoya Verildi',completed:'Tamamlandı',paid:'Ödendi',cancelled:'İptal Edildi'})[s]||s||'Bekliyor'}
+function crmStatusBadge(s){const cls=s==='paid'||s==='completed'?'paid':s==='cancelled'?'cancelled':'pending';return `<span class="crm-badge ${cls}">${crmEsc(crmStatusText(s))}</span>`}
+function openOwnerOrderDetail(json){
+ const o=typeof json==='string'?JSON.parse(json):json, overlay=ensureOrderDetailOverlay(), st=o.status||'pending';
+ document.getElementById('crmOrderDetailTitle').textContent='Sipariş #'+String(o.id||'').slice(-12);
+ document.getElementById('crmOrderDetailBody').innerHTML=`
+ <div class="crm-order-section"><h4>Sipariş Bilgileri</h4><div class="crm-order-detail-grid">
+ ${orderDetailField('Sipariş No',o.id)}${orderDetailField('Tarih',crmDate(o.createdAt))}${orderDetailField('Durum',crmStatusText(st))}
+ ${orderDetailField('Ürün',o.productTitle)}${orderDetailField('Ölçü',o.size)}${orderDetailField('Fiyat',o.price)}</div>
+ <div class="crm-order-status-box"><div><label>SİPARİŞ DURUMUNU DEĞİŞTİR</label>
+ <select id="crmOrderStatusSelect" class="crm-order-status-select">
+ <option value="new" ${st==='new'?'selected':''}>Yeni</option><option value="pending" ${st==='pending'?'selected':''}>Bekliyor</option>
+ <option value="processing" ${st==='processing'?'selected':''}>Hazırlanıyor</option><option value="shipped" ${st==='shipped'?'selected':''}>Kargoya Verildi</option>
+ <option value="completed" ${st==='completed'?'selected':''}>Tamamlandı</option><option value="cancelled" ${st==='cancelled'?'selected':''}>İptal Edildi</option>
+ </select></div><button class="crm-order-save-status" onclick='updateOwnerOrderStatus(${JSON.stringify(JSON.stringify(o))})'>Durumu Kaydet</button></div></div>
+ <div class="crm-order-section"><h4>Müşteri Bilgileri</h4><div class="crm-order-detail-grid">
+ ${orderDetailField('Ad Soyad',o.name)}${orderDetailField('Telefon',o.phone)}${orderDetailField('E-posta',o.email)}${orderDetailField('Ülke',o.country)}
+ ${orderDetailField('Şehir',o.city)}${orderDetailField('İlçe / Bölge',o.district)}${orderDetailField('Adres',o.address,true)}${orderDetailField('Müşteri Notu',o.note,true)}
+ </div></div><div class="crm-order-actions">
+ <button class="crm-order-detail-btn" onclick='createInvoiceFromOrder(${JSON.stringify(JSON.stringify(o))});closeOwnerOrderDetail()'>Fatura Oluştur</button>
+ <button class="crm-order-delete-btn" onclick='deleteOwnerOrder(${JSON.stringify(JSON.stringify(o))})'>Siparişi Sil</button></div>`;
+ overlay.classList.add('active');
+}
+async function updateOwnerOrderStatus(json){
+ const o=typeof json==='string'?JSON.parse(json):json, status=document.getElementById('crmOrderStatusSelect')?.value||'pending';
+ try{
+   const {error}=await supabaseClient.from('orders').update({status}).eq('id',o.id);
+   if(error){alert('Durum kaydedilemedi: '+error.message);return}
+   const found=crmOrders.find(x=>String(x.id)===String(o.id)); if(found) found.status=status;
+   renderOwnerOrders(); closeOwnerOrderDetail(); alert('Sipariş durumu kaydedildi: '+crmStatusText(status));
+ }catch(e){alert('Durum kaydedilemedi: '+e.message)}
+}
+</script>
+
 </body>
 </html>
