@@ -1188,6 +1188,16 @@ box-shadow:0 30px 90px rgba(0,0,0,.45);position:relative;}
 @media(max-width:800px){.crm-form-grid,.crm-detail-grid{grid-template-columns:1fr}.crm-payment-summary{grid-template-columns:1fr}.crm-form-grid .full{grid-column:auto}}
 
 </style>
+<style>
+.crm-order-detail-overlay{position:fixed;inset:0;z-index:5000;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(18,4,8,.88);backdrop-filter:blur(10px)}
+.crm-order-detail-overlay.active{display:flex}.crm-order-detail-card{width:min(920px,96vw);max-height:92vh;overflow:auto;border-radius:18px;border:1px solid rgba(226,185,98,.38);background:linear-gradient(145deg,#3d0e18,#21080e);box-shadow:0 30px 90px rgba(0,0,0,.55);color:#f4e8dc}
+.crm-order-detail-head{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;gap:16px;align-items:center;padding:20px 22px;border-bottom:1px solid rgba(226,185,98,.2);background:rgba(42,10,17,.96)}
+.crm-order-detail-head h3{color:#f0d18a;font-size:27px;margin:0}.crm-order-detail-head small{color:#bca79a}.crm-order-close{width:38px;height:38px;border-radius:10px;cursor:pointer;border:1px solid rgba(226,185,98,.35);background:transparent;color:#f0d18a}
+.crm-order-detail-body{padding:20px 22px}.crm-order-section{border:1px solid rgba(226,185,98,.18);border-radius:14px;padding:16px;margin-bottom:14px;background:rgba(16,4,8,.25)}.crm-order-section h4{color:#e3bd67;font-size:20px;margin:0 0 10px}
+.crm-order-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 22px}.crm-order-field{padding:9px 0;border-bottom:1px solid rgba(226,185,98,.09);font-size:12px}.crm-order-field span{display:block;color:#a99589;font-size:9px;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}.crm-order-field strong{display:block;color:#f5e9dc;font-weight:500;word-break:break-word}.crm-order-field.full{grid-column:1/-1}
+.crm-order-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.crm-order-actions button{padding:10px 14px;border-radius:10px;cursor:pointer;font:inherit;font-size:11px}.crm-order-detail-btn{border:1px solid rgba(226,185,98,.35);background:rgba(226,185,98,.08);color:#f0d18a}.crm-order-delete-btn{border:1px solid rgba(211,92,92,.5);background:rgba(130,25,35,.25);color:#ffc0c0}
+@media(max-width:700px){.crm-order-detail-grid{grid-template-columns:1fr}.crm-order-field.full{grid-column:auto}.crm-order-detail-body{padding:14px}.crm-order-detail-head{padding:15px}}
+</style>
 </head>
 <body>
 
@@ -2639,7 +2649,7 @@ Pazar: Kapalı"></textarea></div>
                 <td><strong>${crmEsc(String(o.id).slice(-12))}</strong></td><td>${crmEsc(o.name||'-')}<div class="crm-muted">${crmEsc(o.email||'')}</div></td>
                 <td>${crmEsc(o.productTitle||'-')}<div class="crm-muted">${crmEsc(o.size||'')}</div></td><td>${crmEsc(o.price||'-')}</td>
                 <td>${crmEsc(crmDate(o.createdAt))}</td><td>${crmStatusBadge(o.status||'pending')}</td>
-                <td><div class="crm-row-actions"><button class="crm-mini-btn" onclick='createInvoiceFromOrder(${JSON.stringify(JSON.stringify(o))})'>Fatura</button></div></td>
+                <td><div class="crm-row-actions"><button class="crm-mini-btn" onclick='openOwnerOrderDetail(${JSON.stringify(JSON.stringify(o))})'>Detay</button><button class="crm-mini-btn" onclick='createInvoiceFromOrder(${JSON.stringify(JSON.stringify(o))})'>Fatura</button></div></td>
             </tr>`).join(''):`<tr><td colspan="7"><div class="crm-empty"><i class="fa-solid fa-bag-shopping"></i>Henüz sipariş yok.</div></td></tr>`;
         }
 
@@ -3332,5 +3342,12 @@ Pazar: Kapalı"></textarea></div>
             } finally { event.target.value = ''; }
         }
     </script>
+<script>
+function ensureOrderDetailOverlay(){let el=document.getElementById('crmOrderDetailOverlay');if(el)return el;el=document.createElement('div');el.id='crmOrderDetailOverlay';el.className='crm-order-detail-overlay';el.innerHTML=`<div class="crm-order-detail-card"><div class="crm-order-detail-head"><div><small>SULTANZADE • SİPARİŞ KARTI</small><h3 id="crmOrderDetailTitle">Sipariş Detayı</h3></div><button class="crm-order-close" type="button" onclick="closeOwnerOrderDetail()"><i class="fa-solid fa-xmark"></i></button></div><div id="crmOrderDetailBody" class="crm-order-detail-body"></div></div>`;el.addEventListener('click',e=>{if(e.target===el)closeOwnerOrderDetail()});document.body.appendChild(el);return el}
+function orderDetailField(label,value,full=false){return `<div class="crm-order-field${full?' full':''}"><span>${crmEsc(label)}</span><strong>${crmEsc(value||'-')}</strong></div>`}
+function openOwnerOrderDetail(json){const o=typeof json==='string'?JSON.parse(json):json;const overlay=ensureOrderDetailOverlay();document.getElementById('crmOrderDetailTitle').textContent='Sipariş #'+String(o.id||'').slice(-12);document.getElementById('crmOrderDetailBody').innerHTML=`<div class="crm-order-section"><h4>Sipariş Bilgileri</h4><div class="crm-order-detail-grid">${orderDetailField('Sipariş No',o.id)}${orderDetailField('Tarih',crmDate(o.createdAt))}${orderDetailField('Durum',crmStatusText(o.status||'pending'))}${orderDetailField('Ürün',o.productTitle)}${orderDetailField('Ölçü',o.size)}${orderDetailField('Fiyat',o.price)}</div></div><div class="crm-order-section"><h4>Müşteri Bilgileri</h4><div class="crm-order-detail-grid">${orderDetailField('Ad Soyad',o.name)}${orderDetailField('Telefon',o.phone)}${orderDetailField('E-posta',o.email)}${orderDetailField('Ülke',o.country)}${orderDetailField('Şehir',o.city)}${orderDetailField('İlçe / Bölge',o.district)}${orderDetailField('Adres',o.address,true)}${orderDetailField('Müşteri Notu',o.note,true)}</div></div><div class="crm-order-actions"><button class="crm-order-detail-btn" type="button" onclick='createInvoiceFromOrder(${JSON.stringify(JSON.stringify(o))});closeOwnerOrderDetail()'><i class="fa-solid fa-file-invoice"></i> Fatura Oluştur</button><button class="crm-order-delete-btn" type="button" onclick='deleteOwnerOrder(${JSON.stringify(JSON.stringify(o))})'><i class="fa-solid fa-trash"></i> Siparişi Sil</button></div>`;overlay.classList.add('active')}
+function closeOwnerOrderDetail(){document.getElementById('crmOrderDetailOverlay')?.classList.remove('active')}
+async function deleteOwnerOrder(json){const o=typeof json==='string'?JSON.parse(json):json;if(!confirm('Bu siparişi kalıcı olarak silmek istediğinize emin misiniz?'))return;let remoteError=null;try{const{error}=await supabaseClient.from('orders').delete().eq('id',o.id);if(error)remoteError=error}catch(e){remoteError=e}try{const db=await openLocalDB();await new Promise((resolve,reject)=>{const req=db.transaction(LOCAL_ORDERS_STORE,'readwrite').objectStore(LOCAL_ORDERS_STORE).delete(o.id);req.onsuccess=()=>resolve();req.onerror=()=>reject(req.error)})}catch(e){}crmOrders=crmOrders.filter(x=>String(x.id)!==String(o.id));closeOwnerOrderDetail();renderOwnerOrders();if(remoteError)alert('Sipariş ekrandan kaldırıldı ancak Supabase silme izni engelledi: '+(remoteError.message||remoteError));else alert('Sipariş silindi.')}
+</script>
 </body>
 </html>
