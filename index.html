@@ -3410,5 +3410,326 @@ function closeOwnerOrderDetail(){document.getElementById('crmOrderDetailOverlay'
 async function updateOwnerOrderStatus(j){const o=typeof j==='string'?JSON.parse(j):j,st=document.getElementById('crmOrderStatusSelect').value;try{const{error}=await supabaseClient.from('orders').update({status:st}).eq('id',o.id);if(error){alert('Durum kaydedilemedi: '+error.message);return}const f=crmOrders.find(x=>String(x.id)===String(o.id));if(f)f.status=st;renderOwnerOrders();closeOwnerOrderDetail();alert('Sipariş durumu kaydedildi: '+crmStatusText(st))}catch(e){alert('Durum kaydedilemedi: '+e.message)}}
 async function deleteOwnerOrder(j){const o=typeof j==='string'?JSON.parse(j):j;if(!confirm('Bu siparişi kalıcı olarak silmek istediğinize emin misiniz?'))return;try{const{error}=await supabaseClient.from('orders').delete().eq('id',o.id);if(error){alert('Sipariş silinemedi: '+error.message);return}crmOrders=crmOrders.filter(x=>String(x.id)!==String(o.id));closeOwnerOrderDetail();renderOwnerOrders();alert('Sipariş silindi.')}catch(e){alert('Sipariş silinemedi: '+e.message)}}
 </script>
+
+<style>
+/* ===== SULTANZADE FINAL FATURA + ÖDEME YÖNETİMİ ===== */
+.crm-final-actionbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.crm-final-btn{border:1px solid rgba(226,185,98,.36);background:rgba(226,185,98,.08);color:#f0d18a;border-radius:9px;padding:9px 12px;cursor:pointer;font-size:10px}
+.crm-final-btn.primary{background:linear-gradient(135deg,#b78b34,#e4c575);color:#2a1118;font-weight:700}
+.crm-final-btn.danger{border-color:rgba(211,92,92,.45);background:rgba(130,25,35,.22);color:#ffc0c0}
+.crm-invoice-info{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 20px;margin:14px 0}
+.crm-invoice-info>div{padding:10px 0;border-bottom:1px solid #ece3d8}
+.crm-invoice-info small{display:block;color:#87756a;font-size:9px;letter-spacing:1px;margin-bottom:3px}
+.crm-invoice-info strong{display:block;color:#3d1520;word-break:break-word}
+@media(max-width:700px){.crm-invoice-info{grid-template-columns:1fr}}
+</style>
+
+<script>
+/* ===== SULTANZADE FINAL BUSINESS SUITE ===== */
+async function ensureCRMCustomerFromInvoiceData(name,email,phone){
+    email=String(email||'').trim().toLowerCase();
+    phone=String(phone||'').trim();
+    let c=crmCustomers.find(x =>
+        (email && String(x.email||'').toLowerCase()===email) ||
+        (phone && String(x.phone||'')===phone)
+    );
+    if(c) return c;
+
+    const now=new Date().toISOString();
+    c={
+        id:`cust-${Date.now()}`,
+        type:'person',
+        name:name||'Müşteri',
+        email,
+        phone,
+        taxOffice:'',
+        taxNo:'',
+        country:'',
+        city:'',
+        address:'',
+        tag:'Sipariş Müşterisi',
+        status:'active',
+        note:'',
+        createdAt:now,
+        updatedAt:now
+    };
+    crmCustomers.unshift(c);
+    crmLocalPut(CRM_CUSTOMER_KEY,crmCustomers);
+    try{
+        const payload={
+            id:c.id,customer_type:c.type,name:c.name,email:c.email||null,phone:c.phone||null,
+            tax_office:null,tax_no:null,country:null,city:null,address:null,tag:c.tag,
+            status:'active',note:null,created_at:c.createdAt,updated_at:c.updatedAt
+        };
+        await supabaseClient.from('customers').upsert(payload);
+    }catch(e){}
+    return c;
+}
+
+async function saveInvoice(){
+    const name=document.getElementById('invoiceCustomerName').value.trim();
+    const email=document.getElementById('invoiceCustomerEmail').value.trim().toLowerCase();
+    const phone=document.getElementById('invoiceCustomerPhone').value.trim();
+    const desc=document.getElementById('invoiceDescription').value.trim();
+    const amount=document.getElementById('invoiceAmount').value.trim();
+
+    if(!name||!desc||!amount){
+        alert('Müşteri adı, açıklama ve tutar zorunludur.');
+        return;
+    }
+
+    const customer=await ensureCRMCustomerFromInvoiceData(name,email,phone);
+    const now=new Date();
+    const invoice=crmCurrentInvoice?{...crmCurrentInvoice}:{
+        id:`inv-${Date.now()}`,
+        invoiceNo:`SZ-${now.getFullYear()}-${String(Date.now()).slice(-6)}`,
+        createdAt:now.toISOString()
+    };
+
+    Object.assign(invoice,{
+        customerId:customer?.id||invoice.customerId||'',
+        customerName:name,
+        customerEmail:email,
+        customerPhone:phone,
+        orderId:document.getElementById('invoiceOrderId').value.trim(),
+        description:desc,
+        amount,
+        status:document.getElementById('invoiceStatus').value||'pending',
+        dueDate:document.getElementById('invoiceDueDate').value||'',
+        note:document.getElementById('invoiceNote').value.trim(),
+        updatedAt:new Date().toISOString()
+    });
+
+    const idx=crmInvoices.findIndex(x=>String(x.id)===String(invoice.id));
+    if(idx>=0) crmInvoices[idx]=invoice; else crmInvoices.unshift(invoice);
+    putLocalInvoices(crmInvoices);
+
+    try{
+        const payload={
+            id:invoice.id,
+            customer_id:invoice.customerId||null,
+            invoice_no:invoice.invoiceNo,
+            customer_name:invoice.customerName,
+            customer_email:invoice.customerEmail||null,
+            customer_phone:invoice.customerPhone||null,
+            order_id:invoice.orderId||null,
+            description:invoice.description,
+            amount:invoice.amount,
+            status:invoice.status,
+            due_date:invoice.dueDate||null,
+            note:invoice.note||null,
+            created_at:invoice.createdAt
+        };
+        const {error}=await supabaseClient.from('invoices').upsert(payload);
+        if(error){alert('Fatura online kaydedilemedi: '+error.message);return;}
+    }catch(e){
+        alert('Fatura online kaydedilemedi: '+e.message);
+        return;
+    }
+
+    renderOwnerInvoices();
+    renderOwnerOrders();
+    renderOwnerCustomers();
+    closeModal('invoiceModalOverlay');
+    alert('Fatura kaydedildi.');
+}
+
+function renderOwnerInvoices(){
+    const body=document.getElementById('crmInvoicesBody'); if(!body)return;
+    const q=(document.getElementById('crmInvoiceSearch')?.value||'').toLowerCase();
+    const rows=crmInvoices.filter(i=>`${i.invoiceNo} ${i.customerName} ${i.customerEmail} ${i.orderId}`.toLowerCase().includes(q));
+
+    document.getElementById('crmInvoiceCount').textContent=crmInvoices.length;
+    document.getElementById('crmPaidInvoiceCount').textContent=crmInvoices.filter(i=>i.status==='paid').length;
+    document.getElementById('crmPendingInvoiceCount').textContent=crmInvoices.filter(i=>i.status!=='paid'&&i.status!=='cancelled').length;
+    document.getElementById('crmInvoiceTotal').textContent=crmInvoices.reduce((n,i)=>n+amountNumber(i.amount),0).toLocaleString('tr-TR',{maximumFractionDigits:2})+' ₺';
+
+    body.innerHTML=rows.length?rows.map(i=>`<tr>
+      <td><strong>${crmEsc(i.invoiceNo||i.id)}</strong></td>
+      <td>${crmEsc(i.customerName||'-')}<div class="crm-muted">${crmEsc(i.customerEmail||'')}</div></td>
+      <td>${crmEsc(i.amount||'-')}</td>
+      <td>${crmEsc(crmDate(i.createdAt))}</td>
+      <td>${crmStatusBadge(i.status||'pending')}</td>
+      <td>${crmEsc(i.orderId||'-')}</td>
+      <td><div class="crm-row-actions">
+        <button class="crm-mini-btn" onclick='viewInvoice(${JSON.stringify(JSON.stringify(i))})'>Görüntüle</button>
+        <button class="crm-mini-btn" onclick='editInvoice(${JSON.stringify(JSON.stringify(i))})'>Düzenle</button>
+        <button class="crm-mini-btn" onclick="openPaymentEditor('${crmEsc(i.customerId||'')}','${crmEsc(i.id)}')">Tahsilat</button>
+        <button class="crm-mini-btn danger" onclick="deleteInvoiceFinal('${crmEsc(i.id)}')">Sil</button>
+      </div></td>
+    </tr>`).join(''):`<tr><td colspan="7"><div class="crm-empty"><i class="fa-solid fa-file-invoice"></i>Henüz fatura oluşturulmadı.</div></td></tr>`;
+}
+
+function viewInvoice(json){
+    const i=JSON.parse(json);
+    document.getElementById('invoiceModalOverlay').classList.add('active');
+    document.getElementById('invoiceModalTitle').textContent='Fatura Detayı';
+    document.getElementById('invoiceEditor').style.display='none';
+    const p=document.getElementById('invoicePreview');
+    p.style.display='';
+    p.innerHTML=`<div class="invoice-preview">
+      <div class="invoice-preview-head">
+        <div><h2>SULTANZADE</h2><div>Satış / Sipariş Faturası</div></div>
+        <div><strong>${crmEsc(i.invoiceNo||'')}</strong><br>${crmEsc(crmDate(i.createdAt))}</div>
+      </div>
+      <div class="crm-invoice-info">
+        <div><small>MÜŞTERİ</small><strong>${crmEsc(i.customerName||'-')}</strong></div>
+        <div><small>DURUM</small><strong>${crmEsc(crmStatusText(i.status||'pending'))}</strong></div>
+        <div><small>E-POSTA</small><strong>${crmEsc(i.customerEmail||'-')}</strong></div>
+        <div><small>TELEFON</small><strong>${crmEsc(i.customerPhone||'-')}</strong></div>
+        <div><small>SİPARİŞ NO</small><strong>${crmEsc(i.orderId||'-')}</strong></div>
+        <div><small>VADE TARİHİ</small><strong>${crmEsc(i.dueDate||'-')}</strong></div>
+      </div>
+      <table class="invoice-lines"><thead><tr><th>Açıklama</th><th>Tutar</th></tr></thead>
+      <tbody><tr><td>${crmEsc(i.description||'-')}</td><td>${crmEsc(i.amount||'-')}</td></tr></tbody></table>
+      <div class="invoice-total">Toplam: <strong>${crmEsc(i.amount||'')}</strong></div>
+      ${i.note?`<p style="margin-top:15px"><strong>Not:</strong> ${crmEsc(i.note)}</p>`:''}
+      <div class="crm-final-actionbar">
+        <button class="crm-final-btn primary" onclick="openPaymentEditor('${crmEsc(i.customerId||'')}','${crmEsc(i.id)}');closeModal('invoiceModalOverlay')">Tahsilat Ekle</button>
+        <button class="crm-final-btn" onclick='editInvoice(${JSON.stringify(JSON.stringify(i))})'>Düzenle</button>
+        <button class="crm-final-btn" onclick="window.print()">Yazdır / PDF</button>
+        <button class="crm-final-btn danger" onclick="deleteInvoiceFinal('${crmEsc(i.id)}')">Faturayı Sil</button>
+      </div>
+    </div>`;
+}
+
+async function deleteInvoiceFinal(id){
+    if(!confirm('Bu fatura kalıcı olarak silinsin mi?'))return;
+    const linked=crmPayments.filter(p=>String(p.invoiceId)===String(id));
+    if(linked.length && !confirm('Bu faturaya bağlı tahsilat kayıtları da var. Fatura silinsin mi?'))return;
+
+    try{
+        const {error}=await supabaseClient.from('invoices').delete().eq('id',id);
+        if(error){alert('Fatura silinemedi: '+error.message);return;}
+    }catch(e){alert('Fatura silinemedi: '+e.message);return;}
+
+    crmInvoices=crmInvoices.filter(x=>String(x.id)!==String(id));
+    putLocalInvoices(crmInvoices);
+    closeModal('invoiceModalOverlay');
+    renderOwnerInvoices();
+    renderOwnerOrders();
+    alert('Fatura silindi.');
+}
+
+function openPaymentEditor(customerId='',invoiceId=''){
+    const custSel=document.getElementById('crmPaymentCustomer');
+    const invSel=document.getElementById('crmPaymentInvoice');
+    custSel.innerHTML='<option value="">Müşteri seçin</option>'+crmCustomers.map(c=>`<option value="${crmEsc(c.id)}">${crmEsc(c.name)}${c.email?' — '+crmEsc(c.email):''}</option>`).join('');
+    invSel.innerHTML='<option value="">Fatura seçin</option>'+crmInvoices.map(i=>`<option value="${crmEsc(i.id)}">${crmEsc(i.invoiceNo||i.id)} — ${crmEsc(i.customerName||'')} — ${crmEsc(i.amount||'')}</option>`).join('');
+
+    const inv=crmInvoices.find(i=>String(i.id)===String(invoiceId));
+    if(inv && !customerId) customerId=inv.customerId||'';
+
+    custSel.value=customerId||'';
+    invSel.value=invoiceId||'';
+    document.getElementById('crmPaymentDate').value=new Date().toISOString().slice(0,10);
+    document.getElementById('crmPaymentAmount').value=inv?.amount||'';
+    document.getElementById('crmPaymentReference').value='';
+    document.getElementById('crmPaymentNote').value='';
+    document.getElementById('crmPaymentEditorOverlay').classList.add('active');
+}
+
+async function saveCRMPayment(){
+    let customerId=document.getElementById('crmPaymentCustomer').value;
+    const invoiceId=document.getElementById('crmPaymentInvoice').value;
+    const amount=document.getElementById('crmPaymentAmount').value.trim();
+    const i=crmInvoices.find(x=>String(x.id)===String(invoiceId));
+
+    if(i && !customerId) customerId=i.customerId||'';
+    if(!customerId||!amount){alert('Müşteri ve tutar zorunludur.');return;}
+
+    const c=crmCustomers.find(x=>String(x.id)===String(customerId));
+    const p={
+        id:`pay-${Date.now()}`,
+        customerId,
+        customerName:c?.name||i?.customerName||'',
+        invoiceId:invoiceId||'',
+        invoiceNo:i?.invoiceNo||'',
+        amount,
+        paymentDate:document.getElementById('crmPaymentDate').value||new Date().toISOString().slice(0,10),
+        method:document.getElementById('crmPaymentMethod').value,
+        reference:document.getElementById('crmPaymentReference').value.trim(),
+        note:document.getElementById('crmPaymentNote').value.trim(),
+        createdAt:new Date().toISOString()
+    };
+
+    try{
+        const payload={
+            id:p.id,customer_id:p.customerId,customer_name:p.customerName,
+            invoice_id:p.invoiceId||null,invoice_no:p.invoiceNo||null,amount:p.amount,
+            payment_date:p.paymentDate,method:p.method,reference:p.reference||null,
+            note:p.note||null,created_at:p.createdAt
+        };
+        const {error}=await supabaseClient.from('payments').upsert(payload);
+        if(error){alert('Tahsilat online kaydedilemedi: '+error.message);return;}
+    }catch(e){alert('Tahsilat online kaydedilemedi: '+e.message);return;}
+
+    crmPayments.unshift(p);
+    crmLocalPut(CRM_PAYMENT_KEY,crmPayments);
+
+    if(i){
+        const paid=crmPayments.filter(x=>String(x.invoiceId)===String(i.id)).reduce((n,x)=>n+amountNumber(x.amount),0);
+        if(paid>=amountNumber(i.amount)){
+            i.status='paid';
+            putLocalInvoices(crmInvoices);
+            try{await supabaseClient.from('invoices').update({status:'paid'}).eq('id',i.id)}catch(e){}
+        }
+    }
+
+    closeModal('crmPaymentEditorOverlay');
+    renderOwnerPayments();
+    renderOwnerInvoices();
+    alert('Tahsilat kaydedildi.');
+}
+
+function renderOwnerPayments(){
+    const body=document.getElementById('crmPaymentsBody');if(!body)return;
+    const q=(document.getElementById('crmPaymentSearch')?.value||'').toLowerCase();
+    const rows=crmPayments.filter(p=>`${p.customerName} ${p.invoiceNo} ${p.method} ${p.reference}`.toLowerCase().includes(q));
+    const total=crmPayments.reduce((n,p)=>n+amountNumber(p.amount),0);
+
+    const count=document.getElementById('crmPaymentCount'); if(count)count.textContent=crmPayments.length;
+    const totalEl=document.getElementById('crmPaymentTotal'); if(totalEl)totalEl.textContent=total.toLocaleString('tr-TR',{maximumFractionDigits:2})+' ₺';
+
+    body.innerHTML=rows.length?rows.map(p=>`<tr>
+      <td><strong>${crmEsc(p.customerName||'-')}</strong></td>
+      <td>${crmEsc(p.invoiceNo||'-')}</td>
+      <td>${crmEsc(p.amount||'-')}</td>
+      <td>${crmEsc(p.paymentDate||'-')}</td>
+      <td>${crmEsc(p.method||'-')}</td>
+      <td>${crmEsc(p.reference||p.note||'-')}</td>
+      <td><button class="crm-mini-btn danger" onclick="deleteCRMPayment('${crmEsc(p.id)}')">Sil</button></td>
+    </tr>`).join(''):`<tr><td colspan="7"><div class="crm-empty"><i class="fa-solid fa-money-bill-transfer"></i>Henüz tahsilat kaydı yok.</div></td></tr>`;
+}
+
+async function deleteCRMPayment(id){
+    if(!confirm('Bu tahsilat kaydı silinsin mi?'))return;
+    const p=crmPayments.find(x=>String(x.id)===String(id));
+
+    try{
+        const {error}=await supabaseClient.from('payments').delete().eq('id',id);
+        if(error){alert('Tahsilat silinemedi: '+error.message);return;}
+    }catch(e){alert('Tahsilat silinemedi: '+e.message);return;}
+
+    crmPayments=crmPayments.filter(x=>String(x.id)!==String(id));
+    crmLocalPut(CRM_PAYMENT_KEY,crmPayments);
+
+    if(p?.invoiceId){
+        const inv=crmInvoices.find(i=>String(i.id)===String(p.invoiceId));
+        if(inv){
+            const paid=crmPayments.filter(x=>String(x.invoiceId)===String(inv.id)).reduce((n,x)=>n+amountNumber(x.amount),0);
+            const newStatus=paid>=amountNumber(inv.amount)?'paid':'pending';
+            inv.status=newStatus;
+            putLocalInvoices(crmInvoices);
+            try{await supabaseClient.from('invoices').update({status:newStatus}).eq('id',inv.id)}catch(e){}
+        }
+    }
+
+    renderOwnerPayments();
+    renderOwnerInvoices();
+    alert('Tahsilat kaydı silindi.');
+}
+</script>
+
 </body>
 </html>
