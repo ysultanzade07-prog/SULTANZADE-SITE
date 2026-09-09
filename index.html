@@ -2106,7 +2106,7 @@ Pazar: Kapalı"></textarea></div>
             renderCategories();
             await updateOwnerControls();
             supabaseClient.auth.onAuthStateChange(() => {
-                setTimeout(() => updateOwnerControls(), 0);
+                setTimeout(async () => { await updateOwnerControls(); window.applyFullI18n && window.applyFullI18n(); }, 0);
             });
         });
 
@@ -3769,6 +3769,8 @@ async function deleteCRMPayment(id){
 (function(){
   const D={
     en:{
+      'Havale/EFT bilgileri müşteriye burada gösterilir.':'Bank transfer information is shown to customers here.','Teslimat ve kargo mesajlarını yönetin.':'Manage delivery and shipping messages.','Mağaza mesajı':'Store message','Kargo ücreti ücretsizdir. Teslim süresi seçilen kargo firmasına göre değişebilir.':'Shipping is free. Delivery time may vary depending on the carrier.','Alt bölümde ve iletişim alanında gösterilir.':'Shown in the footer and contact area.','İpucu':'Tip','Buradaki metin müşteriye doğrudan gösterilir. Özet saat alanı ile birlikte güncellenir.':'This text is shown directly to customers and updates with the summary hours.','Telefon, WhatsApp ve e-posta.':'Phone, WhatsApp and email.','Ürün seçimi, ölçü, fiyat ve müşteri bilgileri WhatsApp mesajına otomatik eklenir.':'Product, size, price and customer details are automatically added to the WhatsApp message.','Ana sayfadaki marka görseli.':'Brand image on the home page.','Bordo & altın tema':'Burgundy & gold theme','Yönetici paneli mağazanın bordo kadife ve altın estetiğine uyumlu olarak tasarlanmıştır.':'The manager panel is designed to match the store’s burgundy velvet and gold aesthetic.','Değişiklikler yalnızca yetkili yöneticiye açıktır.':'Changes are available only to the authorized manager.','Mevcut müşteri hesabınızla devam edin.':'Continue with your existing customer account.','Fatura ve sipariş geçmişinizi saklamak için hesap oluşturun.':'Create an account to keep your invoice and order history.','Sipariş durumunu değiştir':'Change order status','Üretim / Özel Not':'Production / Special Note','Ölçü Seçeneği':'Size Option','Koleksiyon Serisi / Etiket':'Collection Series / Tag','Henüz Kategori Bulunmuyor':'No Categories Yet','Yukarıdaki "+ Kategori Ekle" butonuna tıklayarak ilk kategorinizi oluşturabilirsiniz.':'Click the "+ Add Category" button above to create your first category.','Yeni Kategori Ekle':'Add New Category','Görsel, fiyat ve kategori detaylarını girin.':'Enter image, price and category details.','Ürün Görselleri * (Çoklu)':'Product Images * (Multiple)','Birden fazla fotoğraf seçebilirsiniz':'You can select multiple photos','Ürün Bilgileri':'Product Information','Ürününüzü müşteriye gösterecek temel bilgiler.':'Basic information shown to customers.','Ürün Adı *':'Product Name *','Açıklama *':'Description *','3 Farklı Ölçü / Fiyat Seçeneği':'3 Different Size / Price Options','Müşteri ürüne girdiğinde bu 3 seçenekten birini seçer; seçilen ölçünün fiyatı otomatik değişir.':'When a customer opens the product, they choose one of these 3 options; the price changes automatically.','1. Ölçü':'Size 1','2. Ölçü':'Size 2','3. Ölçü':'Size 3','Seçenek adı *':'Option name *','Marka Görseli':'Brand Image','SULTANZADE ana sayfa görselini buradan yükleyebilirsin.':'Upload the SULTANZADE home-page image here.','Bilgisayardan marka fotoğrafı seç':'Choose brand image from computer','İlk kez giriş yapıyorum / Şifre oluştur':'First time signing in / Create password','Yönetici yetkisi yalnızca mağaza sahibinin doğrulanmış hesabıyla verilir.':'Manager access is granted only to the verified store-owner account.','Hesabım':'My Account','Siparişlerim':'My Orders','Faturalarım':'My Invoices','Güvenli Hesap':'Secure Account','Bu portalda yalnızca kendi sipariş ve faturalarınızı görebilirsiniz.':'In this portal you can only view your own orders and invoices.','Müşteri kartını doldurun. Bu bilgiler firma sahibinin CRM panelinde tutulur.':'Fill in the customer card. This information is stored in the owner CRM panel.','Müşteri Tipi':'Customer Type','Ad Soyad / Firma Adı *':'Full Name / Company Name *','Ülke':'Country','Şehir':'City','Firma İçi Not':'Internal Company Note','Müşteriyi Kaydet':'Save Customer','Vazgeç':'Cancel','Düzenle':'Edit','Fatura':'Invoice','Tutar *':'Amount *','Tarih':'Date','Ödeme Yöntemi':'Payment Method','Kredi Kartı':'Credit Card','Diğer':'Other','Tahsilatı Kaydet':'Save Payment','Müşteri Adı':'Customer Name','Müşteri E-posta':'Customer Email','Açıklama / Ürün':'Description / Product','Tutar':'Amount','Ödeme Bekliyor':'Payment Pending','Ödendi':'Paid','İptal':'Cancelled','Son Ödeme Tarihi':'Due Date','Faturayı Kaydet':'Save Invoice','Mağazamız':'Our Store','Haritada Aç':'Open Map','Ödeme Bilgileri':'Payment Information','Yönetici panelinden girilecek':'Entered from manager panel','Ödeme açıklaması:':'Payment description:','Ürün bedeli':'Product price','Kargo & Sipariş':'Shipping & Order','Teslim süresi kargo firmasına bağlıdır.':'Delivery time depends on the shipping company.','WhatsApp ile Sipariş':'Order via WhatsApp','İletişim & Destek':'Contact & Support','WhatsApp Destek Hattı':'WhatsApp Support Line','© 2026 SULTANZADE. Tüm hakları saklıdır.':'© 2026 SULTANZADE. All rights reserved.',"Veya resim URL yapıştırın (Enter'a basın)":'Or paste an image URL (press Enter)','Örn: Osmanlı Kahve Seti':'E.g. Ottoman Coffee Set','Ürünün kısa ve etkileyici açıklaması...':'A short and compelling product description...','Örn: 2026 Özel Seri':'E.g. 2026 Special Series','Örn: Küçük':'E.g. Small','Örn: Orta':'E.g. Medium','Örn: Büyük':'E.g. Large','Örn: Pirinç, ahşap, kadife':'E.g. Brass, wood, velvet','Örn: Ceviz / Altın':'E.g. Walnut / Gold','El işçiliği, üretim süresi veya müşterinin bilmesi gereken özel bilgiler...':'Handcraft, production time or special information the customer should know...','Ad, e-posta veya telefon ile müşteri ara...':'Search customer by name, email or phone...','Sipariş no, müşteri, ürün veya e-posta ara...':'Search order no, customer, product or email...','Fatura no, müşteri veya e-posta ara...':'Search invoice no, customer or email...','Müşteri, fatura no veya ödeme yöntemi ara...':'Search customer, invoice no or payment method...','VIP, Toptan, Perakende...':'VIP, Wholesale, Retail...','Bu notu yalnızca firma sahibi görür.':'Only the store owner can see this note.',
+      'SULTANZADE Hesap':'SULTANZADE Account','SULTANZADE Müşteri':'SULTANZADE Customer','SULTANZADE Firma Sahibi':'SULTANZADE Store Owner','Müşteri / Firma Sahibi':'Customer / Store Owner','Müşteri Hesabım':'My Account','Sipariş & Destek':'Orders & Support','Yönetici Paneli':'Manager Panel','Ücretsiz Kargo':'Free Shipping','Tüm ülkelere gönderim.':'Worldwide shipping.','Güvenli Ödeme':'Secure Payment','Banka havalesi / EFT.':'Bank transfer / EFT.','El İşçiliği':'Handcrafted','Özenli SULTANZADE koleksiyonları.':'Carefully crafted SULTANZADE collections.','WhatsApp Destek':'WhatsApp Support','Hızlı iletişim ve sipariş desteği.':'Fast communication and order support.',
       'İletişim':'Contact','Kategorilerimiz':'Our Collections','Kategori Ekle':'Add Category','Sipariş Ver':'Order Now','WhatsApp’tan Bilgi Al':'Ask on WhatsApp',"WhatsApp'tan Bilgi Al":'Ask on WhatsApp',
       'Sipariş Bilgileri':'Order Information','Bilgilerinizi girin; sipariş özetiniz WhatsApp üzerinden gönderilecektir.':'Enter your details; your order summary will be sent via WhatsApp.','Ülke *':'Country *','Ad Soyad *':'Full Name *','Telefon / WhatsApp *':'Phone / WhatsApp *','E-posta *':'Email *','Şehir *':'City *','İlçe / Bölge':'District / Region','Açık Adres *':'Full Address *','Sipariş Notu':'Order Note','WhatsApp ile Siparişi Gönder':'Send Order via WhatsApp',
       'Yönetici Girişi':'Manager Login','Sadece yetkili SULTANZADE yöneticisi mağaza bilgilerini değiştirebilir.':'Only the authorized SULTANZADE manager can change store information.','E-posta':'Email','Şifre':'Password','Giriş Yap':'Sign In','Çıkış Yap':'Sign Out','Yalnızca owner yetkisi':'Owner access only',
@@ -3785,6 +3787,8 @@ async function deleteCRMPayment(id){
       'Malzeme':'Material','Renk':'Color','Üretim / Not':'Production / Note','Üretim / Özel Not':'Production / Special Note','En':'Width','Boy':'Length','Yükseklik':'Height','Ağırlık':'Weight','Ölçü seçin':'Choose a size','Seçilen ölçü':'Selected size','Ürün Detayı':'Product Details','Ölçü Seçeneği':'Size Option','Koleksiyon Serisi / Etiket':'Collection Series / Tag','Kaydet ve Ekle':'Save and Add'
     },
     ru:{
+      'Havale/EFT bilgileri müşteriye burada gösterilir.':'Информация о банковском переводе показывается клиентам здесь.','Teslimat ve kargo mesajlarını yönetin.':'Управляйте сообщениями о доставке и отправке.','Mağaza mesajı':'Сообщение магазина','Kargo ücreti ücretsizdir. Teslim süresi seçilen kargo firmasına göre değişebilir.':'Доставка бесплатная. Срок зависит от выбранной службы доставки.','Alt bölümde ve iletişim alanında gösterilir.':'Показывается внизу сайта и в разделе контактов.','İpucu':'Совет','Buradaki metin müşteriye doğrudan gösterilir. Özet saat alanı ile birlikte güncellenir.':'Этот текст показывается клиенту напрямую и обновляется вместе с краткими часами работы.','Telefon, WhatsApp ve e-posta.':'Телефон, WhatsApp и эл. почта.','Ürün seçimi, ölçü, fiyat ve müşteri bilgileri WhatsApp mesajına otomatik eklenir.':'Товар, размер, цена и данные клиента автоматически добавляются в сообщение WhatsApp.','Ana sayfadaki marka görseli.':'Изображение бренда на главной странице.','Bordo & altın tema':'Бордовая и золотая тема','Yönetici paneli mağazanın bordo kadife ve altın estetiğine uyumlu olarak tasarlanmıştır.':'Панель управления оформлена в бордово-золотом стиле магазина.','Değişiklikler yalnızca yetkili yöneticiye açıktır.':'Изменения доступны только авторизованному администратору.','Mevcut müşteri hesabınızla devam edin.':'Продолжите с существующей учётной записью клиента.','Fatura ve sipariş geçmişinizi saklamak için hesap oluşturun.':'Создайте аккаунт, чтобы сохранять историю заказов и счетов.','Sipariş durumunu değiştir':'Изменить статус заказа','Üretim / Özel Not':'Производство / Особая заметка','Ölçü Seçeneği':'Вариант размера','Koleksiyon Serisi / Etiket':'Серия коллекции / Метка','Henüz Kategori Bulunmuyor':'Категорий пока нет','Yukarıdaki "+ Kategori Ekle" butonuna tıklayarak ilk kategorinizi oluşturabilirsiniz.':'Нажмите кнопку «+ Добавить категорию» выше, чтобы создать первую категорию.','Yeni Kategori Ekle':'Добавить новую категорию','Görsel, fiyat ve kategori detaylarını girin.':'Введите изображение, цену и данные категории.','Ürün Görselleri * (Çoklu)':'Изображения товара * (несколько)','Birden fazla fotoğraf seçebilirsiniz':'Можно выбрать несколько фотографий','Ürün Bilgileri':'Информация о товаре','Ürününüzü müşteriye gösterecek temel bilgiler.':'Основная информация о товаре для клиента.','Ürün Adı *':'Название товара *','Açıklama *':'Описание *','3 Farklı Ölçü / Fiyat Seçeneği':'3 варианта размера / цены','Müşteri ürüne girdiğinde bu 3 seçenekten birini seçer; seçilen ölçünün fiyatı otomatik değişir.':'При открытии товара клиент выбирает один из 3 вариантов; цена меняется автоматически.','1. Ölçü':'Размер 1','2. Ölçü':'Размер 2','3. Ölçü':'Размер 3','Seçenek adı *':'Название варианта *','Marka Görseli':'Изображение бренда','SULTANZADE ana sayfa görselini buradan yükleyebilirsin.':'Загрузите здесь изображение SULTANZADE для главной страницы.','Bilgisayardan marka fotoğrafı seç':'Выбрать изображение бренда с компьютера','İlk kez giriş yapıyorum / Şifre oluştur':'Первый вход / Создать пароль','Yönetici yetkisi yalnızca mağaza sahibinin doğrulanmış hesabıyla verilir.':'Доступ администратора предоставляется только подтверждённой учётной записи владельца магазина.','Hesabım':'Мой аккаунт','Siparişlerim':'Мои заказы','Faturalarım':'Мои счета','Güvenli Hesap':'Безопасный аккаунт','Bu portalda yalnızca kendi sipariş ve faturalarınızı görebilirsiniz.':'В этом портале вы можете видеть только свои заказы и счета.','Müşteri kartını doldurun. Bu bilgiler firma sahibinin CRM panelinde tutulur.':'Заполните карточку клиента. Эти данные хранятся в CRM владельца.','Müşteri Tipi':'Тип клиента','Ad Soyad / Firma Adı *':'Имя / Название компании *','Ülke':'Страна','Şehir':'Город','Firma İçi Not':'Внутренняя заметка','Müşteriyi Kaydet':'Сохранить клиента','Vazgeç':'Отмена','Düzenle':'Изменить','Fatura':'Счёт','Tutar *':'Сумма *','Tarih':'Дата','Ödeme Yöntemi':'Способ оплаты','Kredi Kartı':'Кредитная карта','Diğer':'Другое','Tahsilatı Kaydet':'Сохранить платёж','Müşteri Adı':'Имя клиента','Müşteri E-posta':'Эл. почта клиента','Açıklama / Ürün':'Описание / Товар','Tutar':'Сумма','Ödeme Bekliyor':'Ожидает оплаты','Ödendi':'Оплачено','İptal':'Отменено','Son Ödeme Tarihi':'Срок оплаты','Faturayı Kaydet':'Сохранить счёт','Mağazamız':'Наш магазин','Haritada Aç':'Открыть карту','Ödeme Bilgileri':'Платёжная информация','Yönetici panelinden girilecek':'Вводится из панели управления','Ödeme açıklaması:':'Описание платежа:','Ürün bedeli':'Стоимость товара','Kargo & Sipariş':'Доставка и заказ','Teslim süresi kargo firmasına bağlıdır.':'Срок доставки зависит от службы доставки.','WhatsApp ile Sipariş':'Заказать через WhatsApp','İletişim & Destek':'Контакты и поддержка','WhatsApp Destek Hattı':'Поддержка WhatsApp','© 2026 SULTANZADE. Tüm hakları saklıdır.':'© 2026 SULTANZADE. Все права защищены.',"Veya resim URL yapıştırın (Enter'a basın)":'Или вставьте URL изображения (нажмите Enter)','Örn: Osmanlı Kahve Seti':'Напр.: Османский кофейный набор','Ürünün kısa ve etkileyici açıklaması...':'Краткое и выразительное описание товара...','Örn: 2026 Özel Seri':'Напр.: Спецсерия 2026','Örn: Küçük':'Напр.: Малый','Örn: Orta':'Напр.: Средний','Örn: Büyük':'Напр.: Большой','Örn: Pirinç, ahşap, kadife':'Напр.: Латунь, дерево, бархат','Örn: Ceviz / Altın':'Напр.: Орех / Золото','El işçiliği, üretim süresi veya müşterinin bilmesi gereken özel bilgiler...':'Ручная работа, срок производства или важная информация для клиента...','Ad, e-posta veya telefon ile müşteri ara...':'Поиск клиента по имени, эл. почте или телефону...','Sipariş no, müşteri, ürün veya e-posta ara...':'Поиск по номеру заказа, клиенту, товару или эл. почте...','Fatura no, müşteri veya e-posta ara...':'Поиск по номеру счёта, клиенту или эл. почте...','Müşteri, fatura no veya ödeme yöntemi ara...':'Поиск по клиенту, номеру счёта или способу оплаты...','VIP, Toptan, Perakende...':'VIP, Опт, Розница...','Bu notu yalnızca firma sahibi görür.':'Эту заметку видит только владелец магазина.',
+      'SULTANZADE Hesap':'Аккаунт SULTANZADE','SULTANZADE Müşteri':'Клиент SULTANZADE','SULTANZADE Firma Sahibi':'Владелец SULTANZADE','Müşteri / Firma Sahibi':'Клиент / Владелец магазина','Müşteri Hesabım':'Мой аккаунт','Sipariş & Destek':'Заказы и поддержка','Yönetici Paneli':'Панель управления','Ücretsiz Kargo':'Бесплатная доставка','Tüm ülkelere gönderim.':'Доставка во все страны.','Güvenli Ödeme':'Безопасная оплата','Banka havalesi / EFT.':'Банковский перевод / EFT.','El İşçiliği':'Ручная работа','Özenli SULTANZADE koleksiyonları.':'Тщательно изготовленные коллекции SULTANZADE.','WhatsApp Destek':'Поддержка WhatsApp','Hızlı iletişim ve sipariş desteği.':'Быстрая связь и помощь с заказами.',
       'İletişim':'Контакты','Kategorilerimiz':'Наши коллекции','Kategori Ekle':'Добавить категорию','Sipariş Ver':'Заказать','WhatsApp’tan Bilgi Al':'Спросить в WhatsApp',"WhatsApp'tan Bilgi Al":'Спросить в WhatsApp','Sipariş Bilgileri':'Данные заказа','Bilgilerinizi girin; sipariş özetiniz WhatsApp üzerinden gönderilecektir.':'Введите данные; сводка заказа будет отправлена через WhatsApp.','Ülke *':'Страна *','Ad Soyad *':'Имя и фамилия *','Telefon / WhatsApp *':'Телефон / WhatsApp *','E-posta *':'Эл. почта *','Şehir *':'Город *','İlçe / Bölge':'Район / Область','Açık Adres *':'Полный адрес *','Sipariş Notu':'Примечание к заказу','WhatsApp ile Siparişi Gönder':'Отправить заказ через WhatsApp',
       'Yönetici Girişi':'Вход администратора','Sadece yetkili SULTANZADE yöneticisi mağaza bilgilerini değiştirebilir.':'Только авторизованный администратор SULTANZADE может изменять данные магазина.','E-posta':'Эл. почта','Şifre':'Пароль','Giriş Yap':'Войти','Çıkış Yap':'Выйти','Yalnızca owner yetkisi':'Только владелец','Genel Bakış':'Обзор','Mağaza':'Магазин','Ödeme':'Оплата','Kargo':'Доставка','Çalışma Saatleri':'Часы работы','Müşteriler':'Клиенты','Siparişler':'Заказы','Faturalar':'Счета','Tahsilatlar':'Платежи','Görünüm':'Внешний вид',
       'Mağaza özeti':'Обзор магазина','Sitenin müşteriye gösterdiği bilgileri tek panelden yönetin.':'Управляйте всей информацией для клиентов из одной панели.','YÖNETİM MERKEZİ':'ЦЕНТР УПРАВЛЕНИЯ','Mağazanız hazır.':'Ваш магазин готов.','Banka, adres, kargo, iletişim ve çalışma saatlerini buradan güncelleyebilirsiniz.':'Здесь можно обновить банк, адрес, доставку, контакты и часы работы.','MAĞAZA':'МАГАЗИН','KARGO':'ДОСТАВКА','SAATLER':'ЧАСЫ','Adres':'Адрес','Ücretsiz kargo':'Бесплатная доставка',
@@ -3793,6 +3797,8 @@ async function deleteCRMPayment(id){
       'Hero Görseli':'Главное изображение','Yeni hero görseli seç':'Выбрать новое изображение','Değişiklikleri Kaydet':'Сохранить изменения','SULTANZADE Müşteri Portalı':'Портал клиента SULTANZADE','Siparişlerinizi ve faturalarınızı tek hesabınızdan takip edin.':'Отслеживайте заказы и счета в одном аккаунте.','Müşteri Girişi':'Вход клиента','Yeni Hesap':'Новый аккаунт','Ad Soyad':'Имя и фамилия','Müşteri Hesabı Oluştur':'Создать аккаунт клиента','Özet':'Сводка','Ödemeler':'Платежи','Notlar':'Заметки','Tahsilat Kaydı':'Запись платежа','Müşteri':'Клиент','Sipariş Detayı':'Детали заказа','Müşteri Bilgileri':'Данные клиента','Sipariş No':'№ заказа','Ürün':'Товар','Ölçü':'Размер','Fiyat':'Цена','Siparişi Sil':'Удалить заказ','Fatura Oluştur':'Создать счет','Durumu Kaydet':'Сохранить статус','Yeni':'Новый','Bekliyor':'Ожидает','Hazırlanıyor':'Готовится','Kargoya Verildi':'Отправлен','Tamamlandı':'Завершен','İptal Edildi':'Отменен','Malzeme':'Материал','Renk':'Цвет','Üretim / Not':'Производство / Примечание','En':'Ширина','Boy':'Длина','Yükseklik':'Высота','Ağırlık':'Вес','Ölçü seçin':'Выберите размер','Seçilen ölçü':'Выбранный размер','Ürün Detayı':'Детали товара','Kaydet ve Ekle':'Сохранить и добавить'
     },
     ar:{
+      'Havale/EFT bilgileri müşteriye burada gösterilir.':'تُعرض معلومات التحويل البنكي للعملاء هنا.','Teslimat ve kargo mesajlarını yönetin.':'إدارة رسائل الشحن والتوصيل.','Mağaza mesajı':'رسالة المتجر','Kargo ücreti ücretsizdir. Teslim süresi seçilen kargo firmasına göre değişebilir.':'الشحن مجاني. وقد تختلف مدة التسليم حسب شركة الشحن المختارة.','Alt bölümde ve iletişim alanında gösterilir.':'يظهر في أسفل الموقع وفي قسم التواصل.','İpucu':'نصيحة','Buradaki metin müşteriye doğrudan gösterilir. Özet saat alanı ile birlikte güncellenir.':'يظهر هذا النص مباشرة للعميل ويتم تحديثه مع ملخص ساعات العمل.','Telefon, WhatsApp ve e-posta.':'الهاتف وواتساب والبريد الإلكتروني.','Ürün seçimi, ölçü, fiyat ve müşteri bilgileri WhatsApp mesajına otomatik eklenir.':'تُضاف معلومات المنتج والمقاس والسعر والعميل تلقائياً إلى رسالة واتساب.','Ana sayfadaki marka görseli.':'صورة العلامة التجارية في الصفحة الرئيسية.','Bordo & altın tema':'سمة خمري وذهبي','Yönetici paneli mağazanın bordo kadife ve altın estetiğine uyumlu olarak tasarlanmıştır.':'تم تصميم لوحة الإدارة لتتوافق مع الطابع الخمري والذهبي للمتجر.','Değişiklikler yalnızca yetkili yöneticiye açıktır.':'التعديلات متاحة فقط للمدير المخوّل.','Mevcut müşteri hesabınızla devam edin.':'تابع باستخدام حساب العميل الحالي.','Fatura ve sipariş geçmişinizi saklamak için hesap oluşturun.':'أنشئ حساباً للاحتفاظ بسجل الطلبات والفواتير.','Sipariş durumunu değiştir':'تغيير حالة الطلب','Üretim / Özel Not':'الإنتاج / ملاحظة خاصة','Ölçü Seçeneği':'خيار المقاس','Koleksiyon Serisi / Etiket':'سلسلة المجموعة / الوسم','Henüz Kategori Bulunmuyor':'لا توجد فئات بعد','Yukarıdaki "+ Kategori Ekle" butonuna tıklayarak ilk kategorinizi oluşturabilirsiniz.':'اضغط على زر «+ إضافة فئة» أعلاه لإنشاء أول فئة.','Yeni Kategori Ekle':'إضافة فئة جديدة','Görsel, fiyat ve kategori detaylarını girin.':'أدخل الصورة والسعر وتفاصيل الفئة.','Ürün Görselleri * (Çoklu)':'صور المنتج * (متعددة)','Birden fazla fotoğraf seçebilirsiniz':'يمكنك اختيار عدة صور','Ürün Bilgileri':'معلومات المنتج','Ürününüzü müşteriye gösterecek temel bilgiler.':'المعلومات الأساسية التي تظهر للعميل.','Ürün Adı *':'اسم المنتج *','Açıklama *':'الوصف *','3 Farklı Ölçü / Fiyat Seçeneği':'3 خيارات مختلفة للمقاس / السعر','Müşteri ürüne girdiğinde bu 3 seçenekten birini seçer; seçilen ölçünün fiyatı otomatik değişir.':'عند فتح المنتج يختار العميل واحداً من هذه الخيارات الثلاثة ويتغير السعر تلقائياً.','1. Ölçü':'المقاس 1','2. Ölçü':'المقاس 2','3. Ölçü':'المقاس 3','Seçenek adı *':'اسم الخيار *','Marka Görseli':'صورة العلامة التجارية','SULTANZADE ana sayfa görselini buradan yükleyebilirsin.':'يمكنك رفع صورة SULTANZADE للصفحة الرئيسية من هنا.','Bilgisayardan marka fotoğrafı seç':'اختر صورة العلامة التجارية من الكمبيوتر','İlk kez giriş yapıyorum / Şifre oluştur':'تسجيل الدخول لأول مرة / إنشاء كلمة مرور','Yönetici yetkisi yalnızca mağaza sahibinin doğrulanmış hesabıyla verilir.':'تُمنح صلاحية الإدارة فقط لحساب مالك المتجر الموثّق.','Hesabım':'حسابي','Siparişlerim':'طلباتي','Faturalarım':'فواتيري','Güvenli Hesap':'حساب آمن','Bu portalda yalnızca kendi sipariş ve faturalarınızı görebilirsiniz.':'يمكنك في هذه البوابة رؤية طلباتك وفواتيرك فقط.','Müşteri kartını doldurun. Bu bilgiler firma sahibinin CRM panelinde tutulur.':'املأ بطاقة العميل. تُحفظ هذه المعلومات في لوحة CRM الخاصة بمالك المتجر.','Müşteri Tipi':'نوع العميل','Ad Soyad / Firma Adı *':'الاسم الكامل / اسم الشركة *','Ülke':'الدولة','Şehir':'المدينة','Firma İçi Not':'ملاحظة داخلية للشركة','Müşteriyi Kaydet':'حفظ العميل','Vazgeç':'إلغاء','Düzenle':'تعديل','Fatura':'فاتورة','Tutar *':'المبلغ *','Tarih':'التاريخ','Ödeme Yöntemi':'طريقة الدفع','Kredi Kartı':'بطاقة ائتمان','Diğer':'أخرى','Tahsilatı Kaydet':'حفظ الدفعة','Müşteri Adı':'اسم العميل','Müşteri E-posta':'بريد العميل الإلكتروني','Açıklama / Ürün':'الوصف / المنتج','Tutar':'المبلغ','Ödeme Bekliyor':'بانتظار الدفع','Ödendi':'مدفوع','İptal':'ملغي','Son Ödeme Tarihi':'تاريخ الاستحقاق','Faturayı Kaydet':'حفظ الفاتورة','Mağazamız':'متجرنا','Haritada Aç':'فتح على الخريطة','Ödeme Bilgileri':'معلومات الدفع','Yönetici panelinden girilecek':'يُدخل من لوحة الإدارة','Ödeme açıklaması:':'وصف الدفع:','Ürün bedeli':'قيمة المنتج','Kargo & Sipariş':'الشحن والطلب','Teslim süresi kargo firmasına bağlıdır.':'مدة التسليم تعتمد على شركة الشحن.','WhatsApp ile Sipariş':'اطلب عبر واتساب','İletişim & Destek':'التواصل والدعم','WhatsApp Destek Hattı':'دعم واتساب','© 2026 SULTANZADE. Tüm hakları saklıdır.':'© 2026 SULTANZADE. جميع الحقوق محفوظة.',"Veya resim URL yapıştırın (Enter'a basın)":'أو ألصق رابط الصورة (اضغط Enter)','Örn: Osmanlı Kahve Seti':'مثال: طقم قهوة عثماني','Ürünün kısa ve etkileyici açıklaması...':'وصف مختصر وجذاب للمنتج...','Örn: 2026 Özel Seri':'مثال: سلسلة خاصة 2026','Örn: Küçük':'مثال: صغير','Örn: Orta':'مثال: متوسط','Örn: Büyük':'مثال: كبير','Örn: Pirinç, ahşap, kadife':'مثال: نحاس، خشب، مخمل','Örn: Ceviz / Altın':'مثال: جوز / ذهبي','El işçiliği, üretim süresi veya müşterinin bilmesi gereken özel bilgiler...':'العمل اليدوي أو مدة الإنتاج أو معلومات خاصة يجب أن يعرفها العميل...','Ad, e-posta veya telefon ile müşteri ara...':'ابحث عن العميل بالاسم أو البريد أو الهاتف...','Sipariş no, müşteri, ürün veya e-posta ara...':'ابحث برقم الطلب أو العميل أو المنتج أو البريد...','Fatura no, müşteri veya e-posta ara...':'ابحث برقم الفاتورة أو العميل أو البريد...','Müşteri, fatura no veya ödeme yöntemi ara...':'ابحث بالعميل أو رقم الفاتورة أو طريقة الدفع...','VIP, Toptan, Perakende...':'VIP، جملة، تجزئة...','Bu notu yalnızca firma sahibi görür.':'هذه الملاحظة يراها مالك المتجر فقط.',
+      'SULTANZADE Hesap':'حساب SULTANZADE','SULTANZADE Müşteri':'عميل SULTANZADE','SULTANZADE Firma Sahibi':'مالك SULTANZADE','Müşteri / Firma Sahibi':'العميل / مالك المتجر','Müşteri Hesabım':'حسابي','Sipariş & Destek':'الطلبات والدعم','Yönetici Paneli':'لوحة الإدارة','Ücretsiz Kargo':'شحن مجاني','Tüm ülkelere gönderim.':'شحن إلى جميع الدول.','Güvenli Ödeme':'دفع آمن','Banka havalesi / EFT.':'تحويل بنكي / EFT.','El İşçiliği':'صناعة يدوية','Özenli SULTANZADE koleksiyonları.':'مجموعات SULTANZADE مصنوعة بعناية.','WhatsApp Destek':'دعم واتساب','Hızlı iletişim ve sipariş desteği.':'تواصل سريع ودعم للطلبات.',
       'İletişim':'اتصل بنا','Kategorilerimiz':'مجموعاتنا','Kategori Ekle':'إضافة فئة','Sipariş Ver':'اطلب الآن','WhatsApp’tan Bilgi Al':'تواصل عبر واتساب',"WhatsApp'tan Bilgi Al":'تواصل عبر واتساب','Sipariş Bilgileri':'معلومات الطلب','Bilgilerinizi girin; sipariş özetiniz WhatsApp üzerinden gönderilecektir.':'أدخل معلوماتك؛ سيتم إرسال ملخص الطلب عبر واتساب.','Ülke *':'الدولة *','Ad Soyad *':'الاسم الكامل *','Telefon / WhatsApp *':'الهاتف / واتساب *','E-posta *':'البريد الإلكتروني *','Şehir *':'المدينة *','İlçe / Bölge':'المنطقة / الحي','Açık Adres *':'العنوان الكامل *','Sipariş Notu':'ملاحظة الطلب','WhatsApp ile Siparişi Gönder':'إرسال الطلب عبر واتساب',
       'Yönetici Girişi':'دخول المدير','Sadece yetkili SULTANZADE yöneticisi mağaza bilgilerini değiştirebilir.':'يمكن فقط لمدير SULTANZADE المعتمد تعديل معلومات المتجر.','E-posta':'البريد الإلكتروني','Şifre':'كلمة المرور','Giriş Yap':'تسجيل الدخول','Çıkış Yap':'تسجيل الخروج','Yalnızca owner yetkisi':'صلاحية المالك فقط','Genel Bakış':'نظرة عامة','Mağaza':'المتجر','Ödeme':'الدفع','Kargo':'الشحن','Çalışma Saatleri':'ساعات العمل','Müşteriler':'العملاء','Siparişler':'الطلبات','Faturalar':'الفواتير','Tahsilatlar':'المدفوعات','Görünüm':'المظهر',
       'Mağaza özeti':'ملخص المتجر','Sitenin müşteriye gösterdiği bilgileri tek panelden yönetin.':'أدر جميع المعلومات الظاهرة للعملاء من لوحة واحدة.','YÖNETİM MERKEZİ':'مركز الإدارة','Mağazanız hazır.':'متجرك جاهز.','Banka, adres, kargo, iletişim ve çalışma saatlerini buradan güncelleyebilirsiniz.':'يمكنك تحديث البنك والعنوان والشحن والتواصل وساعات العمل من هنا.','MAĞAZA':'المتجر','KARGO':'الشحن','SAATLER':'الساعات','Adres':'العنوان','Ücretsiz kargo':'شحن مجاني',
@@ -3803,180 +3809,47 @@ async function deleteCRMPayment(id){
   };
 
   const TR_KEYS = new Set(Object.keys(D.en));
+  function canonicalFullKey(value){
+    const text=String(value||'').replace(/\s+/g,' ').trim();
+    if(!text) return text;
+    if(TR_KEYS.has(text)) return text;
+    for(const code of ['en','ru','ar']){
+      const dict=D[code]||{};
+      for(const key of TR_KEYS){
+        if(String(dict[key]||'').replace(/\s+/g,' ').trim()===text) return key;
+      }
+    }
+    return text;
+  }
   function translateText(raw, lang){
-    if(lang==='tr') return raw;
-    const trimmed=raw.trim(); if(!trimmed) return raw;
-    const v=D[lang]?.[trimmed]; if(!v) return raw;
-    return raw.replace(trimmed,v);
+    const trimmed=String(raw||'').trim(); if(!trimmed) return raw;
+    const key=canonicalFullKey(trimmed);
+    if(!TR_KEYS.has(key)) return raw;
+    const v=lang==='tr' ? key : (D[lang]?.[key] || key);
+    return String(raw).replace(trimmed,v);
   }
   function apply(root=document){
     const lang=window.currentLang || localStorage.getItem('sultanzade_lang') || 'tr';
-    if(lang==='tr') return;
+    const titles={tr:'SULTANZADE | Özel Koleksiyonlar, El İşçiliği ve Lüks Satranç Setleri',en:'SULTANZADE | Special Collections, Handcrafted Luxury Chess Sets',ru:'SULTANZADE | Особые коллекции и роскошные шахматные наборы ручной работы',ar:'SULTANZADE | مجموعات خاصة وأطقم شطرنج فاخرة مصنوعة يدوياً'}; document.title=titles[lang]||titles.tr;
     const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
     let n; const nodes=[]; while(n=walker.nextNode()) nodes.push(n);
     nodes.forEach(node=>{ if(node.parentElement && !['SCRIPT','STYLE','OPTION'].includes(node.parentElement.tagName)){ const x=translateText(node.nodeValue,lang); if(x!==node.nodeValue) node.nodeValue=x; }});
-    root.querySelectorAll?.('input[placeholder],textarea[placeholder]').forEach(el=>{ const v=D[lang]?.[el.placeholder.trim()]; if(v) el.placeholder=v; });
+    root.querySelectorAll?.('input[placeholder],textarea[placeholder]').forEach(el=>{
+      const current=el.getAttribute('placeholder')||'';
+      const key=canonicalFullKey(current);
+      if(TR_KEYS.has(key)) el.setAttribute('placeholder', lang==='tr' ? key : (D[lang]?.[key] || key));
+    });
   }
   window.applyFullI18n=()=>apply(document);
-  const obs=new MutationObserver(ms=>{ const lang=window.currentLang || localStorage.getItem('sultanzade_lang') || 'tr'; if(lang==='tr') return; ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1)apply(n); else if(n.nodeType===3 && n.parentElement) apply(n.parentElement);})); });
-  document.addEventListener('DOMContentLoaded',()=>{apply(document);obs.observe(document.body,{childList:true,subtree:true});});
+  let applying=false;
+  const obs=new MutationObserver(()=>{
+    if(applying) return;
+    applying=true;
+    setTimeout(()=>{ try{ apply(document); } finally{ applying=false; } },0);
+  });
+  document.addEventListener('DOMContentLoaded',()=>{apply(document);obs.observe(document.body,{childList:true,subtree:true,characterData:true});});
 })();
 </script>
 
 </body>
 </html>
-<script>
-/* ===== SULTANZADE COMPLETE 4-LANGUAGE UI LAYER ===== */
-const SZ_UI = {
- en: {
-'İletişim':'Contact','Mağazamız':'Our Store','Ödeme Bilgileri':'Payment Information','Kargo & Sipariş':'Shipping & Order','İletişim & Destek':'Contact & Support',
-'Banka':'Bank','Yönetici panelinden girilecek':'To be entered from the admin panel','Hesap sahibi':'Account holder','Kopyala':'Copy','Ödeme açıklaması':'Payment description','Ürün bedeli':'Product payment','Haritada Aç':'Open in Maps','Ücretsiz kargo':'Free shipping','Teslim süresi kargo firmasına bağlıdır.':'Delivery time depends on the shipping company.','Tüm ülkeler':'All countries','WhatsApp ile Sipariş':'Order via WhatsApp','WhatsApp Destek Hattı':'WhatsApp Support Line',
-'Sipariş Ver':'Place Order','WhatsApp’tan Bilgi Al':'Ask on WhatsApp',"WhatsApp'tan Bilgi Al":'Ask on WhatsApp','Ölçü seçin':'Choose a size','Seçilen ölçü':'Selected size','Malzeme':'Material','Renk':'Color','Üretim':'Production','Genişlik':'Width','Yükseklik':'Height','Ağırlık':'Weight','Notlar':'Notes',
-'Sipariş Bilgileri':'Order Information','Bilgilerinizi girin; sipariş özetiniz WhatsApp üzerinden gönderilecektir.':'Enter your information; your order summary will be sent via WhatsApp.','Ülke *':'Country *','Ad Soyad *':'Full Name *','Telefon / WhatsApp *':'Phone / WhatsApp *','E-posta *':'Email *','Şehir *':'City *','İlçe / Bölge':'District / Region','Açık Adres *':'Full Address *','Sipariş Notu':'Order Note','WhatsApp ile Siparişi Gönder':'Send Order via WhatsApp',
-'Yönetici Girişi':'Admin Login','Sadece yetkili SULTANZADE yöneticisi mağaza bilgilerini değiştirebilir.':'Only the authorized SULTANZADE administrator can change store information.','E-posta':'Email','Şifre':'Password','Giriş Yap':'Log In','Çıkış Yap':'Log Out','Yönetici Paneli':'Admin Panel','Genel Bakış':'Overview','Mağaza':'Store','Ödeme':'Payment','Kargo':'Shipping','Çalışma Saatleri':'Business Hours','Müşteriler':'Customers','Siparişler':'Orders','Faturalar':'Invoices','Tahsilatlar':'Payments','Ayarlar':'Settings','Güvenlik':'Security',
-'MAĞAZA':'STORE','KARGO':'SHIPPING','SAATLER':'HOURS','WHATSAPP':'WHATSAPP','Mağaza & Adres':'Store & Address','Müşterinin göreceği mağaza bilgileri.':'Store information visible to customers.','Mağaza Adresi':'Store Address','Google Maps Bağlantısı':'Google Maps Link','Mağaza Çalışma Saatleri (özet)':'Store Hours (summary)','Telefon':'Phone','WhatsApp':'WhatsApp','Buradaki metin müşteriye doğrudan gösterilir. Özet saat alanı ile birlikte güncellenir.':'This text is shown directly to customers and updates together with the summary hours field.','İpucu':'Tip',
-'TOPLAM MÜŞTERİ':'TOTAL CUSTOMERS','SİPARİŞ VEREN':'ORDERING CUSTOMERS','TOPLAM SİPARİŞ':'TOTAL ORDERS','FATURALI MÜŞTERİ':'INVOICED CUSTOMERS','Yeni Müşteri':'New Customer','Yenile':'Refresh','MÜŞTERİ':'CUSTOMER','E-POSTA':'EMAIL','TELEFON':'PHONE','ŞEHİR / ÜLKE':'CITY / COUNTRY','SİPARİŞ':'ORDER','SON HAREKET':'LAST ACTIVITY','İŞLEM':'ACTION','Özet':'Summary','Ödemeler':'Payments',
-'Fatura Oluştur':'Create Invoice','Siparişi Sil':'Delete Order','Sipariş Bilgileri':'Order Information','Müşteri Bilgileri':'Customer Information','Durumu Kaydet':'Save Status','Bekliyor':'Pending','Hazırlanıyor':'Processing','Kargoya Verildi':'Shipped','Tamamlandı':'Completed','İptal Edildi':'Cancelled','Adres':'Address','Müşteri Notu':'Customer Note',
-'Fatura Detayı':'Invoice Details','Satış / Sipariş Faturası':'Sales / Order Invoice','DURUM':'STATUS','FATURA TOPLAMI':'INVOICE TOTAL','TAHSİLAT':'PAYMENT','TUTAR':'AMOUNT','TARİH':'DATE','YÖNTEM':'METHOD','FATURA':'INVOICE','Görüntüle':'View','Düzenle':'Edit','Sil':'Delete','Kaydet':'Save','İptal':'Cancel','Tahsilat Kaydı':'Payment Record','Müşteri':'Customer','Tutar':'Amount','Yöntem':'Method','Tarih':'Date','Açıklama':'Description','Fatura':'Invoice',
-'Kategori Ekle':'Add Category','Kategorilerimiz':'Our Categories','Yedekle':'Backup','Yükle':'Restore','Kaydet ve Ekle':'Save and Add','Kategori / Ürün Başlığı *':'Category / Product Title *','Fiyat Bilgisi *':'Price *','Koleksiyon Serisi / Etiket':'Collection Series / Badge','Kategori Açıklaması *':'Category Description *','Kategori Görselleri * (Çoklu)':'Category Images * (Multiple)'
- },
- ru: {
-'İletişim':'Контакты','Mağazamız':'Наш магазин','Ödeme Bilgileri':'Платёжная информация','Kargo & Sipariş':'Доставка и заказ','İletişim & Destek':'Контакты и поддержка','Banka':'Банк','Yönetici panelinden girilecek':'Указывается в панели администратора','Hesap sahibi':'Владелец счёта','Kopyala':'Копировать','Ödeme açıklaması':'Назначение платежа','Ürün bedeli':'Оплата товара','Haritada Aç':'Открыть на карте','Ücretsiz kargo':'Бесплатная доставка','Teslim süresi kargo firmasına bağlıdır.':'Срок доставки зависит от транспортной компании.','Tüm ülkeler':'Все страны','WhatsApp ile Sipariş':'Заказать через WhatsApp','WhatsApp Destek Hattı':'Поддержка WhatsApp','Sipariş Ver':'Оформить заказ','WhatsApp’tan Bilgi Al':'Спросить в WhatsApp',"WhatsApp'tan Bilgi Al":'Спросить в WhatsApp','Ölçü seçin':'Выберите размер','Seçilen ölçü':'Выбранный размер','Malzeme':'Материал','Renk':'Цвет','Üretim':'Производство','Genişlik':'Ширина','Yükseklik':'Высота','Ağırlık':'Вес','Notlar':'Примечания','Sipariş Bilgileri':'Данные заказа','Bilgilerinizi girin; sipariş özetiniz WhatsApp üzerinden gönderilecektir.':'Введите данные; итог заказа будет отправлен через WhatsApp.','Ülke *':'Страна *','Ad Soyad *':'Имя и фамилия *','Telefon / WhatsApp *':'Телефон / WhatsApp *','E-posta *':'Эл. почта *','Şehir *':'Город *','İlçe / Bölge':'Район / Область','Açık Adres *':'Полный адрес *','Sipariş Notu':'Примечание к заказу','WhatsApp ile Siparişi Gönder':'Отправить заказ через WhatsApp','Yönetici Girişi':'Вход администратора','Sadece yetkili SULTANZADE yöneticisi mağaza bilgilerini değiştirebilir.':'Только авторизованный администратор SULTANZADE может изменять данные магазина.','E-posta':'Эл. почта','Şifre':'Пароль','Giriş Yap':'Войти','Çıkış Yap':'Выйти','Yönetici Paneli':'Панель администратора','Genel Bakış':'Обзор','Mağaza':'Магазин','Ödeme':'Оплата','Kargo':'Доставка','Çalışma Saatleri':'Часы работы','Müşteriler':'Клиенты','Siparişler':'Заказы','Faturalar':'Счета','Tahsilatlar':'Платежи','Ayarlar':'Настройки','Güvenlik':'Безопасность','MAĞAZA':'МАГАЗИН','KARGO':'ДОСТАВКА','SAATLER':'ЧАСЫ','Mağaza & Adres':'Магазин и адрес','Müşterinin göreceği mağaza bilgileri.':'Информация о магазине для клиентов.','Mağaza Adresi':'Адрес магазина','Google Maps Bağlantısı':'Ссылка Google Maps','Mağaza Çalışma Saatleri (özet)':'Часы работы (кратко)','Telefon':'Телефон','Buradaki metin müşteriye doğrudan gösterilir. Özet saat alanı ile birlikte güncellenir.':'Этот текст показывается клиенту и обновляется вместе с краткими часами работы.','İpucu':'Подсказка','TOPLAM MÜŞTERİ':'ВСЕГО КЛИЕНТОВ','SİPARİŞ VEREN':'СДЕЛАЛИ ЗАКАЗ','TOPLAM SİPARİŞ':'ВСЕГО ЗАКАЗОВ','FATURALI MÜŞTERİ':'КЛИЕНТЫ СО СЧЁТОМ','Yeni Müşteri':'Новый клиент','Yenile':'Обновить','MÜŞTERİ':'КЛИЕНТ','E-POSTA':'ЭЛ. ПОЧТА','TELEFON':'ТЕЛЕФОН','ŞEHİR / ÜLKE':'ГОРОД / СТРАНА','SİPARİŞ':'ЗАКАЗ','SON HAREKET':'ПОСЛЕДНЕЕ ДЕЙСТВИЕ','İŞLEM':'ДЕЙСТВИЕ','Özet':'Обзор','Ödemeler':'Платежи','Fatura Oluştur':'Создать счёт','Siparişi Sil':'Удалить заказ','Müşteri Bilgileri':'Данные клиента','Durumu Kaydet':'Сохранить статус','Bekliyor':'Ожидает','Hazırlanıyor':'Готовится','Kargoya Verildi':'Отправлено','Tamamlandı':'Завершено','İptal Edildi':'Отменено','Adres':'Адрес','Müşteri Notu':'Примечание клиента','Fatura Detayı':'Детали счёта','Satış / Sipariş Faturası':'Счёт продажи / заказа','DURUM':'СТАТУС','FATURA TOPLAMI':'СУММА СЧЕТОВ','TAHSİLAT':'ОПЛАЧЕНО','TUTAR':'СУММА','TARİH':'ДАТА','YÖNTEM':'МЕТОД','FATURA':'СЧЁТ','Görüntüle':'Просмотр','Düzenle':'Изменить','Sil':'Удалить','Kaydet':'Сохранить','İptal':'Отмена','Tahsilat Kaydı':'Запись платежа','Müşteri':'Клиент','Tutar':'Сумма','Yöntem':'Метод','Tarih':'Дата','Açıklama':'Описание','Fatura':'Счёт','Kategori Ekle':'Добавить категорию','Kategorilerimiz':'Наши категории','Yedekle':'Резервная копия','Yükle':'Восстановить','Kaydet ve Ekle':'Сохранить и добавить','Kategori / Ürün Başlığı *':'Название категории / товара *','Fiyat Bilgisi *':'Цена *','Koleksiyon Serisi / Etiket':'Серия / Метка','Kategori Açıklaması *':'Описание категории *','Kategori Görselleri * (Çoklu)':'Изображения категории * (несколько)'
- },
- ar: {
-'İletişim':'اتصل بنا','Mağazamız':'متجرنا','Ödeme Bilgileri':'معلومات الدفع','Kargo & Sipariş':'الشحن والطلب','İletişim & Destek':'التواصل والدعم','Banka':'البنك','Yönetici panelinden girilecek':'يُدخل من لوحة الإدارة','Hesap sahibi':'صاحب الحساب','Kopyala':'نسخ','Ödeme açıklaması':'وصف الدفع','Ürün bedeli':'قيمة المنتج','Haritada Aç':'فتح على الخريطة','Ücretsiz kargo':'شحن مجاني','Teslim süresi kargo firmasına bağlıdır.':'مدة التسليم تعتمد على شركة الشحن.','Tüm ülkeler':'جميع الدول','WhatsApp ile Sipariş':'اطلب عبر واتساب','WhatsApp Destek Hattı':'دعم واتساب','Sipariş Ver':'اطلب الآن','WhatsApp’tan Bilgi Al':'تواصل عبر واتساب',"WhatsApp'tan Bilgi Al":'تواصل عبر واتساب','Ölçü seçin':'اختر المقاس','Seçilen ölçü':'المقاس المحدد','Malzeme':'المادة','Renk':'اللون','Üretim':'التصنيع','Genişlik':'العرض','Yükseklik':'الارتفاع','Ağırlık':'الوزن','Notlar':'ملاحظات','Sipariş Bilgileri':'معلومات الطلب','Bilgilerinizi girin; sipariş özetiniz WhatsApp üzerinden gönderilecektir.':'أدخل معلوماتك وسيتم إرسال ملخص الطلب عبر واتساب.','Ülke *':'الدولة *','Ad Soyad *':'الاسم الكامل *','Telefon / WhatsApp *':'الهاتف / واتساب *','E-posta *':'البريد الإلكتروني *','Şehir *':'المدينة *','İlçe / Bölge':'المنطقة / الحي','Açık Adres *':'العنوان الكامل *','Sipariş Notu':'ملاحظة الطلب','WhatsApp ile Siparişi Gönder':'إرسال الطلب عبر واتساب','Yönetici Girişi':'تسجيل دخول المدير','Sadece yetkili SULTANZADE yöneticisi mağaza bilgilerini değiştirebilir.':'يمكن لمدير SULTANZADE المخوّل فقط تعديل معلومات المتجر.','E-posta':'البريد الإلكتروني','Şifre':'كلمة المرور','Giriş Yap':'تسجيل الدخول','Çıkış Yap':'تسجيل الخروج','Yönetici Paneli':'لوحة الإدارة','Genel Bakış':'نظرة عامة','Mağaza':'المتجر','Ödeme':'الدفع','Kargo':'الشحن','Çalışma Saatleri':'ساعات العمل','Müşteriler':'العملاء','Siparişler':'الطلبات','Faturalar':'الفواتير','Tahsilatlar':'التحصيلات','Ayarlar':'الإعدادات','Güvenlik':'الأمان','MAĞAZA':'المتجر','KARGO':'الشحن','SAATLER':'الساعات','Mağaza & Adres':'المتجر والعنوان','Müşterinin göreceği mağaza bilgileri.':'معلومات المتجر التي يراها العميل.','Mağaza Adresi':'عنوان المتجر','Google Maps Bağlantısı':'رابط خرائط Google','Mağaza Çalışma Saatleri (özet)':'ساعات عمل المتجر (مختصر)','Telefon':'الهاتف','Buradaki metin müşteriye doğrudan gösterilir. Özet saat alanı ile birlikte güncellenir.':'يظهر هذا النص مباشرة للعميل ويتم تحديثه مع ملخص ساعات العمل.','İpucu':'معلومة','TOPLAM MÜŞTERİ':'إجمالي العملاء','SİPARİŞ VEREN':'العملاء الذين طلبوا','TOPLAM SİPARİŞ':'إجمالي الطلبات','FATURALI MÜŞTERİ':'عملاء لديهم فواتير','Yeni Müşteri':'عميل جديد','Yenile':'تحديث','MÜŞTERİ':'العميل','E-POSTA':'البريد الإلكتروني','TELEFON':'الهاتف','ŞEHİR / ÜLKE':'المدينة / الدولة','SİPARİŞ':'الطلب','SON HAREKET':'آخر نشاط','İŞLEM':'الإجراء','Özet':'ملخص','Ödemeler':'المدفوعات','Fatura Oluştur':'إنشاء فاتورة','Siparişi Sil':'حذف الطلب','Müşteri Bilgileri':'معلومات العميل','Durumu Kaydet':'حفظ الحالة','Bekliyor':'قيد الانتظار','Hazırlanıyor':'قيد التجهيز','Kargoya Verildi':'تم الشحن','Tamamlandı':'مكتمل','İptal Edildi':'ملغي','Adres':'العنوان','Müşteri Notu':'ملاحظة العميل','Fatura Detayı':'تفاصيل الفاتورة','Satış / Sipariş Faturası':'فاتورة بيع / طلب','DURUM':'الحالة','FATURA TOPLAMI':'إجمالي الفواتير','TAHSİLAT':'التحصيل','TUTAR':'المبلغ','TARİH':'التاريخ','YÖNTEM':'الطريقة','FATURA':'الفاتورة','Görüntüle':'عرض','Düzenle':'تعديل','Sil':'حذف','Kaydet':'حفظ','İptal':'إلغاء','Tahsilat Kaydı':'سجل التحصيل','Müşteri':'العميل','Tutar':'المبلغ','Yöntem':'الطريقة','Tarih':'التاريخ','Açıklama':'الوصف','Fatura':'الفاتورة','Kategori Ekle':'إضافة فئة','Kategorilerimiz':'فئاتنا','Yedekle':'نسخة احتياطية','Yükle':'استعادة','Kaydet ve Ekle':'حفظ وإضافة','Kategori / Ürün Başlığı *':'اسم الفئة / المنتج *','Fiyat Bilgisi *':'السعر *','Koleksiyon Serisi / Etiket':'سلسلة المجموعة / الشارة','Kategori Açıklaması *':'وصف الفئة *','Kategori Görselleri * (Çoklu)':'صور الفئة * (متعددة)'
- }
-};
-const SZ_TR_KEYS = Object.keys(SZ_UI.en);
-function szNorm(v){return String(v||'').replace(/\s+/g,' ').trim()}
-function szCanonicalKey(value){
- const n=szNorm(value);
- if(SZ_TR_KEYS.includes(n)) return n;
- for(const code of ['en','ru','ar']){
-   const dict=SZ_UI[code]||{};
-   for(const key of SZ_TR_KEYS){ if(szNorm(dict[key])===n) return key; }
- }
- return n;
-}
-function szTranslateString(v,lang){
- if(!v) return v;
- const n=szNorm(v);
- const canonical=szCanonicalKey(n);
- if(lang==='tr') return SZ_TR_KEYS.includes(canonical) ? canonical : v;
- const dict=SZ_UI[lang]||{};
- if(dict[canonical]) return dict[canonical];
- // Translate a known label prefix even if the current DOM text was left in another language.
- for(const key of SZ_TR_KEYS){
-   const variants=[key,SZ_UI.en?.[key],SZ_UI.ru?.[key],SZ_UI.ar?.[key]].filter(Boolean);
-   for(const variant of variants){
-     if(n.startsWith(szNorm(variant)+':')) return n.replace(variant,dict[key]||key);
-   }
- }
- return v;
-}
-function applyCompleteUILanguage(lang=currentLang){
- lang=lang||'tr';
- document.documentElement.lang=lang; document.documentElement.dir=lang==='ar'?'rtl':'ltr';
- const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
- const nodes=[]; while(walker.nextNode()) nodes.push(walker.currentNode);
- nodes.forEach(n=>{
-   const p=n.parentElement; if(!p||['SCRIPT','STYLE','TEXTAREA','OPTION'].includes(p.tagName)) return;
-   if(n.nodeValue.trim() && !n.__szOriginal) n.__szOriginal=n.nodeValue;
-   if(!n.__szOriginal) return;
-   const original=n.__szOriginal; const lead=original.match(/^\s*/)?.[0]||''; const tail=original.match(/\s*$/)?.[0]||'';
-   n.nodeValue=lead+szTranslateString(szNorm(original),lang)+tail;
- });
- document.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(el=>{
-   if(!el.dataset.szOriginalPlaceholder) el.dataset.szOriginalPlaceholder=el.getAttribute('placeholder')||'';
-   el.setAttribute('placeholder',szTranslateString(el.dataset.szOriginalPlaceholder,lang));
- });
- document.querySelectorAll('option').forEach(el=>{
-   if(!el.dataset.szOriginalText) el.dataset.szOriginalText=el.textContent;
-   el.textContent=szTranslateString(el.dataset.szOriginalText,lang);
- });
- // dynamic site-setting values: translate only known default descriptive values, never address/IBAN/phone/email/name.
- const valueIds=['footerShipping','footerDelivery','footerCountries','paymentNoteDisplay','managerOverviewShipping'];
- valueIds.forEach(id=>{const el=document.getElementById(id);if(el){if(!el.dataset.szOriginalValue)el.dataset.szOriginalValue=el.textContent;el.textContent=szTranslateString(el.dataset.szOriginalValue,lang)}});
- // Critical product-detail actions: set from the selected language directly so old Arabic/Russian text can never leak into another language.
- const orderBtn=document.querySelector('#detailModalOverlay button[onclick="openOrderModal()"]');
- if(orderBtn){
-   const labels={tr:'Sipariş Ver',en:'Order Now',ru:'Заказать',ar:'اطلب الآن'};
-   orderBtn.innerHTML='<i class="fa-solid fa-bag-shopping"></i> '+labels[lang];
- }
- const waBtn=document.getElementById('detailWhatsapp');
- if(waBtn){
-   const labels={tr:'WhatsApp’tan Bilgi Al',en:'Ask on WhatsApp',ru:'Связаться в WhatsApp',ar:'تواصل عبر واتساب'};
-   waBtn.innerHTML='<i class="fa-brands fa-whatsapp"></i> '+labels[lang];
- }
-}
-let szLangBusy=false;
-const szObserver=new MutationObserver(()=>{ if(szLangBusy)return; szLangBusy=true; setTimeout(()=>{try{applyCompleteUILanguage(currentLang)}finally{szLangBusy=false}},20)});
-document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{applyCompleteUILanguage(currentLang);szObserver.observe(document.body,{childList:true,subtree:true});},80)});
-// hook existing language function without removing its product translation logic
-const szOldChangeLanguage=window.changeLanguage;
-if(typeof szOldChangeLanguage==='function'){
- window.changeLanguage=function(lang){const r=szOldChangeLanguage(lang);setTimeout(()=>applyCompleteUILanguage(lang),30);return r;};
-}
-</script>
-
-<script>
-/* ===== TRUST SECTION 4-LANGUAGE FINAL FIX ===== */
-(function(){
-  const TRUST_I18N = {
-    tr: [
-      ['Ücretsiz Kargo','Tüm ülkelere gönderim.'],
-      ['Güvenli Ödeme','Banka havalesi / EFT.'],
-      ['El İşçiliği','Özenli SULTANZADE koleksiyonları.'],
-      ['WhatsApp Destek','Hızlı iletişim ve sipariş desteği.']
-    ],
-    en: [
-      ['Free Shipping','Worldwide shipping.'],
-      ['Secure Payment','Bank transfer / EFT.'],
-      ['Handcrafted','Carefully crafted SULTANZADE collections.'],
-      ['WhatsApp Support','Fast communication and order support.']
-    ],
-    ru: [
-      ['Бесплатная доставка','Доставка во все страны.'],
-      ['Безопасная оплата','Банковский перевод / EFT.'],
-      ['Ручная работа','Тщательно изготовленные коллекции SULTANZADE.'],
-      ['Поддержка WhatsApp','Быстрая связь и помощь с заказами.']
-    ],
-    ar: [
-      ['شحن مجاني','شحن إلى جميع الدول.'],
-      ['دفع آمن','تحويل بنكي / EFT.'],
-      ['صناعة يدوية','مجموعات SULTANZADE مصنوعة بعناية.'],
-      ['دعم واتساب','تواصل سريع ودعم للطلبات.']
-    ]
-  };
-
-  function applyTrustLanguage(lang){
-    lang = TRUST_I18N[lang] ? lang : 'tr';
-    const items = document.querySelectorAll('.trust-section .trust-item');
-    const data = TRUST_I18N[lang];
-    items.forEach((item, i) => {
-      if(!data[i]) return;
-      const h = item.querySelector('h4');
-      const p = item.querySelector('p');
-      if(h) h.textContent = data[i][0];
-      if(p) p.textContent = data[i][1];
-    });
-  }
-
-  window.applyTrustLanguage = applyTrustLanguage;
-
-  document.addEventListener('DOMContentLoaded', function(){
-    setTimeout(function(){
-      applyTrustLanguage(window.currentLang || localStorage.getItem('sultanzade_lang') || 'tr');
-    }, 0);
-  });
-
-  const oldChangeLanguageTrustFix = window.changeLanguage;
-  if(typeof oldChangeLanguageTrustFix === 'function'){
-    window.changeLanguage = function(lang){
-      const result = oldChangeLanguageTrustFix.apply(this, arguments);
-      setTimeout(function(){ applyTrustLanguage(lang); }, 0);
-      return result;
-    };
-  }
-})();
-</script>
