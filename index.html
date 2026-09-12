@@ -3851,5 +3851,99 @@ async function deleteCRMPayment(id){
 })();
 </script>
 
+
+<script>
+/* ===== SULTANZADE FINAL AUTH / ROLE GATE ===== */
+(function(){
+  const OWNER = String(window.OWNER_EMAIL || 'y.sultanzade07@gmail.com').toLowerCase();
+
+  function gotoLogin(){
+    window.location.href = './login.html';
+  }
+
+  async function getSessionUser(){
+    try{
+      const { data } = await supabaseClient.auth.getSession();
+      return data?.session?.user || null;
+    }catch(e){ return null; }
+  }
+
+  async function applyRoleUI(){
+    const user = await getSessionUser();
+    if(!user){
+      gotoLogin();
+      return null;
+    }
+
+    const isOwner = String(user.email || '').toLowerCase() === OWNER;
+    const managerItem = document.getElementById('ownerManagerAccessItem');
+    const logoutItem = document.getElementById('ownerLogoutItem');
+    const addButton = document.getElementById('ownerAddCategoryButton');
+    const profileName = document.getElementById('profileDisplayName');
+    const profileEmail = document.getElementById('profileDisplayEmail');
+
+    if(managerItem) managerItem.style.display = isOwner ? '' : 'none';
+    if(addButton) addButton.style.display = isOwner ? '' : 'none';
+    if(logoutItem) logoutItem.style.display = '';
+    if(profileName) profileName.textContent = isOwner ? 'SULTANZADE Firma Sahibi' : 'SULTANZADE Müşteri';
+    if(profileEmail) profileEmail.textContent = user.email || '';
+
+    return {user,isOwner};
+  }
+
+  const oldUpdate = window.updateOwnerControls;
+  window.updateOwnerControls = async function(){
+    try{ if(typeof oldUpdate === 'function') await oldUpdate(); }catch(e){}
+    return applyRoleUI();
+  };
+
+  window.openManagerAccess = async function(){
+    const role = await applyRoleUI();
+    if(!role) return;
+    if(!role.isOwner){
+      alert('Bu bölüm yalnızca SULTANZADE yöneticisine açıktır.');
+      return;
+    }
+    await openManagerPanel();
+  };
+
+  window.managerLogout = async function(){
+    try{ await supabaseClient.auth.signOut(); }catch(e){}
+    gotoLogin();
+  };
+
+  async function boot(){
+    const role = await applyRoleUI();
+    if(!role) return;
+
+    // Yönetici ayrı giriş sekmesinden geldiyse Odoo benzeri doğrudan back-office aç.
+    const params = new URLSearchParams(window.location.search);
+    const managerMode = params.get('panel') === 'manager' || sessionStorage.getItem('sultanzade_open_manager') === '1';
+
+    if(role.isOwner && managerMode){
+      sessionStorage.removeItem('sultanzade_open_manager');
+      setTimeout(async()=>{
+        try{ await openManagerPanel(); }
+        catch(e){ console.error('Yönetici paneli açılamadı', e); }
+      },250);
+      if(history.replaceState) history.replaceState({}, document.title, './index.html');
+    }
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', boot);
+  }else{
+    boot();
+  }
+
+  try{
+    supabaseClient.auth.onAuthStateChange((event,session)=>{
+      if(event === 'SIGNED_OUT' || !session) gotoLogin();
+      else setTimeout(applyRoleUI,0);
+    });
+  }catch(e){}
+})();
+</script>
+
 </body>
 </html>
