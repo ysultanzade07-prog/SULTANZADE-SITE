@@ -224,7 +224,30 @@ html[dir="rtl"] .brand-side,html[dir="rtl"] .auth-side{text-align:right}
 html[dir="rtl"] .auth-top{flex-direction:row-reverse}
 </style>
 
-<style id="mobile-final-fix">@media(max-width:700px){html,body{max-width:100%;overflow-x:hidden}.shell,.card,.panel,main{max-width:100%!important;box-sizing:border-box}img{max-width:100%;height:auto}input,select,button{max-width:100%;box-sizing:border-box}}</style>
+<style id="sultanzade-login-mobile-fix">
+html,body{max-width:100%;overflow-x:hidden}
+img{max-width:100%;height:auto}
+@media(max-width:768px){
+  .shell,.wrap,.page,.login-shell,.login-card,.panel{width:100%!important;max-width:100%!important;box-sizing:border-box!important}
+  body{min-width:0!important}
+  .hero img,.hero-image{width:100%!important;height:auto!important;object-fit:contain!important}
+  input,select,button{font-size:16px!important;max-width:100%;box-sizing:border-box}
+}
+</style>
+
+
+<style id="sultanzade-guest-browse-style">
+.guest-browse{width:100%;margin:0 0 18px;padding:15px 18px;border:1px solid #d8a528;border-radius:14px;background:transparent;color:#f6d778;font-weight:800;font-size:16px;cursor:pointer}
+.guest-browse:hover,.guest-browse:focus{background:#d8a528;color:#2c0710;outline:none}
+@media(max-width:768px){.guest-browse{min-height:52px;font-size:16px}}
+</style>
+
+<style id="sultanzade-login-click-fix">
+.tabs,.tabs button,.guest-browse,.panel,.panel button,.panel input,.panel select{position:relative;z-index:5;pointer-events:auto!important}
+.brand-side{pointer-events:none}
+.auth-side{position:relative;z-index:10}
+@media(max-width:768px){.auth-shell{display:block!important}.brand-side,.auth-side{width:100%!important;max-width:100%!important}.auth-side{padding:18px!important}.tabs{gap:6px!important}.tab{min-height:52px!important}.panel{padding:18px 0!important}}
+</style>
 </head>
 <body>
 <main class="auth-shell">
@@ -251,6 +274,8 @@ html[dir="rtl"] .auth-top{flex-direction:row-reverse}
       <button id="tabManager" class="tab" type="button">Yönetici</button>
       <button id="tabSignup" class="tab" type="button">Kayıt Ol</button>
     </div>
+
+    <button id="guestBrowseButton" class="guest-browse" type="button">Mağazayı Giriş Yapmadan Gez</button>
 
     <section id="customerPanel" class="panel">
       <h2 id="customerTitle">Müşteri Girişi</h2>
@@ -347,6 +372,8 @@ function applyLang(code){
   document.documentElement.dir=lang==='ar'?'rtl':'ltr';
   $('language').value=lang;
   const t=L[lang];
+  const guestLabels={tr:'Mağazayı Giriş Yapmadan Gez',en:'Browse Store Without Signing In',ru:'Смотреть магазин без входа',ar:'تصفح المتجر بدون تسجيل الدخول'};
+  const guest=$('guestBrowseButton'); if(guest) guest.textContent=guestLabels[lang]||guestLabels.tr;
   const map={
     brandKicker:'brandKicker',brandTitle:'brandTitle',brandText:'brandText',pageTitle:'pageTitle',
     tabCustomer:'tabCustomer',tabManager:'tabManager',tabSignup:'tabSignup',
@@ -356,7 +383,7 @@ function applyLang(code){
     nameLabel:'name',phoneLabel:'phone',signupEmailLabel:'email',signupPassLabel:'pass',signupConfirmLabel:'confirm',
     customerButton:'customerButton',managerButton:'managerButton',signupButton:'signupButton'
   };
-  Object.entries(map).forEach(([id,key])=>$(id).textContent=t[key]);
+  Object.entries(map).forEach(([id,key])=>{ const el=$(id); if(el) el.textContent=t[key]; });
 }
 function setPanel(which){
   ['customer','manager','signup'].forEach(x=>{
@@ -370,6 +397,14 @@ $('language').addEventListener('change',e=>applyLang(e.target.value));
 $('tabCustomer').onclick=()=>setPanel('customer');
 $('tabManager').onclick=()=>setPanel('manager');
 $('tabSignup').onclick=()=>setPanel('signup');
+$('guestBrowseButton').onclick=()=>{ window.location.href='./index.html'; };
+
+
+const initialParams=new URLSearchParams(window.location.search);
+const initialMode=initialParams.get('mode');
+if(initialMode==='manager') setPanel('manager');
+else if(initialMode==='signup') setPanel('signup');
+else setPanel('customer');
 
 async function signIn(email,password,managerMode){
   const clean=email.trim().toLowerCase();
@@ -388,8 +423,9 @@ async function signIn(email,password,managerMode){
   }
 
   if(managerMode) sessionStorage.setItem('sultanzade_open_manager','1');
-  const wantsOrder=new URLSearchParams(window.location.search).get('return')==='order';
-  window.location.href=managerMode?'./index.html?panel=manager':(wantsOrder?'./index.html?resume=order':'./index.html');
+  const params=new URLSearchParams(window.location.search);
+  const returnTo=params.get('return');
+  window.location.href=managerMode?'./index.html?panel=manager':(returnTo==='order'?'./index.html?resumeOrder=1':'./index.html');
 }
 
 $('customerForm').onsubmit=async e=>{
@@ -420,7 +456,7 @@ $('signupForm').onsubmit=async e=>{
     options:{data:{full_name:$('signupName').value.trim(),phone:$('signupPhone').value.trim(),role:'customer'}}
   });
   if(error){m.textContent=error.message;m.className='msg error';b.disabled=false;b.textContent=t.signupButton;return;}
-  if(data.session){const wantsOrder=new URLSearchParams(window.location.search).get('return')==='order';window.location.href=wantsOrder?'./index.html?resume=order':'./index.html';return;}
+  if(data.session){const p=new URLSearchParams(window.location.search);window.location.href=p.get('return')==='order'?'./index.html?resumeOrder=1':'./index.html';return;}
   m.textContent=t.created;m.className='msg ok';b.disabled=false;b.textContent=t.signupButton;$('signupForm').reset();
   setTimeout(()=>setPanel('customer'),1400);
 };

@@ -24,18 +24,8 @@
       "@type":"Store",
       "name":"SULTANZADE",
       "url":"https://sultanzade.vercel.app/",
-      "telephone":"+90 (534) 622 73 28",
-      "email":"info@sultanzade.com",
       "description":"SULTANZADE özel koleksiyonları, el işçiliği satranç setleri ve lüks ürünler.",
       "image":"https://sultanzade.vercel.app/sultanzade-hero-original.jpeg",
-      "address":{
-        "@type":"PostalAddress",
-        "streetAddress":"Yenidoğan Mahallesi Şehit Naci Çakar Sokak, Asil Sanayi Sitesi 3. Blok No:5 İç Kapı No:30",
-        "addressLocality":"Bayrampaşa",
-        "addressRegion":"İstanbul",
-        "addressCountry":"TR"
-      },
-      "openingHours":"Mo-Sa 10:00-20:00",
       "sameAs":["https://www.instagram.com/sultanzade_satranc_imalathanesi/"]
     }
     </script>
@@ -1187,23 +1177,58 @@ box-shadow:0 30px 90px rgba(0,0,0,.45);position:relative;}
 .crm-select option{color:#241419;background:white}
 @media(max-width:800px){.crm-form-grid,.crm-detail-grid{grid-template-columns:1fr}.crm-payment-summary{grid-template-columns:1fr}.crm-form-grid .full{grid-column:auto}}
 
+</style>
+<style>
+.crm-order-detail-overlay{position:fixed;inset:0;z-index:5000;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(18,4,8,.88);backdrop-filter:blur(10px)}
+.crm-order-detail-overlay.active{display:flex}.crm-order-detail-card{width:min(920px,96vw);max-height:92vh;overflow:auto;border-radius:18px;border:1px solid rgba(226,185,98,.38);background:linear-gradient(145deg,#3d0e18,#21080e);box-shadow:0 30px 90px rgba(0,0,0,.55);color:#f4e8dc}
+.crm-order-detail-head{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;gap:16px;align-items:center;padding:20px 22px;border-bottom:1px solid rgba(226,185,98,.2);background:rgba(42,10,17,.96)}
+.crm-order-detail-head h3{color:#f0d18a;font-size:27px;margin:0}.crm-order-detail-head small{color:#bca79a}.crm-order-close{width:38px;height:38px;border-radius:10px;cursor:pointer;border:1px solid rgba(226,185,98,.35);background:transparent;color:#f0d18a}
+.crm-order-detail-body{padding:20px 22px}.crm-order-section{border:1px solid rgba(226,185,98,.18);border-radius:14px;padding:16px;margin-bottom:14px;background:rgba(16,4,8,.25)}.crm-order-section h4{color:#e3bd67;font-size:20px;margin:0 0 10px}
+.crm-order-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 22px}.crm-order-field{padding:9px 0;border-bottom:1px solid rgba(226,185,98,.09);font-size:12px}.crm-order-field span{display:block;color:#a99589;font-size:9px;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}.crm-order-field strong{display:block;color:#f5e9dc;font-weight:500;word-break:break-word}.crm-order-field.full{grid-column:1/-1}
+.crm-order-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.crm-order-actions button{padding:10px 14px;border-radius:10px;cursor:pointer;font:inherit;font-size:11px}.crm-order-detail-btn{border:1px solid rgba(226,185,98,.35);background:rgba(226,185,98,.08);color:#f0d18a}.crm-order-delete-btn{border:1px solid rgba(211,92,92,.5);background:rgba(130,25,35,.25);color:#ffc0c0}
+@media(max-width:700px){.crm-order-detail-grid{grid-template-columns:1fr}.crm-order-field.full{grid-column:auto}.crm-order-detail-body{padding:14px}.crm-order-detail-head{padding:15px}}
+</style>
 
-/* ===== 2026 MOBILE + GUEST SHOPPING FIX ===== */
-@media (max-width: 700px){
-  html,body{width:100%;max-width:100%;overflow-x:hidden;}
-  img,video{max-width:100%;height:auto;}
-  .hero{height:220px!important;min-height:220px!important;background-size:cover!important;background-position:center center!important;}
-  .catalog-container,.container{width:100%!important;max-width:100%!important;padding-left:14px!important;padding-right:14px!important;box-sizing:border-box;}
-  .products-grid{grid-template-columns:1fr!important;gap:16px!important;}
-  .modal-overlay{padding:8px!important;align-items:flex-start!important;overflow-y:auto!important;}
-  .modal-card,.order-card{width:100%!important;max-width:100%!important;max-height:none!important;margin:8px auto!important;box-sizing:border-box!important;}
-  .detail-layout,.form-grid{grid-template-columns:1fr!important;}
-  #detailModalOverlay .modal-card{width:100%!important;}
-  #detailModalOverlay [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important;}
-  input,select,textarea,button{max-width:100%;box-sizing:border-box;}
-  .manager-main{overflow-x:hidden;}
+<style id="sultanzade-mobile-fix">
+/* Mobile stability patch - keeps desktop layout unchanged */
+html, body { max-width: 100%; overflow-x: hidden; }
+img, video { max-width: 100%; height: auto; }
+@media (max-width: 768px) {
+  body { min-width: 0 !important; }
+  .container, .header-container, .nav-container, .products-section, .contact-section, .footer-container,
+  .manager-panel, .manager-content, .customer-portal, .modal-content, .detail-modal, .order-modal {
+    width: 100% !important; max-width: 100% !important; box-sizing: border-box !important;
+  }
+  header, .site-header { position: relative; }
+  .header-container, .nav-container { padding-left: 14px !important; padding-right: 14px !important; gap: 10px !important; }
+  .logo, .brand-logo, .wordmark { max-width: 64vw !important; }
+  .hero, .hero-section, .brand-hero { min-height: 0 !important; height: auto !important; }
+  .hero img, .hero-image, #brandHeroImage { width: 100% !important; height: auto !important; max-height: none !important; object-fit: contain !important; object-position: center center !important; }
+  .products-grid, #productsGrid { grid-template-columns: 1fr !important; gap: 16px !important; }
+  .product-card { width: 100% !important; min-width: 0 !important; }
+  .product-card img { width: 100% !important; height: auto !important; aspect-ratio: 4 / 3; object-fit: cover !important; }
+  .modal-overlay { padding: 10px !important; align-items: flex-start !important; overflow-y: auto !important; }
+  .modal, .modal-content, .detail-modal, .order-modal { margin: 10px auto !important; max-height: none !important; overflow: visible !important; border-radius: 14px !important; }
+  .detail-layout, .product-detail-grid, .order-grid, .manager-grid, .settings-grid, .crm-grid { grid-template-columns: 1fr !important; }
+  .detail-gallery, .detail-info { width: 100% !important; min-width: 0 !important; }
+  .size-options, #detailSizeOptions { grid-template-columns: 1fr !important; }
+  input, select, textarea, button { max-width: 100%; box-sizing: border-box; }
+  input, select, textarea { font-size: 16px !important; }
+  .manager-sidebar { width: 100% !important; position: static !important; }
+  .manager-shell, .manager-layout { display: block !important; }
+  .manager-nav { display: flex !important; overflow-x: auto !important; gap: 8px !important; padding-bottom: 8px !important; }
+  .manager-nav button { flex: 0 0 auto !important; white-space: nowrap !important; }
+  table { min-width: 680px; }
+  .table-wrap, .crm-table-wrap { overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+}
+@media (max-width: 480px) {
+  .product-info, .detail-info, .order-modal, .modal-content { padding-left: 14px !important; padding-right: 14px !important; }
+  .btn-whatsapp, .btn-submit, .size-option { width: 100% !important; }
+  h1, .hero-title { font-size: clamp(28px, 9vw, 44px) !important; }
+  h2, .section-title { font-size: clamp(24px, 8vw, 36px) !important; }
 }
 </style>
+
 </head>
 <body>
 
@@ -1306,14 +1331,26 @@ box-shadow:0 30px 90px rgba(0,0,0,.45);position:relative;}
                         <div class="language-pane" id="product-lang-en">
                             <div class="form-group"><label>Product Name *</label><input type="text" id="pTitleEn" class="form-control" placeholder="E.g. Ottoman Coffee Set"></div>
                             <div class="form-group"><label>Description *</label><textarea id="pDescEn" class="form-control" rows="3" placeholder="A concise product description..."></textarea></div>
+                            <div class="form-group"><label>Material</label><input type="text" id="pMaterialEn" class="form-control" placeholder="E.g. Brass, wood, velvet"></div>
+                            <div class="form-group"><label>Color</label><input type="text" id="pColorEn" class="form-control" placeholder="E.g. Walnut / Gold"></div>
+                            <div class="form-group"><label>Production / Special Note</label><textarea id="pProductionEn" class="form-control" rows="2"></textarea></div>
+                            <div class="form-group"><label>Size names (1 / 2 / 3)</label><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"><input id="pSize1NameEn" class="form-control" placeholder="Small"><input id="pSize2NameEn" class="form-control" placeholder="Medium"><input id="pSize3NameEn" class="form-control" placeholder="Large"></div></div>
                         </div>
                         <div class="language-pane" id="product-lang-ru">
                             <div class="form-group"><label>Название товара *</label><input type="text" id="pTitleRu" class="form-control" placeholder="Например: Османский кофейный набор"></div>
                             <div class="form-group"><label>Описание *</label><textarea id="pDescRu" class="form-control" rows="3" placeholder="Краткое описание товара..."></textarea></div>
+                            <div class="form-group"><label>Материал</label><input type="text" id="pMaterialRu" class="form-control"></div>
+                            <div class="form-group"><label>Цвет</label><input type="text" id="pColorRu" class="form-control"></div>
+                            <div class="form-group"><label>Производство / Примечание</label><textarea id="pProductionRu" class="form-control" rows="2"></textarea></div>
+                            <div class="form-group"><label>Названия размеров (1 / 2 / 3)</label><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"><input id="pSize1NameRu" class="form-control" placeholder="Малый"><input id="pSize2NameRu" class="form-control" placeholder="Средний"><input id="pSize3NameRu" class="form-control" placeholder="Большой"></div></div>
                         </div>
                         <div class="language-pane" id="product-lang-ar">
                             <div class="form-group"><label>اسم المنتج *</label><input type="text" id="pTitleAr" class="form-control" dir="rtl" placeholder="مثال: طقم قهوة عثماني"></div>
                             <div class="form-group"><label>الوصف *</label><textarea id="pDescAr" class="form-control" rows="3" dir="rtl" placeholder="وصف مختصر للمنتج..."></textarea></div>
+                            <div class="form-group"><label>المادة</label><input type="text" id="pMaterialAr" class="form-control" dir="rtl"></div>
+                            <div class="form-group"><label>اللون</label><input type="text" id="pColorAr" class="form-control" dir="rtl"></div>
+                            <div class="form-group"><label>الإنتاج / ملاحظة خاصة</label><textarea id="pProductionAr" class="form-control" rows="2" dir="rtl"></textarea></div>
+                            <div class="form-group"><label>أسماء المقاسات (1 / 2 / 3)</label><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"><input id="pSize1NameAr" class="form-control" dir="rtl" placeholder="صغير"><input id="pSize2NameAr" class="form-control" dir="rtl" placeholder="متوسط"><input id="pSize3NameAr" class="form-control" dir="rtl" placeholder="كبير"></div></div>
                         </div>
                     </div>
 
@@ -1382,7 +1419,7 @@ box-shadow:0 30px 90px rgba(0,0,0,.45);position:relative;}
             <p class="product-description" id="detailDesc" style="-webkit-line-clamp: initial; font-size: 0.95rem;"></p>
             <div class="spec-list" id="detailSpecs"></div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
-                <a id="detailWhatsapp" class="btn-whatsapp" href="https://wa.me/905346227328" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp"></i> WhatsApp'tan Bilgi Al</a>
+                <a id="detailWhatsapp" class="btn-whatsapp" href="#" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp"></i> WhatsApp'tan Bilgi Al</a>
                 <button type="button" class="btn-whatsapp" onclick="openOrderModal()"><i class="fa-solid fa-bag-shopping"></i> Sipariş Ver</button>
             </div>
         </div>
@@ -1809,33 +1846,33 @@ Pazar: Kapalı"></textarea></div>
         <div class="business-grid">
             <div class="business-card">
                 <h3><i class="fa-solid fa-store"></i> Mağazamız</h3>
-                <div class="info-row"><i class="fa-solid fa-location-dot"></i><p id="siteAddress">Yenidoğan Mahallesi Şehit Naci Çakar Sokak, Asil Sanayi Sitesi 3. Blok No:5 İç Kapı No:30, Bayrampaşa / İstanbul</p></div>
-                <div class="info-row"><i class="fa-solid fa-clock"></i><p id="siteHours">Pzt - Cmt: 10:00 - 20:00</p></div>
+                <div class="info-row"><i class="fa-solid fa-location-dot"></i><p id="siteAddress"></p></div>
+                <div class="info-row"><i class="fa-solid fa-clock"></i><p id="siteHours"></p></div>
                 <a id="siteMapLink" class="btn-map-link" href="#" target="_blank" rel="noopener"><i class="fa-solid fa-map-location-dot"></i> Haritada Aç</a>
             </div>
 
             <div class="business-card">
                 <h3><i class="fa-solid fa-building-columns"></i> Ödeme Bilgileri</h3>
-                <div class="info-row"><i class="fa-solid fa-building"></i><p><strong>Banka:</strong> <span id="siteBankName">Yönetici panelinden girilecek</span></p></div>
-                <div class="info-row"><i class="fa-solid fa-user"></i><p><strong>Hesap sahibi:</strong> <span id="siteAccountHolder">MUVAFFAK SULTANZADE</span></p></div>
-                <div class="copy-row"><code id="siteIban">TR66002050000969494700001</code><button type="button" onclick="copySiteValue('siteIban')">Kopyala</button></div>
-                <p class="order-note">Ödeme açıklaması: <strong id="sitePaymentNote">Ürün bedeli</strong></p>
+                <div class="info-row"><i class="fa-solid fa-building"></i><p><strong>Banka:</strong> <span id="siteBankName"></span></p></div>
+                <div class="info-row"><i class="fa-solid fa-user"></i><p><strong>Hesap sahibi:</strong> <span id="siteAccountHolder"></span></p></div>
+                <div class="copy-row"><code id="siteIban"></code><button type="button" onclick="copySiteValue('siteIban')">Kopyala</button></div>
+                <p class="order-note">Ödeme açıklaması: <strong id="sitePaymentNote"></strong></p>
             </div>
 
             <div class="business-card">
                 <h3><i class="fa-solid fa-box-open"></i> Kargo & Sipariş</h3>
-                <div class="info-row"><i class="fa-solid fa-truck"></i><p id="siteShipping">Ücretsiz kargo</p></div>
-                <div class="info-row"><i class="fa-solid fa-hourglass-half"></i><p id="siteDelivery">Teslim süresi kargo firmasına bağlıdır.</p></div>
-                <div class="info-row"><i class="fa-solid fa-earth-europe"></i><p id="siteCountries">Tüm ülkeler</p></div>
+                <div class="info-row"><i class="fa-solid fa-truck"></i><p id="siteShipping"></p></div>
+                <div class="info-row"><i class="fa-solid fa-hourglass-half"></i><p id="siteDelivery"></p></div>
+                <div class="info-row"><i class="fa-solid fa-earth-europe"></i><p id="siteCountries"></p></div>
                 <a class="btn-map-link" href="#" onclick="document.getElementById('profileDropdown').classList.remove('active'); openGlobalWhatsApp(); return false;"><i class="fa-brands fa-whatsapp"></i> WhatsApp ile Sipariş</a>
             </div>
 
             <div class="business-card" style="grid-column:1/-1;">
                 <h3><i class="fa-solid fa-headset"></i> İletişim & Destek</h3>
                 <div class="manager-grid">
-                    <a class="info-row" id="sitePhoneLink" href="#"><i class="fa-solid fa-phone"></i><p id="sitePhone">+90 (534) 622 73 28</p></a>
+                    <a class="info-row" id="sitePhoneLink" href="#"><i class="fa-solid fa-phone"></i><p id="sitePhone"></p></a>
                     <a class="info-row" id="siteWhatsappLink" href="#"><i class="fa-brands fa-whatsapp"></i><p>WhatsApp Destek Hattı</p></a>
-                    <a class="info-row" id="siteEmailLink" href="#"><i class="fa-solid fa-envelope"></i><p id="siteEmail">info@sultanzade.com</p></a>
+                    <a class="info-row" id="siteEmailLink" href="#"><i class="fa-solid fa-envelope"></i><p id="siteEmail"></p></a>
                     <a class="info-row" href="https://www.instagram.com/sultanzadesatrancimalathanesi" target="_blank" rel="noopener"><i class="fa-brands fa-instagram"></i><p>sultanzade satranç imalathanesi</p></a>
                 </div>
             </div>
@@ -1878,7 +1915,8 @@ Pazar: Kapalı"></textarea></div>
                 lblDesc: "Kategori Açıklaması *",
                 phDesc: "Kısa bir açıklama...",
                 btnSave: "Kaydet ve Ekle",
-                navContact: "İletişim",
+              
+              navContact: "İletişim",
                 addrTitle: "Merkez Mağaza",
                 addr: "Yenidoğan mahallesi Şehit Naci Çakar sokak , Asil sanayi sitesi 3.blok no:5 iç kapı no:30 Bayrampaşa / İstanbul",
                 hours: "Pzt - Cmt: 10:00 - 20:00",
@@ -1886,7 +1924,7 @@ Pazar: Kapalı"></textarea></div>
                 socialTitle: "Bizi Takip Edin",
                 footer: "© 2026 SULTANZADE. Tüm hakları saklıdır.",
                 defaultBadge: "Özel Seri",
-                menuSettings: "Hesap Ayarları",
+                menuSettings: "Yönetici Paneli",
                 menuOrders: "Siparişlerim",
                 menuLogout: "Çıkış Yap"
             },
@@ -2001,20 +2039,20 @@ Pazar: Kapalı"></textarea></div>
         let activeDetailSizeIndex = 0;
         let siteSettings = {
             bankName: '',
-            accountHolder: 'MUVAFFAK SULTANZADE',
-            iban: 'TR66002050000969494700001',
-            paymentNote: 'Ürün bedeli',
-            address: 'Yenidoğan Mahallesi Şehit Naci Çakar Sokak, Asil Sanayi Sitesi 3. Blok No:5 İç Kapı No:30, Bayrampaşa / İstanbul',
-            mapUrl: 'https://maps.google.com/?q=Yenido%C4%9Fan+Mahallesi+%C5%9Eehit+Naci+%C3%87akar+Sokak,+Asil+Sanayi+Sitesi+3.+Blok+No:5,+Bayrampa%C5%9Fa,+%C4%B0stanbul',
-            hours: 'Pzt - Cmt: 10:00 - 20:00',
-            phone: '+90 (534) 622 73 28',
-            whatsapp: '905346227328',
-            email: 'info@sultanzade.com',
-            shipping: 'Ücretsiz kargo',
-            delivery: 'Teslim süresi kargo firmasına bağlıdır.',
-            countries: 'Tüm ülkeler'
+            accountHolder: '',
+            iban: '',
+            paymentNote: '',
+            address: '',
+            mapUrl: '',
+            hours: '',
+            phone: '',
+            whatsapp: '',
+            email: '',
+            shipping: '',
+            delivery: '',
+            countries: ''
         };
-        const COUNTRY_CODES = 'AF AL DZ AD AO AG AR AM AU AT AZ BS BH BD BB BY BE BZ BJ BT BO BA BW BR BN BG BF BI CV KH CM CA CF TD CL CN CO KM CG CD CR CI HR CU CY CZ DK DJ DM DO EC EG SV GQ ER EE SZ ET FJ FI FR GA GM GE DE GH GR GD GT GN GW GY HT HN HU IS IN ID IR IQ IE IL IT JM JP JO KZ KE KI KP KR KW KG LA LV LB LS LR LY LI LT LU MG MW MY MV ML MT MH MR MU MX FM MD MC MN ME MA MZ MM NA NR NP NL NZ NI NE NG MK NO OM PK PW PS PA PG PY PE PH PL PT QA RO RU RW KN LC VC WS SM ST SA SN RS SC SL SG SK SI SB SO ZA SS ES LK SD SR SE CH SY TJ TZ TH TL TG TO TT TN TR TM TV UG UA AE GB US UY UZ VU VA VE VN YE ZM ZW'.split(' ');
+        const COUNTRY_CODES = 'AF AL DZ AD AO AG AR AM AU AT AZ BS BH BD BB BY BE BZ BJ BT BO BA BW BR BN BG BF BI CV KH CM CA CF TD CL CN CO KM CG CD CR CI HR CU CY CZ DK DJ DM DO EC EG SV GQ ER EE SZ ET FJ FI FR GA GM GE DE GH GR GD GT GN GW GY HT HN HU IS IN ID IR IQ IE IT JM JP JO KZ KE KI KP KR KW KG LA LV LB LS LR LY LI LT LU MG MW MY MV ML MT MH MR MU MX FM MD MC MN ME MA MZ MM NA NR NP NL NZ NI NE NG MK NO OM PK PW PS PA PG PY PE PH PL PT QA RO RU RW KN LC VC WS SM ST SA SN RS SC SL SG SK SI SB SO ZA SS ES LK SD SR SE CH SY TJ TZ TH TL TG TO TT TN TR TM TV UG UA AE GB US UY UZ VU VA VE VN YE ZM ZW'.split(' ');
 
 
         // Kalıcı yerel kayıt: Supabase erişilemese bile ürünler ve fotoğraflar kaybolmaz.
@@ -2097,25 +2135,32 @@ Pazar: Kapalı"></textarea></div>
             await applyBrandHero();
             populateCountries();
             renderCategories();
-            // Girişten sipariş için dönen müşteriyi seçtiği ürüne geri getir.
-            try {
-                const pendingRaw = sessionStorage.getItem('sultanzade_pending_order');
-                if (pendingRaw) {
-                    const { data: { user } } = await supabaseClient.auth.getUser();
-                    if (user && String(user.email || '').toLowerCase() !== OWNER_EMAIL.toLowerCase()) {
-                        const pending = JSON.parse(pendingRaw);
-                        sessionStorage.removeItem('sultanzade_pending_order');
-                        openDetailModal(pending.productId);
-                        if (Number.isInteger(Number(pending.sizeIndex))) selectProductSize(Number(pending.sizeIndex));
-                        setTimeout(() => openOrderModal(), 100);
-                    }
-                }
-            } catch(e) { console.warn('Bekleyen sipariş geri yüklenemedi:', e); }
             await updateOwnerControls();
+            await resumePendingOrderIfNeeded();
             supabaseClient.auth.onAuthStateChange(() => {
-                setTimeout(() => updateOwnerControls(), 0);
+                setTimeout(async () => { await updateOwnerControls(); window.applyFullI18n && window.applyFullI18n(); }, 0);
             });
         });
+
+
+        async function resumePendingOrderIfNeeded() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('resumeOrder') !== '1') return;
+            let user = null;
+            try { user = (await supabaseClient.auth.getUser()).data.user || null; } catch(e) {}
+            if (!user || String(user.email || '').toLowerCase() === OWNER_EMAIL.toLowerCase()) return;
+            let pending = null;
+            try { pending = JSON.parse(sessionStorage.getItem('sultanzade_pending_order') || 'null'); } catch(e) {}
+            if (!pending || pending.productId == null) return;
+            const product = categories.find(c => String(c.id) === String(pending.productId));
+            if (!product) return;
+            openDetailModal(product.id);
+            const idx = Number.isFinite(Number(pending.sizeIndex)) ? Number(pending.sizeIndex) : 0;
+            selectProductSize(idx);
+            sessionStorage.removeItem('sultanzade_pending_order');
+            if (history.replaceState) history.replaceState({}, document.title, './index.html');
+            setTimeout(() => openOrderModal(), 120);
+        }
 
         function getProductText(cat) {
             const lang = currentLang;
@@ -2165,6 +2210,7 @@ Pazar: Kapalı"></textarea></div>
             const map = document.getElementById('siteMapLink'); if (map) map.href = siteSettings.mapUrl || '#';
             const phone = document.getElementById('sitePhoneLink'); if (phone) phone.href = `tel:${String(siteSettings.phone || '').replace(/[^0-9+]/g,'')}`;
             const wa = document.getElementById('siteWhatsappLink'); if (wa) wa.href = `https://wa.me/${String(siteSettings.whatsapp || '').replace(/\D/g,'')}`;
+            const email = document.getElementById('siteEmailLink'); if (email) email.href = siteSettings.email ? `mailto:${siteSettings.email}` : '#';
         }
 
         function populateCountries() {
@@ -2172,7 +2218,7 @@ Pazar: Kapalı"></textarea></div>
             if (!select) return;
             const lang = currentLang === 'en' ? 'en' : currentLang === 'ru' ? 'ru' : currentLang === 'ar' ? 'ar' : 'tr';
             const names = new Intl.DisplayNames([lang], { type: 'region' });
-            select.innerHTML = `<option value="">Ülke seçin *</option>` + COUNTRY_CODES.map(code => `<option value="${code}">${escapeHTML(names.of(code) || code)}</option>`).join('');
+            select.innerHTML = `<option value="">Ülke seçin *</option>` + COUNTRY_CODES.filter(code => code !== 'IL').map(code => `<option value="${code}">${escapeHTML(names.of(code) || code)}</option>`).join('');
         }
 
         function copySiteValue(id) {
@@ -2181,7 +2227,8 @@ Pazar: Kapalı"></textarea></div>
         }
 
         function openGlobalWhatsApp() {
-            const phone = String(siteSettings.whatsapp || '905346227328').replace(/\D/g,'');
+            const phone = String(siteSettings.whatsapp || '').replace(/\D/g,'');
+            if (!phone) { alert('WhatsApp numarası yönetici panelinden girilmemiş.'); return; }
             const msg = encodeURIComponent('Merhaba, SULTANZADE hakkında bilgi ve sipariş almak istiyorum.');
             window.open(`https://wa.me/${phone}?text=${msg}`, '_blank', 'noopener');
         }
@@ -2303,36 +2350,33 @@ Pazar: Kapalı"></textarea></div>
 
         async function openOrderModal() {
             if (!activeDetailProduct) return;
-            // Ürünleri herkes inceleyebilir; sipariş için müşteri hesabı gerekir.
-            try {
-                const { data: { user } } = await supabaseClient.auth.getUser();
-                const isCustomer = user && String(user.email || '').toLowerCase() !== OWNER_EMAIL.toLowerCase();
-                if (!isCustomer) {
+
+            // Visitors may browse freely. Login is required only when they choose to order.
+            let currentUser = null;
+            try { currentUser = (await supabaseClient.auth.getUser()).data.user || null; } catch(e) {}
+            const isOwner = currentUser && String(currentUser.email || '').toLowerCase() === OWNER_EMAIL.toLowerCase();
+            if (!currentUser || isOwner) {
+                try {
                     sessionStorage.setItem('sultanzade_pending_order', JSON.stringify({
                         productId: String(activeDetailProduct.id),
-                        sizeIndex: activeDetailSizeIndex || 0
+                        sizeIndex: Number(activeDetailSizeIndex || 0)
                     }));
-                    window.location.href = './login.html?return=order';
-                    return;
-                }
-            } catch (e) {
-                sessionStorage.setItem('sultanzade_pending_order', JSON.stringify({productId:String(activeDetailProduct.id),sizeIndex:activeDetailSizeIndex||0}));
-                window.location.href = './login.html?return=order';
+                } catch(e) {}
+                const next = isOwner ? 'manager' : 'customer';
+                window.location.href = `./login.html?mode=${next}&return=order`;
                 return;
             }
+
             const sizes = legacySizesFromDetails(activeDetailProduct);
             const selected = sizes[activeDetailSizeIndex] || sizes[0] || {};
             const text = getProductText(activeDetailProduct);
-            document.getElementById('orderSummary').innerHTML = `<strong>${escapeHTML(text.title || '')}</strong><br>${escapeHTML(selected.name || 'Standart')} · ${escapeHTML(selected.price || activeDetailProduct.price || '')}`;
+            document.getElementById('orderSummary').innerHTML = `<strong>${escapeHTML(text.title || '')}</strong><br>${escapeHTML(getLocalizedSizeName(activeDetailProduct, selected, activeDetailSizeIndex))} · ${escapeHTML(selected.price || activeDetailProduct.price || '')}`;
             populateCountries();
             try {
-                const { data: { user } } = await supabaseClient.auth.getUser();
-                if (user && String(user.email||'').toLowerCase() !== OWNER_EMAIL.toLowerCase()) {
-                    const meta = user.user_metadata || {};
-                    const em = document.getElementById('orderEmail'); if (em && !em.value) em.value = user.email || '';
-                    const nm = document.getElementById('orderName'); if (nm && !nm.value) nm.value = meta.full_name || meta.name || '';
-                    const ph = document.getElementById('orderPhone'); if (ph && !ph.value) ph.value = meta.phone || '';
-                }
+                const meta = currentUser.user_metadata || {};
+                const em = document.getElementById('orderEmail'); if (em && !em.value) em.value = currentUser.email || '';
+                const nm = document.getElementById('orderName'); if (nm && !nm.value) nm.value = meta.full_name || meta.name || '';
+                const ph = document.getElementById('orderPhone'); if (ph && !ph.value) ph.value = meta.phone || '';
             } catch(e) {}
             document.getElementById('orderModalOverlay').classList.add('active');
         }
@@ -2350,7 +2394,7 @@ Pazar: Kapalı"></textarea></div>
                 customerUserId: signedCustomer && String(signedCustomer.email||'').toLowerCase() !== OWNER_EMAIL.toLowerCase() ? signedCustomer.id : null,
                 productId: activeDetailProduct.id,
                 productTitle: text.title,
-                size: selected.name || 'Standart',
+                size: getLocalizedSizeName(activeDetailProduct, selected, activeDetailSizeIndex),
                 price: selected.price || activeDetailProduct.price || '',
                 country: document.getElementById('orderCountry').value,
                 name: document.getElementById('orderName').value.trim(),
@@ -2371,7 +2415,7 @@ Pazar: Kapalı"></textarea></div>
                 const { error } = await supabaseClient.from('orders').insert({
                     product_id: Number.isFinite(Number(activeDetailProduct.id)) ? Number(activeDetailProduct.id) : null,
                     product_title: text.title || '',
-                    size_name: selected.name || 'Standart',
+                    size_name: order.size,
                     price: selected.price || activeDetailProduct.price || '',
                     country: order.country,
                     customer_name: order.name,
@@ -2386,21 +2430,15 @@ Pazar: Kapalı"></textarea></div>
             } catch (e) {
                 console.warn('Online sipariş bağlantısı başarısız:', e);
             }
-            const msg = [
-              'Merhaba, SULTANZADE üzerinden sipariş vermek istiyorum.',
-              `Ürün: ${text.title || ''}`,
-              `Ölçü: ${selected.name || 'Standart'}`,
-              `Fiyat: ${selected.price || activeDetailProduct.price || ''}`,
-              `Ülke: ${order.country}`,
-              `Ad Soyad: ${order.name}`,
-              `Telefon: ${order.phone}`,
-              `E-posta: ${order.email}`,
-              `Şehir: ${order.city}`,
-              `İlçe/Bölge: ${order.district}`,
-              `Adres: ${order.address}`,
-              `Not: ${order.note || '-'}`
-            ].join('\n');
-            window.open(`https://wa.me/${String(siteSettings.whatsapp||'905346227328').replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
+            const orderMsgLabels = {
+              tr:{hello:'Merhaba, SULTANZADE üzerinden sipariş vermek istiyorum.',product:'Ürün',size:'Ölçü',price:'Fiyat',country:'Ülke',name:'Ad Soyad',phone:'Telefon',email:'E-posta',city:'Şehir',district:'İlçe/Bölge',address:'Adres',note:'Not'},
+              en:{hello:'Hello, I would like to place an order through SULTANZADE.',product:'Product',size:'Size',price:'Price',country:'Country',name:'Full Name',phone:'Phone',email:'Email',city:'City',district:'District / Region',address:'Address',note:'Note'},
+              ru:{hello:'Здравствуйте, я хочу оформить заказ через SULTANZADE.',product:'Товар',size:'Размер',price:'Цена',country:'Страна',name:'Имя и фамилия',phone:'Телефон',email:'Эл. почта',city:'Город',district:'Район / Область',address:'Адрес',note:'Примечание'},
+              ar:{hello:'مرحباً، أود تقديم طلب عبر SULTANZADE.',product:'المنتج',size:'المقاس',price:'السعر',country:'الدولة',name:'الاسم الكامل',phone:'الهاتف',email:'البريد الإلكتروني',city:'المدينة',district:'المنطقة / الحي',address:'العنوان',note:'ملاحظة'}
+            };
+            const ml = orderMsgLabels[currentLang] || orderMsgLabels.tr;
+            const msg = [ml.hello,`${ml.product}: ${text.title || ''}`,`${ml.size}: ${order.size}`,`${ml.price}: ${selected.price || activeDetailProduct.price || ''}`,`${ml.country}: ${order.country}`,`${ml.name}: ${order.name}`,`${ml.phone}: ${order.phone}`,`${ml.email}: ${order.email}`,`${ml.city}: ${order.city}`,`${ml.district}: ${order.district}`,`${ml.address}: ${order.address}`,`${ml.note}: ${order.note || '-'}`].join('\n');
+            window.open(`https://wa.me/${String(siteSettings.whatsapp||'').replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
         }
 
 
@@ -2685,7 +2723,7 @@ Pazar: Kapalı"></textarea></div>
                 <td><strong>${crmEsc(String(o.id).slice(-12))}</strong></td><td>${crmEsc(o.name||'-')}<div class="crm-muted">${crmEsc(o.email||'')}</div></td>
                 <td>${crmEsc(o.productTitle||'-')}<div class="crm-muted">${crmEsc(o.size||'')}</div></td><td>${crmEsc(o.price||'-')}</td>
                 <td>${crmEsc(crmDate(o.createdAt))}</td><td>${crmStatusBadge(o.status||'pending')}</td>
-                <td><div class="crm-row-actions"><button class="crm-mini-btn" onclick='createInvoiceFromOrder(${JSON.stringify(JSON.stringify(o))})'>Fatura</button></div></td>
+                <td><div class="crm-row-actions"><button class="crm-mini-btn" onclick='openOwnerOrderDetail(${JSON.stringify(JSON.stringify(o))})'>Detay</button><button class="crm-mini-btn" onclick='createInvoiceFromOrder(${JSON.stringify(JSON.stringify(o))})'>Fatura</button></div></td>
             </tr>`).join(''):`<tr><td colspan="7"><div class="crm-empty"><i class="fa-solid fa-bag-shopping"></i>Henüz sipariş yok.</div></td></tr>`;
         }
 
@@ -2965,6 +3003,7 @@ Pazar: Kapalı"></textarea></div>
             setText('i18n-menu-orders', t.menuOrders);
             setText('i18n-menu-logout', t.menuLogout);
             renderCategories();
+            setTimeout(() => window.applyFullI18n && window.applyFullI18n(), 0);
         }
 
         // --- VERİLERİ YEDEKLEME VE YÜKLEME FONKSİYONLARI ---
@@ -3116,12 +3155,23 @@ Pazar: Kapalı"></textarea></div>
             return [];
         }
 
+        function getLocalizedProductField(cat, key) {
+            const tr = cat?.translations || {};
+            return tr[currentLang]?.[key] || tr.tr?.[key] || cat?.details?.[key] || '';
+        }
+
+        function getLocalizedSizeName(cat, size, index=0) {
+            const tr = cat?.translations || {};
+            return tr[currentLang]?.sizeNames?.[index] || tr.tr?.sizeNames?.[index] || size?.name || (currentLang==='ar'?'قياسي':currentLang==='ru'?'Стандартный':currentLang==='en'?'Standard':'Standart');
+        }
+
         function getSizeDisplayDimensions(size) {
+            const l = currentLang==='ar' ? {w:'العرض',l:'الطول',h:'الارتفاع',wt:'الوزن'} : currentLang==='ru' ? {w:'Ширина',l:'Длина',h:'Высота',wt:'Вес'} : currentLang==='en' ? {w:'Width',l:'Length',h:'Height',wt:'Weight'} : {w:'En',l:'Boy',h:'Yükseklik',wt:'Ağırlık'};
             const parts = [];
-            if (size.width) parts.push(`En ${size.width}`);
-            if (size.length) parts.push(`Boy ${size.length}`);
-            if (size.height) parts.push(`Yükseklik ${size.height}`);
-            if (size.weight) parts.push(`Ağırlık ${size.weight}`);
+            if (size.width) parts.push(`${l.w} ${size.width}`);
+            if (size.length) parts.push(`${l.l} ${size.length}`);
+            if (size.height) parts.push(`${l.h} ${size.height}`);
+            if (size.weight) parts.push(`${l.wt} ${size.weight}`);
             return parts.join(' • ');
         }
 
@@ -3140,9 +3190,9 @@ Pazar: Kapalı"></textarea></div>
                 length: selected.length || d.length,
                 height: selected.height || d.height,
                 weight: selected.weight || d.weight,
-                material: d.material,
-                color: d.color,
-                production: d.production
+                material: getLocalizedProductField(activeDetailProduct,'material'),
+                color: getLocalizedProductField(activeDetailProduct,'color'),
+                production: getLocalizedProductField(activeDetailProduct,'production')
             };
             const labels = currentLang === 'ar' ? {width:'العرض',length:'الطول',height:'الارتفاع',weight:'الوزن',material:'المادة',color:'اللون',production:'ملاحظات'} : currentLang === 'ru' ? {width:'Ширина',length:'Длина',height:'Высота',weight:'Вес',material:'Материал',color:'Цвет',production:'Примечание'} : currentLang === 'en' ? {width:'Width',length:'Length',height:'Height',weight:'Weight',material:'Material',color:'Color',production:'Notes'} : {width:'En',length:'Boy',height:'Yükseklik',weight:'Ağırlık',material:'Malzeme',color:'Renk',production:'Üretim / Not'};
             const specs = Object.entries(labels).filter(([key]) => merged[key]).map(([key,label]) => `<div class="spec-item"><span>${label}</span><span>${escapeHTML(merged[key])}</span></div>`).join('');
@@ -3151,19 +3201,20 @@ Pazar: Kapalı"></textarea></div>
             const sizeNote = document.getElementById('detailSelectedSize');
             if (sizeNote) {
                 const noteMap = currentLang === 'ar' ? 'المقاس المحدد' : currentLang === 'ru' ? 'Выбранный размер' : currentLang === 'en' ? 'Selected size' : 'Seçilen ölçü';
-                sizeNote.innerText = `${noteMap}: ${selected.name || ''}`.trim();
+                sizeNote.innerText = `${noteMap}: ${getLocalizedSizeName(activeDetailProduct, selected, index)}`.trim();
             }
 
             const whatsapp = document.getElementById('detailWhatsapp');
             if (whatsapp) {
                 const productText = getProductText(activeDetailProduct);
                 const messageMap = {
-                    tr: `Merhaba, SULTANZADE sitesindeki \"${productText.title || ''}\" ürünü hakkında bilgi almak istiyorum. Ölçü: ${selected.name || 'Standart'}, Fiyat: ${selected.price || activeDetailProduct.price || ''}.`,
+                    tr: `Merhaba, SULTANZADE sitesindeki \"${productText.title || ''}\" ürünü hakkında bilgi almak istiyorum. Ölçü: ${getLocalizedSizeName(activeDetailProduct, selected, index)}, Fiyat: ${selected.price || activeDetailProduct.price || ''}.`,
                     en: `Hello, I would like information about the \"${productText.title || ''}\" product on the SULTANZADE website. Size: ${selected.name || 'Standard'}, Price: ${selected.price || activeDetailProduct.price || ''}.`,
                     ru: `Здравствуйте, хочу получить информацию о товаре \"${productText.title || ''}\" на сайте SULTANZADE. Размер: ${selected.name || 'Стандартный'}, Цена: ${selected.price || activeDetailProduct.price || ''}.`,
                     ar: `مرحباً، أود الحصول على معلومات عن منتج \"${productText.title || ''}\" في موقع SULTANZADE. المقاس: ${selected.name || 'قياسي'}، السعر: ${selected.price || activeDetailProduct.price || ''}.`
                 };
-                whatsapp.href = `https://wa.me/905346227328?text=${encodeURIComponent(messageMap[currentLang] || messageMap.tr)}`;
+                const waNumber = String(siteSettings.whatsapp || '').replace(/\D/g,'');
+                whatsapp.href = waNumber ? `https://wa.me/${waNumber}?text=${encodeURIComponent(messageMap[currentLang] || messageMap.tr)}` : '#';
             }
         }
 
@@ -3185,14 +3236,28 @@ Pazar: Kapalı"></textarea></div>
                     else if (item.url) localImages.push(item.url);
                 }
                 const translationsData = {
-                    tr: { title, desc },
-                    en: { title: document.getElementById('pTitleEn').value.trim(), desc: document.getElementById('pDescEn').value.trim() },
-                    ru: { title: document.getElementById('pTitleRu').value.trim(), desc: document.getElementById('pDescRu').value.trim() },
-                    ar: { title: document.getElementById('pTitleAr').value.trim(), desc: document.getElementById('pDescAr').value.trim() }
+                    tr: { title, desc,
+                        material: document.getElementById('pMaterial').value.trim(),
+                        color: document.getElementById('pColor').value.trim(),
+                        production: document.getElementById('pProduction').value.trim(),
+                        sizeNames: [1,2,3].map(i => document.getElementById(`pSize${i}Name`).value.trim()) },
+                    en: { title: document.getElementById('pTitleEn').value.trim(), desc: document.getElementById('pDescEn').value.trim(),
+                        material: document.getElementById('pMaterialEn')?.value.trim() || '', color: document.getElementById('pColorEn')?.value.trim() || '', production: document.getElementById('pProductionEn')?.value.trim() || '',
+                        sizeNames: [1,2,3].map(i => document.getElementById(`pSize${i}NameEn`)?.value.trim() || '') },
+                    ru: { title: document.getElementById('pTitleRu').value.trim(), desc: document.getElementById('pDescRu').value.trim(),
+                        material: document.getElementById('pMaterialRu')?.value.trim() || '', color: document.getElementById('pColorRu')?.value.trim() || '', production: document.getElementById('pProductionRu')?.value.trim() || '',
+                        sizeNames: [1,2,3].map(i => document.getElementById(`pSize${i}NameRu`)?.value.trim() || '') },
+                    ar: { title: document.getElementById('pTitleAr').value.trim(), desc: document.getElementById('pDescAr').value.trim(),
+                        material: document.getElementById('pMaterialAr')?.value.trim() || '', color: document.getElementById('pColorAr')?.value.trim() || '', production: document.getElementById('pProductionAr')?.value.trim() || '',
+                        sizeNames: [1,2,3].map(i => document.getElementById(`pSize${i}NameAr`)?.value.trim() || '') }
                 };
                 ['en','ru','ar'].forEach(lang => {
                     if (!translationsData[lang].title) translationsData[lang].title = title;
                     if (!translationsData[lang].desc) translationsData[lang].desc = desc;
+                    if (!translationsData[lang].material) translationsData[lang].material = translationsData.tr.material;
+                    if (!translationsData[lang].color) translationsData[lang].color = translationsData.tr.color;
+                    if (!translationsData[lang].production) translationsData[lang].production = translationsData.tr.production;
+                    translationsData[lang].sizeNames = translationsData[lang].sizeNames.map((x,i)=>x || translationsData.tr.sizeNames[i] || '');
                 });
                 const sizes = [1,2,3].map(readSizeOption);
                 if (sizes.some(s => !s.name || !s.price)) throw new Error('Lütfen 3 ölçü seçeneğinin adını ve fiyatını doldurun.');
@@ -3304,7 +3369,7 @@ Pazar: Kapalı"></textarea></div>
             if (sizes.length) {
                 sizeContainer.innerHTML = sizes.map((size, idx) => `
                     <button type="button" class="size-option ${idx === 0 ? 'active' : ''}" onclick="selectProductSize(${idx})">
-                        <span class="size-option-name">${escapeHTML(size.name || `${idx + 1}. Ölçü`)}</span>
+                        <span class="size-option-name">${escapeHTML(getLocalizedSizeName(cat, size, idx))}</span>
                         <span class="size-option-dims">${escapeHTML(getSizeDisplayDimensions(size))}</span>
                         <span class="size-option-price">${escapeHTML(size.price || cat.price || '')}</span>
                     </button>
@@ -3378,5 +3443,561 @@ Pazar: Kapalı"></textarea></div>
             } finally { event.target.value = ''; }
         }
     </script>
+<script>
+function ensureOrderDetailOverlay(){let el=document.getElementById('crmOrderDetailOverlay');if(el)return el;el=document.createElement('div');el.id='crmOrderDetailOverlay';el.className='crm-order-detail-overlay';el.innerHTML=`<div class="crm-order-detail-card"><div class="crm-order-detail-head"><div><small>SULTANZADE • SİPARİŞ KARTI • V2</small><h3 id="crmOrderDetailTitle">Sipariş Detayı</h3></div><button class="crm-order-close" type="button" onclick="closeOwnerOrderDetail()"><i class="fa-solid fa-xmark"></i></button></div><div id="crmOrderDetailBody" class="crm-order-detail-body"></div></div>`;el.addEventListener('click',e=>{if(e.target===el)closeOwnerOrderDetail()});document.body.appendChild(el);return el}
+function orderDetailField(label,value,full=false){return `<div class="crm-order-field${full?' full':''}"><span>${crmEsc(label)}</span><strong>${crmEsc(value||'-')}</strong></div>`}
+function openOwnerOrderDetail(json){const o=typeof json==='string'?JSON.parse(json):json;const overlay=ensureOrderDetailOverlay();document.getElementById('crmOrderDetailTitle').textContent='Sipariş #'+String(o.id||'').slice(-12);document.getElementById('crmOrderDetailBody').innerHTML=`<div class="crm-order-section"><h4>Sipariş Bilgileri</h4><div class="crm-order-detail-grid">${orderDetailField('Sipariş No',o.id)}${orderDetailField('Tarih',crmDate(o.createdAt))}${orderDetailField('Durum',crmStatusText(o.status||'pending'))}${orderDetailField('Ürün',o.productTitle)}${orderDetailField('Ölçü',o.size)}${orderDetailField('Fiyat',o.price)}</div></div><div class="crm-order-section"><h4>Müşteri Bilgileri</h4><div class="crm-order-detail-grid">${orderDetailField('Ad Soyad',o.name)}${orderDetailField('Telefon',o.phone)}${orderDetailField('E-posta',o.email)}${orderDetailField('Ülke',o.country)}${orderDetailField('Şehir',o.city)}${orderDetailField('İlçe / Bölge',o.district)}${orderDetailField('Adres',o.address,true)}${orderDetailField('Müşteri Notu',o.note,true)}</div></div><div class="crm-order-actions"><button class="crm-order-detail-btn" type="button" onclick='createInvoiceFromOrder(${JSON.stringify(JSON.stringify(o))});closeOwnerOrderDetail()'><i class="fa-solid fa-file-invoice"></i> Fatura Oluştur</button><button class="crm-order-delete-btn" type="button" onclick='deleteOwnerOrder(${JSON.stringify(JSON.stringify(o))})'><i class="fa-solid fa-trash"></i> Siparişi Sil</button></div>`;overlay.classList.add('active')}
+function closeOwnerOrderDetail(){document.getElementById('crmOrderDetailOverlay')?.classList.remove('active')}
+async function deleteOwnerOrder(json){const o=typeof json==='string'?JSON.parse(json):json;if(!confirm('Bu siparişi kalıcı olarak silmek istediğinize emin misiniz?'))return;let remoteError=null;try{const{error}=await supabaseClient.from('orders').delete().eq('id',o.id);if(error)remoteError=error}catch(e){remoteError=e}try{const db=await openLocalDB();await new Promise((resolve,reject)=>{const req=db.transaction(LOCAL_ORDERS_STORE,'readwrite').objectStore(LOCAL_ORDERS_STORE).delete(o.id);req.onsuccess=()=>resolve();req.onerror=()=>reject(req.error)})}catch(e){}crmOrders=crmOrders.filter(x=>String(x.id)!==String(o.id));closeOwnerOrderDetail();renderOwnerOrders();if(remoteError)alert('Sipariş ekrandan kaldırıldı ancak Supabase silme izni engelledi: '+(remoteError.message||remoteError));else alert('Sipariş silindi.')}
+</script>
+
+<style>
+.crm-order-status-box{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end;margin-top:12px}
+.crm-order-status-box label{display:block;color:#d9b866;font-size:10px;letter-spacing:1px;margin-bottom:6px}
+.crm-order-status-select{width:100%;background:#270910;color:#fff1d0;border:1px solid rgba(226,185,98,.35);border-radius:10px;padding:11px 12px}
+.crm-order-save-status{border:1px solid #e3bd67;background:linear-gradient(135deg,#b78b34,#e4c575);color:#2a1118;border-radius:10px;padding:11px 15px;cursor:pointer;font-weight:700}
+@media(max-width:700px){.crm-order-status-box{grid-template-columns:1fr}}
+</style>
+<script>
+function crmStatusText(s){return ({new:'Yeni',pending:'Bekliyor',processing:'Hazırlanıyor',shipped:'Kargoya Verildi',completed:'Tamamlandı',paid:'Ödendi',cancelled:'İptal Edildi'})[s]||s||'Bekliyor'}
+function crmStatusBadge(s){const cls=s==='paid'||s==='completed'?'paid':s==='cancelled'?'cancelled':'pending';return `<span class="crm-badge ${cls}">${crmEsc(crmStatusText(s))}</span>`}
+function openOwnerOrderDetail(json){
+ const o=typeof json==='string'?JSON.parse(json):json, overlay=ensureOrderDetailOverlay(), st=o.status||'pending';
+ document.getElementById('crmOrderDetailTitle').textContent='Sipariş #'+String(o.id||'').slice(-12);
+ document.getElementById('crmOrderDetailBody').innerHTML=`
+ <div class="crm-order-section"><h4>Sipariş Bilgileri</h4><div class="crm-order-detail-grid">
+ ${orderDetailField('Sipariş No',o.id)}${orderDetailField('Tarih',crmDate(o.createdAt))}${orderDetailField('Durum',crmStatusText(st))}
+ ${orderDetailField('Ürün',o.productTitle)}${orderDetailField('Ölçü',o.size)}${orderDetailField('Fiyat',o.price)}</div>
+ <div class="crm-order-status-box"><div><label>SİPARİŞ DURUMUNU DEĞİŞTİR</label>
+ <select id="crmOrderStatusSelect" class="crm-order-status-select">
+ <option value="new" ${st==='new'?'selected':''}>Yeni</option><option value="pending" ${st==='pending'?'selected':''}>Bekliyor</option>
+ <option value="processing" ${st==='processing'?'selected':''}>Hazırlanıyor</option><option value="shipped" ${st==='shipped'?'selected':''}>Kargoya Verildi</option>
+ <option value="completed" ${st==='completed'?'selected':''}>Tamamlandı</option><option value="cancelled" ${st==='cancelled'?'selected':''}>İptal Edildi</option>
+ </select></div><button class="crm-order-save-status" onclick='updateOwnerOrderStatus(${JSON.stringify(JSON.stringify(o))})'>Durumu Kaydet</button></div></div>
+ <div class="crm-order-section"><h4>Müşteri Bilgileri</h4><div class="crm-order-detail-grid">
+ ${orderDetailField('Ad Soyad',o.name)}${orderDetailField('Telefon',o.phone)}${orderDetailField('E-posta',o.email)}${orderDetailField('Ülke',o.country)}
+ ${orderDetailField('Şehir',o.city)}${orderDetailField('İlçe / Bölge',o.district)}${orderDetailField('Adres',o.address,true)}${orderDetailField('Müşteri Notu',o.note,true)}
+ </div></div><div class="crm-order-actions">
+ <button class="crm-order-detail-btn" onclick='createInvoiceFromOrder(${JSON.stringify(JSON.stringify(o))});closeOwnerOrderDetail()'>Fatura Oluştur</button>
+ <button class="crm-order-delete-btn" onclick='deleteOwnerOrder(${JSON.stringify(JSON.stringify(o))})'>Siparişi Sil</button></div>`;
+ overlay.classList.add('active');
+}
+async function updateOwnerOrderStatus(json){
+ const o=typeof json==='string'?JSON.parse(json):json, status=document.getElementById('crmOrderStatusSelect')?.value||'pending';
+ try{
+   const {error}=await supabaseClient.from('orders').update({status}).eq('id',o.id);
+   if(error){alert('Durum kaydedilemedi: '+error.message);return}
+   const found=crmOrders.find(x=>String(x.id)===String(o.id)); if(found) found.status=status;
+   renderOwnerOrders(); closeOwnerOrderDetail(); alert('Sipariş durumu kaydedildi: '+crmStatusText(status));
+ }catch(e){alert('Durum kaydedilemedi: '+e.message)}
+}
+</script>
+
+<style>
+.crm-order-detail-overlay{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(18,4,8,.9)}
+.crm-order-detail-overlay.active{display:flex}.crm-order-detail-card{width:min(920px,96vw);max-height:92vh;overflow:auto;border-radius:18px;border:1px solid rgba(226,185,98,.38);background:#300b13;color:#f4e8dc}
+.crm-order-detail-head{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:center;padding:20px 22px;border-bottom:1px solid rgba(226,185,98,.2);background:#2a0a11}.crm-order-detail-head h3{color:#f0d18a;font-size:27px;margin:0}.crm-order-detail-head small{color:#bca79a}.crm-order-close{width:38px;height:38px;border-radius:10px;border:1px solid rgba(226,185,98,.35);background:transparent;color:#f0d18a;cursor:pointer}
+.crm-order-detail-body{padding:20px 22px}.crm-order-section{border:1px solid rgba(226,185,98,.18);border-radius:14px;padding:16px;margin-bottom:14px;background:rgba(16,4,8,.25)}.crm-order-section h4{color:#e3bd67;font-size:20px;margin:0 0 10px}.crm-order-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 22px}.crm-order-field{padding:9px 0;border-bottom:1px solid rgba(226,185,98,.09);font-size:12px}.crm-order-field span{display:block;color:#a99589;font-size:9px;letter-spacing:1px;margin-bottom:3px}.crm-order-field strong{display:block;color:#f5e9dc;word-break:break-word}.crm-order-field.full{grid-column:1/-1}
+.crm-order-status-box{margin-top:18px;padding:14px;border:1px solid rgba(226,185,98,.3);border-radius:12px;background:rgba(226,185,98,.06)}.crm-order-status-box label{display:block;color:#e3bd67;font-size:10px;letter-spacing:1.2px;margin-bottom:8px}.crm-order-status-row{display:grid;grid-template-columns:1fr auto;gap:10px}.crm-order-status-select{width:100%;background:#270910;color:#fff1d0;border:1px solid rgba(226,185,98,.35);border-radius:10px;padding:11px 12px}.crm-order-save-status{border:1px solid #e3bd67;background:#d8ad54;color:#2a1118;border-radius:10px;padding:11px 16px;cursor:pointer;font-weight:700}.crm-order-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.crm-order-actions button{padding:10px 14px;border-radius:10px;cursor:pointer}.crm-order-detail-btn{border:1px solid rgba(226,185,98,.35);background:transparent;color:#f0d18a}.crm-order-delete-btn{border:1px solid rgba(211,92,92,.5);background:rgba(130,25,35,.25);color:#ffc0c0}
+@media(max-width:700px){.crm-order-detail-grid,.crm-order-status-row{grid-template-columns:1fr}.crm-order-field.full{grid-column:auto}}
+</style>
+<script>
+function crmStatusText(s){return ({new:'Yeni',pending:'Bekliyor',processing:'Hazırlanıyor',shipped:'Kargoya Verildi',completed:'Tamamlandı',paid:'Ödendi',cancelled:'İptal Edildi'})[s]||s||'Bekliyor'}
+function crmStatusBadge(s){const c=(s==='paid'||s==='completed')?'paid':s==='cancelled'?'cancelled':'pending';return `<span class="crm-badge ${c}">${crmEsc(crmStatusText(s))}</span>`}
+function ensureOrderDetailOverlay(){let e=document.getElementById('crmOrderDetailOverlay');if(e)return e;e=document.createElement('div');e.id='crmOrderDetailOverlay';e.className='crm-order-detail-overlay';e.innerHTML=`<div class="crm-order-detail-card"><div class="crm-order-detail-head"><div><small>SULTANZADE • SİPARİŞ KARTI</small><h3 id="crmOrderDetailTitle">Sipariş Detayı</h3></div><button class="crm-order-close" onclick="closeOwnerOrderDetail()">✕</button></div><div id="crmOrderDetailBody" class="crm-order-detail-body"></div></div>`;e.addEventListener('click',x=>{if(x.target===e)closeOwnerOrderDetail()});document.body.appendChild(e);return e}
+function orderDetailField(l,v,f=false){return `<div class="crm-order-field${f?' full':''}"><span>${crmEsc(l)}</span><strong>${crmEsc(v||'-')}</strong></div>`}
+function openOwnerOrderDetail(j){const o=typeof j==='string'?JSON.parse(j):j,st=o.status||'pending',e=ensureOrderDetailOverlay();document.getElementById('crmOrderDetailTitle').textContent='Sipariş #'+String(o.id||'').slice(-12);document.getElementById('crmOrderDetailBody').innerHTML=`<div class="crm-order-section"><h4>Sipariş Bilgileri</h4><div class="crm-order-detail-grid">${orderDetailField('Sipariş No',o.id)}${orderDetailField('Tarih',crmDate(o.createdAt))}${orderDetailField('Durum',crmStatusText(st))}${orderDetailField('Ürün',o.productTitle)}${orderDetailField('Ölçü',o.size)}${orderDetailField('Fiyat',o.price)}</div><div class="crm-order-status-box"><label>SİPARİŞ DURUMUNU DEĞİŞTİR</label><div class="crm-order-status-row"><select id="crmOrderStatusSelect" class="crm-order-status-select"><option value="new" ${st==='new'?'selected':''}>Yeni</option><option value="pending" ${st==='pending'?'selected':''}>Bekliyor</option><option value="processing" ${st==='processing'?'selected':''}>Hazırlanıyor</option><option value="shipped" ${st==='shipped'?'selected':''}>Kargoya Verildi</option><option value="completed" ${st==='completed'?'selected':''}>Tamamlandı</option><option value="cancelled" ${st==='cancelled'?'selected':''}>İptal Edildi</option></select><button class="crm-order-save-status" onclick='updateOwnerOrderStatus(${JSON.stringify(JSON.stringify(o))})'>Durumu Kaydet</button></div></div></div><div class="crm-order-section"><h4>Müşteri Bilgileri</h4><div class="crm-order-detail-grid">${orderDetailField('Ad Soyad',o.name)}${orderDetailField('Telefon',o.phone)}${orderDetailField('E-posta',o.email)}${orderDetailField('Ülke',o.country)}${orderDetailField('Şehir',o.city)}${orderDetailField('İlçe / Bölge',o.district)}${orderDetailField('Adres',o.address,true)}${orderDetailField('Müşteri Notu',o.note,true)}</div></div><div class="crm-order-actions"><button class="crm-order-detail-btn" onclick='createInvoiceFromOrder(${JSON.stringify(JSON.stringify(o))});closeOwnerOrderDetail()'>Fatura Oluştur</button><button class="crm-order-delete-btn" onclick='deleteOwnerOrder(${JSON.stringify(JSON.stringify(o))})'>Siparişi Sil</button></div>`;e.classList.add('active')}
+function closeOwnerOrderDetail(){document.getElementById('crmOrderDetailOverlay')?.classList.remove('active')}
+async function updateOwnerOrderStatus(j){const o=typeof j==='string'?JSON.parse(j):j,st=document.getElementById('crmOrderStatusSelect').value;try{const{error}=await supabaseClient.from('orders').update({status:st}).eq('id',o.id);if(error){alert('Durum kaydedilemedi: '+error.message);return}const f=crmOrders.find(x=>String(x.id)===String(o.id));if(f)f.status=st;renderOwnerOrders();closeOwnerOrderDetail();alert('Sipariş durumu kaydedildi: '+crmStatusText(st))}catch(e){alert('Durum kaydedilemedi: '+e.message)}}
+async function deleteOwnerOrder(j){const o=typeof j==='string'?JSON.parse(j):j;if(!confirm('Bu siparişi kalıcı olarak silmek istediğinize emin misiniz?'))return;try{const{error}=await supabaseClient.from('orders').delete().eq('id',o.id);if(error){alert('Sipariş silinemedi: '+error.message);return}crmOrders=crmOrders.filter(x=>String(x.id)!==String(o.id));closeOwnerOrderDetail();renderOwnerOrders();alert('Sipariş silindi.')}catch(e){alert('Sipariş silinemedi: '+e.message)}}
+</script>
+
+<style>
+/* ===== SULTANZADE FINAL FATURA + ÖDEME YÖNETİMİ ===== */
+.crm-final-actionbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.crm-final-btn{border:1px solid rgba(226,185,98,.36);background:rgba(226,185,98,.08);color:#f0d18a;border-radius:9px;padding:9px 12px;cursor:pointer;font-size:10px}
+.crm-final-btn.primary{background:linear-gradient(135deg,#b78b34,#e4c575);color:#2a1118;font-weight:700}
+.crm-final-btn.danger{border-color:rgba(211,92,92,.45);background:rgba(130,25,35,.22);color:#ffc0c0}
+.crm-invoice-info{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 20px;margin:14px 0}
+.crm-invoice-info>div{padding:10px 0;border-bottom:1px solid #ece3d8}
+.crm-invoice-info small{display:block;color:#87756a;font-size:9px;letter-spacing:1px;margin-bottom:3px}
+.crm-invoice-info strong{display:block;color:#3d1520;word-break:break-word}
+@media(max-width:700px){.crm-invoice-info{grid-template-columns:1fr}}
+</style>
+
+<script>
+/* ===== SULTANZADE FINAL BUSINESS SUITE ===== */
+async function ensureCRMCustomerFromInvoiceData(name,email,phone){
+    email=String(email||'').trim().toLowerCase();
+    phone=String(phone||'').trim();
+    let c=crmCustomers.find(x =>
+        (email && String(x.email||'').toLowerCase()===email) ||
+        (phone && String(x.phone||'')===phone)
+    );
+    if(c) return c;
+
+    const now=new Date().toISOString();
+    c={
+        id:`cust-${Date.now()}`,
+        type:'person',
+        name:name||'Müşteri',
+        email,
+        phone,
+        taxOffice:'',
+        taxNo:'',
+        country:'',
+        city:'',
+        address:'',
+        tag:'Sipariş Müşterisi',
+        status:'active',
+        note:'',
+        createdAt:now,
+        updatedAt:now
+    };
+    crmCustomers.unshift(c);
+    crmLocalPut(CRM_CUSTOMER_KEY,crmCustomers);
+    try{
+        const payload={
+            id:c.id,customer_type:c.type,name:c.name,email:c.email||null,phone:c.phone||null,
+            tax_office:null,tax_no:null,country:null,city:null,address:null,tag:c.tag,
+            status:'active',note:null,created_at:c.createdAt,updated_at:c.updatedAt
+        };
+        await supabaseClient.from('customers').upsert(payload);
+    }catch(e){}
+    return c;
+}
+
+async function saveInvoice(){
+    const name=document.getElementById('invoiceCustomerName').value.trim();
+    const email=document.getElementById('invoiceCustomerEmail').value.trim().toLowerCase();
+    const phone=document.getElementById('invoiceCustomerPhone').value.trim();
+    const desc=document.getElementById('invoiceDescription').value.trim();
+    const amount=document.getElementById('invoiceAmount').value.trim();
+
+    if(!name||!desc||!amount){
+        alert('Müşteri adı, açıklama ve tutar zorunludur.');
+        return;
+    }
+
+    const customer=await ensureCRMCustomerFromInvoiceData(name,email,phone);
+    const now=new Date();
+    const invoice=crmCurrentInvoice?{...crmCurrentInvoice}:{
+        id:`inv-${Date.now()}`,
+        invoiceNo:`SZ-${now.getFullYear()}-${String(Date.now()).slice(-6)}`,
+        createdAt:now.toISOString()
+    };
+
+    Object.assign(invoice,{
+        customerId:customer?.id||invoice.customerId||'',
+        customerName:name,
+        customerEmail:email,
+        customerPhone:phone,
+        orderId:document.getElementById('invoiceOrderId').value.trim(),
+        description:desc,
+        amount,
+        status:document.getElementById('invoiceStatus').value||'pending',
+        dueDate:document.getElementById('invoiceDueDate').value||'',
+        note:document.getElementById('invoiceNote').value.trim(),
+        updatedAt:new Date().toISOString()
+    });
+
+    const idx=crmInvoices.findIndex(x=>String(x.id)===String(invoice.id));
+    if(idx>=0) crmInvoices[idx]=invoice; else crmInvoices.unshift(invoice);
+    putLocalInvoices(crmInvoices);
+
+    try{
+        const payload={
+            id:invoice.id,
+            customer_id:invoice.customerId||null,
+            invoice_no:invoice.invoiceNo,
+            customer_name:invoice.customerName,
+            customer_email:invoice.customerEmail||null,
+            customer_phone:invoice.customerPhone||null,
+            order_id:invoice.orderId||null,
+            description:invoice.description,
+            amount:invoice.amount,
+            status:invoice.status,
+            due_date:invoice.dueDate||null,
+            note:invoice.note||null,
+            created_at:invoice.createdAt
+        };
+        const {error}=await supabaseClient.from('invoices').upsert(payload);
+        if(error){alert('Fatura online kaydedilemedi: '+error.message);return;}
+    }catch(e){
+        alert('Fatura online kaydedilemedi: '+e.message);
+        return;
+    }
+
+    renderOwnerInvoices();
+    renderOwnerOrders();
+    renderOwnerCustomers();
+    closeModal('invoiceModalOverlay');
+    alert('Fatura kaydedildi.');
+}
+
+function renderOwnerInvoices(){
+    const body=document.getElementById('crmInvoicesBody'); if(!body)return;
+    const q=(document.getElementById('crmInvoiceSearch')?.value||'').toLowerCase();
+    const rows=crmInvoices.filter(i=>`${i.invoiceNo} ${i.customerName} ${i.customerEmail} ${i.orderId}`.toLowerCase().includes(q));
+
+    document.getElementById('crmInvoiceCount').textContent=crmInvoices.length;
+    document.getElementById('crmPaidInvoiceCount').textContent=crmInvoices.filter(i=>i.status==='paid').length;
+    document.getElementById('crmPendingInvoiceCount').textContent=crmInvoices.filter(i=>i.status!=='paid'&&i.status!=='cancelled').length;
+    document.getElementById('crmInvoiceTotal').textContent=crmInvoices.reduce((n,i)=>n+amountNumber(i.amount),0).toLocaleString('tr-TR',{maximumFractionDigits:2})+' ₺';
+
+    body.innerHTML=rows.length?rows.map(i=>`<tr>
+      <td><strong>${crmEsc(i.invoiceNo||i.id)}</strong></td>
+      <td>${crmEsc(i.customerName||'-')}<div class="crm-muted">${crmEsc(i.customerEmail||'')}</div></td>
+      <td>${crmEsc(i.amount||'-')}</td>
+      <td>${crmEsc(crmDate(i.createdAt))}</td>
+      <td>${crmStatusBadge(i.status||'pending')}</td>
+      <td>${crmEsc(i.orderId||'-')}</td>
+      <td><div class="crm-row-actions">
+        <button class="crm-mini-btn" onclick='viewInvoice(${JSON.stringify(JSON.stringify(i))})'>Görüntüle</button>
+        <button class="crm-mini-btn" onclick='editInvoice(${JSON.stringify(JSON.stringify(i))})'>Düzenle</button>
+        <button class="crm-mini-btn" onclick="openPaymentEditor('${crmEsc(i.customerId||'')}','${crmEsc(i.id)}')">Tahsilat</button>
+        <button class="crm-mini-btn danger" onclick="deleteInvoiceFinal('${crmEsc(i.id)}')">Sil</button>
+      </div></td>
+    </tr>`).join(''):`<tr><td colspan="7"><div class="crm-empty"><i class="fa-solid fa-file-invoice"></i>Henüz fatura oluşturulmadı.</div></td></tr>`;
+}
+
+function viewInvoice(json){
+    const i=JSON.parse(json);
+    document.getElementById('invoiceModalOverlay').classList.add('active');
+    document.getElementById('invoiceModalTitle').textContent='Fatura Detayı';
+    document.getElementById('invoiceEditor').style.display='none';
+    const p=document.getElementById('invoicePreview');
+    p.style.display='';
+    p.innerHTML=`<div class="invoice-preview">
+      <div class="invoice-preview-head">
+        <div><h2>SULTANZADE</h2><div>Satış / Sipariş Faturası</div></div>
+        <div><strong>${crmEsc(i.invoiceNo||'')}</strong><br>${crmEsc(crmDate(i.createdAt))}</div>
+      </div>
+      <div class="crm-invoice-info">
+        <div><small>MÜŞTERİ</small><strong>${crmEsc(i.customerName||'-')}</strong></div>
+        <div><small>DURUM</small><strong>${crmEsc(crmStatusText(i.status||'pending'))}</strong></div>
+        <div><small>E-POSTA</small><strong>${crmEsc(i.customerEmail||'-')}</strong></div>
+        <div><small>TELEFON</small><strong>${crmEsc(i.customerPhone||'-')}</strong></div>
+        <div><small>SİPARİŞ NO</small><strong>${crmEsc(i.orderId||'-')}</strong></div>
+        <div><small>VADE TARİHİ</small><strong>${crmEsc(i.dueDate||'-')}</strong></div>
+      </div>
+      <table class="invoice-lines"><thead><tr><th>Açıklama</th><th>Tutar</th></tr></thead>
+      <tbody><tr><td>${crmEsc(i.description||'-')}</td><td>${crmEsc(i.amount||'-')}</td></tr></tbody></table>
+      <div class="invoice-total">Toplam: <strong>${crmEsc(i.amount||'')}</strong></div>
+      ${i.note?`<p style="margin-top:15px"><strong>Not:</strong> ${crmEsc(i.note)}</p>`:''}
+      <div class="crm-final-actionbar">
+        <button class="crm-final-btn primary" onclick="openPaymentEditor('${crmEsc(i.customerId||'')}','${crmEsc(i.id)}');closeModal('invoiceModalOverlay')">Tahsilat Ekle</button>
+        <button class="crm-final-btn" onclick='editInvoice(${JSON.stringify(JSON.stringify(i))})'>Düzenle</button>
+        <button class="crm-final-btn" onclick="window.print()">Yazdır / PDF</button>
+        <button class="crm-final-btn danger" onclick="deleteInvoiceFinal('${crmEsc(i.id)}')">Faturayı Sil</button>
+      </div>
+    </div>`;
+}
+
+async function deleteInvoiceFinal(id){
+    if(!confirm('Bu fatura kalıcı olarak silinsin mi?'))return;
+    const linked=crmPayments.filter(p=>String(p.invoiceId)===String(id));
+    if(linked.length && !confirm('Bu faturaya bağlı tahsilat kayıtları da var. Fatura silinsin mi?'))return;
+
+    try{
+        const {error}=await supabaseClient.from('invoices').delete().eq('id',id);
+        if(error){alert('Fatura silinemedi: '+error.message);return;}
+    }catch(e){alert('Fatura silinemedi: '+e.message);return;}
+
+    crmInvoices=crmInvoices.filter(x=>String(x.id)!==String(id));
+    putLocalInvoices(crmInvoices);
+    closeModal('invoiceModalOverlay');
+    renderOwnerInvoices();
+    renderOwnerOrders();
+    alert('Fatura silindi.');
+}
+
+function openPaymentEditor(customerId='',invoiceId=''){
+    const custSel=document.getElementById('crmPaymentCustomer');
+    const invSel=document.getElementById('crmPaymentInvoice');
+    custSel.innerHTML='<option value="">Müşteri seçin</option>'+crmCustomers.map(c=>`<option value="${crmEsc(c.id)}">${crmEsc(c.name)}${c.email?' — '+crmEsc(c.email):''}</option>`).join('');
+    invSel.innerHTML='<option value="">Fatura seçin</option>'+crmInvoices.map(i=>`<option value="${crmEsc(i.id)}">${crmEsc(i.invoiceNo||i.id)} — ${crmEsc(i.customerName||'')} — ${crmEsc(i.amount||'')}</option>`).join('');
+
+    const inv=crmInvoices.find(i=>String(i.id)===String(invoiceId));
+    if(inv && !customerId) customerId=inv.customerId||'';
+
+    custSel.value=customerId||'';
+    invSel.value=invoiceId||'';
+    document.getElementById('crmPaymentDate').value=new Date().toISOString().slice(0,10);
+    document.getElementById('crmPaymentAmount').value=inv?.amount||'';
+    document.getElementById('crmPaymentReference').value='';
+    document.getElementById('crmPaymentNote').value='';
+    document.getElementById('crmPaymentEditorOverlay').classList.add('active');
+}
+
+async function saveCRMPayment(){
+    let customerId=document.getElementById('crmPaymentCustomer').value;
+    const invoiceId=document.getElementById('crmPaymentInvoice').value;
+    const amount=document.getElementById('crmPaymentAmount').value.trim();
+    const i=crmInvoices.find(x=>String(x.id)===String(invoiceId));
+
+    if(i && !customerId) customerId=i.customerId||'';
+    if(!customerId||!amount){alert('Müşteri ve tutar zorunludur.');return;}
+
+    const c=crmCustomers.find(x=>String(x.id)===String(customerId));
+    const p={
+        id:`pay-${Date.now()}`,
+        customerId,
+        customerName:c?.name||i?.customerName||'',
+        invoiceId:invoiceId||'',
+        invoiceNo:i?.invoiceNo||'',
+        amount,
+        paymentDate:document.getElementById('crmPaymentDate').value||new Date().toISOString().slice(0,10),
+        method:document.getElementById('crmPaymentMethod').value,
+        reference:document.getElementById('crmPaymentReference').value.trim(),
+        note:document.getElementById('crmPaymentNote').value.trim(),
+        createdAt:new Date().toISOString()
+    };
+
+    try{
+        const payload={
+            id:p.id,customer_id:p.customerId,customer_name:p.customerName,
+            invoice_id:p.invoiceId||null,invoice_no:p.invoiceNo||null,amount:p.amount,
+            payment_date:p.paymentDate,method:p.method,reference:p.reference||null,
+            note:p.note||null,created_at:p.createdAt
+        };
+        const {error}=await supabaseClient.from('payments').upsert(payload);
+        if(error){alert('Tahsilat online kaydedilemedi: '+error.message);return;}
+    }catch(e){alert('Tahsilat online kaydedilemedi: '+e.message);return;}
+
+    crmPayments.unshift(p);
+    crmLocalPut(CRM_PAYMENT_KEY,crmPayments);
+
+    if(i){
+        const paid=crmPayments.filter(x=>String(x.invoiceId)===String(i.id)).reduce((n,x)=>n+amountNumber(x.amount),0);
+        if(paid>=amountNumber(i.amount)){
+            i.status='paid';
+            putLocalInvoices(crmInvoices);
+            try{await supabaseClient.from('invoices').update({status:'paid'}).eq('id',i.id)}catch(e){}
+        }
+    }
+
+    closeModal('crmPaymentEditorOverlay');
+    renderOwnerPayments();
+    renderOwnerInvoices();
+    alert('Tahsilat kaydedildi.');
+}
+
+function renderOwnerPayments(){
+    const body=document.getElementById('crmPaymentsBody');if(!body)return;
+    const q=(document.getElementById('crmPaymentSearch')?.value||'').toLowerCase();
+    const rows=crmPayments.filter(p=>`${p.customerName} ${p.invoiceNo} ${p.method} ${p.reference}`.toLowerCase().includes(q));
+    const total=crmPayments.reduce((n,p)=>n+amountNumber(p.amount),0);
+
+    const count=document.getElementById('crmPaymentCount'); if(count)count.textContent=crmPayments.length;
+    const totalEl=document.getElementById('crmPaymentTotal'); if(totalEl)totalEl.textContent=total.toLocaleString('tr-TR',{maximumFractionDigits:2})+' ₺';
+
+    body.innerHTML=rows.length?rows.map(p=>`<tr>
+      <td><strong>${crmEsc(p.customerName||'-')}</strong></td>
+      <td>${crmEsc(p.invoiceNo||'-')}</td>
+      <td>${crmEsc(p.amount||'-')}</td>
+      <td>${crmEsc(p.paymentDate||'-')}</td>
+      <td>${crmEsc(p.method||'-')}</td>
+      <td>${crmEsc(p.reference||p.note||'-')}</td>
+      <td><button class="crm-mini-btn danger" onclick="deleteCRMPayment('${crmEsc(p.id)}')">Sil</button></td>
+    </tr>`).join(''):`<tr><td colspan="7"><div class="crm-empty"><i class="fa-solid fa-money-bill-transfer"></i>Henüz tahsilat kaydı yok.</div></td></tr>`;
+}
+
+async function deleteCRMPayment(id){
+    if(!confirm('Bu tahsilat kaydı silinsin mi?'))return;
+    const p=crmPayments.find(x=>String(x.id)===String(id));
+
+    try{
+        const {error}=await supabaseClient.from('payments').delete().eq('id',id);
+        if(error){alert('Tahsilat silinemedi: '+error.message);return;}
+    }catch(e){alert('Tahsilat silinemedi: '+e.message);return;}
+
+    crmPayments=crmPayments.filter(x=>String(x.id)!==String(id));
+    crmLocalPut(CRM_PAYMENT_KEY,crmPayments);
+
+    if(p?.invoiceId){
+        const inv=crmInvoices.find(i=>String(i.id)===String(p.invoiceId));
+        if(inv){
+            const paid=crmPayments.filter(x=>String(x.invoiceId)===String(inv.id)).reduce((n,x)=>n+amountNumber(x.amount),0);
+            const newStatus=paid>=amountNumber(inv.amount)?'paid':'pending';
+            inv.status=newStatus;
+            putLocalInvoices(crmInvoices);
+            try{await supabaseClient.from('invoices').update({status:newStatus}).eq('id',inv.id)}catch(e){}
+        }
+    }
+
+    renderOwnerPayments();
+    renderOwnerInvoices();
+    alert('Tahsilat kaydı silindi.');
+}
+</script>
+
+
+<script>
+/* ===== SULTANZADE FULL 4-LANGUAGE UI LAYER ===== */
+(function(){
+  const D={
+    en:{
+      'Havale/EFT bilgileri müşteriye burada gösterilir.':'Bank transfer information is shown to customers here.','Teslimat ve kargo mesajlarını yönetin.':'Manage delivery and shipping messages.','Mağaza mesajı':'Store message','Kargo ücreti ücretsizdir. Teslim süresi seçilen kargo firmasına göre değişebilir.':'Shipping is free. Delivery time may vary depending on the carrier.','Alt bölümde ve iletişim alanında gösterilir.':'Shown in the footer and contact area.','İpucu':'Tip','Buradaki metin müşteriye doğrudan gösterilir. Özet saat alanı ile birlikte güncellenir.':'This text is shown directly to customers and updates with the summary hours.','Telefon, WhatsApp ve e-posta.':'Phone, WhatsApp and email.','Ürün seçimi, ölçü, fiyat ve müşteri bilgileri WhatsApp mesajına otomatik eklenir.':'Product, size, price and customer details are automatically added to the WhatsApp message.','Ana sayfadaki marka görseli.':'Brand image on the home page.','Bordo & altın tema':'Burgundy & gold theme','Yönetici paneli mağazanın bordo kadife ve altın estetiğine uyumlu olarak tasarlanmıştır.':'The manager panel is designed to match the store’s burgundy velvet and gold aesthetic.','Değişiklikler yalnızca yetkili yöneticiye açıktır.':'Changes are available only to the authorized manager.','Mevcut müşteri hesabınızla devam edin.':'Continue with your existing customer account.','Fatura ve sipariş geçmişinizi saklamak için hesap oluşturun.':'Create an account to keep your invoice and order history.','Sipariş durumunu değiştir':'Change order status','Üretim / Özel Not':'Production / Special Note','Ölçü Seçeneği':'Size Option','Koleksiyon Serisi / Etiket':'Collection Series / Tag','Henüz Kategori Bulunmuyor':'No Categories Yet','Yukarıdaki "+ Kategori Ekle" butonuna tıklayarak ilk kategorinizi oluşturabilirsiniz.':'Click the "+ Add Category" button above to create your first category.','Yeni Kategori Ekle':'Add New Category','Görsel, fiyat ve kategori detaylarını girin.':'Enter image, price and category details.','Ürün Görselleri * (Çoklu)':'Product Images * (Multiple)','Birden fazla fotoğraf seçebilirsiniz':'You can select multiple photos','Ürün Bilgileri':'Product Information','Ürününüzü müşteriye gösterecek temel bilgiler.':'Basic information shown to customers.','Ürün Adı *':'Product Name *','Açıklama *':'Description *','3 Farklı Ölçü / Fiyat Seçeneği':'3 Different Size / Price Options','Müşteri ürüne girdiğinde bu 3 seçenekten birini seçer; seçilen ölçünün fiyatı otomatik değişir.':'When a customer opens the product, they choose one of these 3 options; the price changes automatically.','1. Ölçü':'Size 1','2. Ölçü':'Size 2','3. Ölçü':'Size 3','Seçenek adı *':'Option name *','Marka Görseli':'Brand Image','SULTANZADE ana sayfa görselini buradan yükleyebilirsin.':'Upload the SULTANZADE home-page image here.','Bilgisayardan marka fotoğrafı seç':'Choose brand image from computer','İlk kez giriş yapıyorum / Şifre oluştur':'First time signing in / Create password','Yönetici yetkisi yalnızca mağaza sahibinin doğrulanmış hesabıyla verilir.':'Manager access is granted only to the verified store-owner account.','Hesabım':'My Account','Siparişlerim':'My Orders','Faturalarım':'My Invoices','Güvenli Hesap':'Secure Account','Bu portalda yalnızca kendi sipariş ve faturalarınızı görebilirsiniz.':'In this portal you can only view your own orders and invoices.','Müşteri kartını doldurun. Bu bilgiler firma sahibinin CRM panelinde tutulur.':'Fill in the customer card. This information is stored in the owner CRM panel.','Müşteri Tipi':'Customer Type','Ad Soyad / Firma Adı *':'Full Name / Company Name *','Ülke':'Country','Şehir':'City','Firma İçi Not':'Internal Company Note','Müşteriyi Kaydet':'Save Customer','Vazgeç':'Cancel','Düzenle':'Edit','Fatura':'Invoice','Tutar *':'Amount *','Tarih':'Date','Ödeme Yöntemi':'Payment Method','Kredi Kartı':'Credit Card','Diğer':'Other','Tahsilatı Kaydet':'Save Payment','Müşteri Adı':'Customer Name','Müşteri E-posta':'Customer Email','Açıklama / Ürün':'Description / Product','Tutar':'Amount','Ödeme Bekliyor':'Payment Pending','Ödendi':'Paid','İptal':'Cancelled','Son Ödeme Tarihi':'Due Date','Faturayı Kaydet':'Save Invoice','Mağazamız':'Our Store','Haritada Aç':'Open Map','Ödeme Bilgileri':'Payment Information','Yönetici panelinden girilecek':'Entered from manager panel','Ödeme açıklaması:':'Payment description:','Ürün bedeli':'Product price','Kargo & Sipariş':'Shipping & Order','Teslim süresi kargo firmasına bağlıdır.':'Delivery time depends on the shipping company.','WhatsApp ile Sipariş':'Order via WhatsApp','İletişim & Destek':'Contact & Support','WhatsApp Destek Hattı':'WhatsApp Support Line','© 2026 SULTANZADE. Tüm hakları saklıdır.':'© 2026 SULTANZADE. All rights reserved.',"Veya resim URL yapıştırın (Enter'a basın)":'Or paste an image URL (press Enter)','Örn: Osmanlı Kahve Seti':'E.g. Ottoman Coffee Set','Ürünün kısa ve etkileyici açıklaması...':'A short and compelling product description...','Örn: 2026 Özel Seri':'E.g. 2026 Special Series','Örn: Küçük':'E.g. Small','Örn: Orta':'E.g. Medium','Örn: Büyük':'E.g. Large','Örn: Pirinç, ahşap, kadife':'E.g. Brass, wood, velvet','Örn: Ceviz / Altın':'E.g. Walnut / Gold','El işçiliği, üretim süresi veya müşterinin bilmesi gereken özel bilgiler...':'Handcraft, production time or special information the customer should know...','Ad, e-posta veya telefon ile müşteri ara...':'Search customer by name, email or phone...','Sipariş no, müşteri, ürün veya e-posta ara...':'Search order no, customer, product or email...','Fatura no, müşteri veya e-posta ara...':'Search invoice no, customer or email...','Müşteri, fatura no veya ödeme yöntemi ara...':'Search customer, invoice no or payment method...','VIP, Toptan, Perakende...':'VIP, Wholesale, Retail...','Bu notu yalnızca firma sahibi görür.':'Only the store owner can see this note.',
+      'SULTANZADE Hesap':'SULTANZADE Account','SULTANZADE Müşteri':'SULTANZADE Customer','SULTANZADE Firma Sahibi':'SULTANZADE Store Owner','Müşteri / Firma Sahibi':'Customer / Store Owner','Müşteri Hesabım':'My Account','Sipariş & Destek':'Orders & Support','Yönetici Paneli':'Manager Panel','Ücretsiz Kargo':'Free Shipping','Tüm ülkelere gönderim.':'Worldwide shipping.','Güvenli Ödeme':'Secure Payment','Banka havalesi / EFT.':'Bank transfer / EFT.','El İşçiliği':'Handcrafted','Özenli SULTANZADE koleksiyonları.':'Carefully crafted SULTANZADE collections.','WhatsApp Destek':'WhatsApp Support','Hızlı iletişim ve sipariş desteği.':'Fast communication and order support.',
+      'İletişim':'Contact','Kategorilerimiz':'Our Collections','Kategori Ekle':'Add Category','Sipariş Ver':'Order Now','WhatsApp’tan Bilgi Al':'Ask on WhatsApp',"WhatsApp'tan Bilgi Al":'Ask on WhatsApp',
+      'Sipariş Bilgileri':'Order Information','Bilgilerinizi girin; sipariş özetiniz WhatsApp üzerinden gönderilecektir.':'Enter your details; your order summary will be sent via WhatsApp.','Ülke *':'Country *','Ad Soyad *':'Full Name *','Telefon / WhatsApp *':'Phone / WhatsApp *','E-posta *':'Email *','Şehir *':'City *','İlçe / Bölge':'District / Region','Açık Adres *':'Full Address *','Sipariş Notu':'Order Note','WhatsApp ile Siparişi Gönder':'Send Order via WhatsApp',
+      'Yönetici Girişi':'Manager Login','Sadece yetkili SULTANZADE yöneticisi mağaza bilgilerini değiştirebilir.':'Only the authorized SULTANZADE manager can change store information.','E-posta':'Email','Şifre':'Password','Giriş Yap':'Sign In','Çıkış Yap':'Sign Out','Yalnızca owner yetkisi':'Owner access only',
+      'Genel Bakış':'Overview','Mağaza':'Store','Ödeme':'Payment','Kargo':'Shipping','Çalışma Saatleri':'Business Hours','Müşteriler':'Customers','Siparişler':'Orders','Faturalar':'Invoices','Tahsilatlar':'Payments','Görünüm':'Appearance',
+      'Mağaza özeti':'Store overview','Sitenin müşteriye gösterdiği bilgileri tek panelden yönetin.':'Manage all customer-facing information from one panel.','YÖNETİM MERKEZİ':'MANAGEMENT CENTER','Mağazanız hazır.':'Your store is ready.','Banka, adres, kargo, iletişim ve çalışma saatlerini buradan güncelleyebilirsiniz.':'Update bank, address, shipping, contact and business hours here.',
+      'MAĞAZA':'STORE','KARGO':'SHIPPING','SAATLER':'HOURS','Adres':'Address','Ücretsiz kargo':'Free shipping','Mağaza & Adres':'Store & Address','Müşterinin göreceği mağaza bilgileri.':'Store information visible to customers.','Mağaza Adresi':'Store Address','Google Maps Bağlantısı':'Google Maps Link','Mağaza Çalışma Saatleri (özet)':'Store Hours (summary)',
+      'Ödeme & IBAN':'Payment & IBAN','Havale/EFT bilgileri müşteriye burada gösterilir.':'Bank transfer information is shown to customers here.','Banka Adı':'Bank Name','Hesap Sahibi':'Account Holder','Ödeme Açıklaması':'Payment Description','Kargo & Gönderim':'Shipping & Delivery','Teslimat ve kargo mesajlarını yönetin.':'Manage delivery and shipping messages.','Kargo Bilgisi':'Shipping Information','Teslim Süresi':'Delivery Time','Gönderim Ülkeleri':'Shipping Countries','Tüm ülkeler':'All countries','Mağaza mesajı':'Store message','Kargo ücreti ücretsizdir. Teslim süresi seçilen kargo firmasına göre değişebilir.':'Shipping is free. Delivery time may vary depending on the carrier.',
+      'Çalışma Saatleri':'Business Hours','Alt bölümde ve iletişim alanında gösterilir.':'Shown in the footer and contact area.','İpucu':'Tip','Buradaki metin müşteriye doğrudan gösterilir. Özet saat alanı ile birlikte güncellenir.':'This text is shown directly to customers and updates with the summary hours.','Telefon, WhatsApp ve e-posta.':'Phone, WhatsApp and email.','Telefon':'Phone','WhatsApp siparişleri':'WhatsApp orders','Ürün seçimi, ölçü, fiyat ve müşteri bilgileri WhatsApp mesajına otomatik eklenir.':'Product, size, price and customer details are automatically added to the WhatsApp message.',
+      'TOPLAM MÜŞTERİ':'TOTAL CUSTOMERS','SİPARİŞ VEREN':'ORDERED','TOPLAM SİPARİŞ':'TOTAL ORDERS','FATURALI MÜŞTERİ':'INVOICED CUSTOMERS','Yeni Müşteri':'New Customer','Yenile':'Refresh','MÜŞTERİ':'CUSTOMER','E-POSTA':'EMAIL','TELEFON':'PHONE','ŞEHİR / ÜLKE':'CITY / COUNTRY','SİPARİŞ':'ORDER','SON HAREKET':'LAST ACTIVITY','İŞLEM':'ACTION','BEKLEYEN':'PENDING','TAMAMLANAN':'COMPLETED','FATURALANAN':'INVOICED','ÜRÜN':'PRODUCT','FİYAT':'PRICE','TARİH':'DATE','DURUM':'STATUS',
+      'TOPLAM FATURA':'TOTAL INVOICES','ÖDENDİ':'PAID','TOPLAM TUTAR':'TOTAL AMOUNT','Yeni Fatura':'New Invoice','FATURA NO':'INVOICE NO','TUTAR':'AMOUNT','TOPLAM TAHSİLAT':'TOTAL PAYMENTS','TAHSİLAT SAYISI':'PAYMENT COUNT','BU AY':'THIS MONTH','BEKLEYEN FATURA':'OUTSTANDING INVOICES','Tahsilat Ekle':'Add Payment','FATURA':'INVOICE','YÖNTEM':'METHOD','NOT':'NOTE',
+      'Hero Görseli':'Hero Image','Ana sayfadaki marka görseli.':'Brand image on the home page.','Yeni hero görseli seç':'Choose new hero image','Bordo & altın tema':'Burgundy & gold theme','Yönetici paneli mağazanın bordo kadife ve altın estetiğine uyumlu olarak tasarlanmıştır.':'The manager panel is designed to match the store’s burgundy velvet and gold aesthetic.','Değişiklikler yalnızca yetkili yöneticiye açıktır.':'Changes are available only to the authorized manager.','Değişiklikleri Kaydet':'Save Changes',
+      'SULTANZADE Müşteri Portalı':'SULTANZADE Customer Portal','Siparişlerinizi ve faturalarınızı tek hesabınızdan takip edin.':'Track your orders and invoices from one account.','Mevcut müşteri hesabınızla devam edin.':'Continue with your existing customer account.','Müşteri Girişi':'Customer Login','Yeni Hesap':'New Account','Fatura ve sipariş geçmişinizi saklamak için hesap oluşturun.':'Create an account to keep your invoice and order history.','Ad Soyad':'Full Name','Müşteri Hesabı Oluştur':'Create Customer Account',
+      'Özet':'Summary','Ödemeler':'Payments','Notlar':'Notes','Tahsilat Kaydı':'Payment Record','Müşteri':'Customer','Sipariş Detayı':'Order Details','Sipariş Bilgileri':'Order Information','Müşteri Bilgileri':'Customer Information','Sipariş No':'Order No','Ürün':'Product','Ölçü':'Size','Fiyat':'Price','Siparişi Sil':'Delete Order','Fatura Oluştur':'Create Invoice','Sipariş durumunu değiştir':'Change order status','Durumu Kaydet':'Save Status','Yeni':'New','Bekliyor':'Pending','Hazırlanıyor':'Processing','Kargoya Verildi':'Shipped','Tamamlandı':'Completed','İptal Edildi':'Cancelled',
+      'Malzeme':'Material','Renk':'Color','Üretim / Not':'Production / Note','Üretim / Özel Not':'Production / Special Note','En':'Width','Boy':'Length','Yükseklik':'Height','Ağırlık':'Weight','Ölçü seçin':'Choose a size','Seçilen ölçü':'Selected size','Ürün Detayı':'Product Details','Ölçü Seçeneği':'Size Option','Koleksiyon Serisi / Etiket':'Collection Series / Tag','Kaydet ve Ekle':'Save and Add'
+    },
+    ru:{
+      'Havale/EFT bilgileri müşteriye burada gösterilir.':'Информация о банковском переводе показывается клиентам здесь.','Teslimat ve kargo mesajlarını yönetin.':'Управляйте сообщениями о доставке и отправке.','Mağaza mesajı':'Сообщение магазина','Kargo ücreti ücretsizdir. Teslim süresi seçilen kargo firmasına göre değişebilir.':'Доставка бесплатная. Срок зависит от выбранной службы доставки.','Alt bölümde ve iletişim alanında gösterilir.':'Показывается внизу сайта и в разделе контактов.','İpucu':'Совет','Buradaki metin müşteriye doğrudan gösterilir. Özet saat alanı ile birlikte güncellenir.':'Этот текст показывается клиенту напрямую и обновляется вместе с краткими часами работы.','Telefon, WhatsApp ve e-posta.':'Телефон, WhatsApp и эл. почта.','Ürün seçimi, ölçü, fiyat ve müşteri bilgileri WhatsApp mesajına otomatik eklenir.':'Товар, размер, цена и данные клиента автоматически добавляются в сообщение WhatsApp.','Ana sayfadaki marka görseli.':'Изображение бренда на главной странице.','Bordo & altın tema':'Бордовая и золотая тема','Yönetici paneli mağazanın bordo kadife ve altın estetiğine uyumlu olarak tasarlanmıştır.':'Панель управления оформлена в бордово-золотом стиле магазина.','Değişiklikler yalnızca yetkili yöneticiye açıktır.':'Изменения доступны только авторизованному администратору.','Mevcut müşteri hesabınızla devam edin.':'Продолжите с существующей учётной записью клиента.','Fatura ve sipariş geçmişinizi saklamak için hesap oluşturun.':'Создайте аккаунт, чтобы сохранять историю заказов и счетов.','Sipariş durumunu değiştir':'Изменить статус заказа','Üretim / Özel Not':'Производство / Особая заметка','Ölçü Seçeneği':'Вариант размера','Koleksiyon Serisi / Etiket':'Серия коллекции / Метка','Henüz Kategori Bulunmuyor':'Категорий пока нет','Yukarıdaki "+ Kategori Ekle" butonuna tıklayarak ilk kategorinizi oluşturabilirsiniz.':'Нажмите кнопку «+ Добавить категорию» выше, чтобы создать первую категорию.','Yeni Kategori Ekle':'Добавить новую категорию','Görsel, fiyat ve kategori detaylarını girin.':'Введите изображение, цену и данные категории.','Ürün Görselleri * (Çoklu)':'Изображения товара * (несколько)','Birden fazla fotoğraf seçebilirsiniz':'Можно выбрать несколько фотографий','Ürün Bilgileri':'Информация о товаре','Ürününüzü müşteriye gösterecek temel bilgiler.':'Основная информация о товаре для клиента.','Ürün Adı *':'Название товара *','Açıklama *':'Описание *','3 Farklı Ölçü / Fiyat Seçeneği':'3 варианта размера / цены','Müşteri ürüne girdiğinde bu 3 seçenekten birini seçer; seçilen ölçünün fiyatı otomatik değişir.':'При открытии товара клиент выбирает один из 3 вариантов; цена меняется автоматически.','1. Ölçü':'Размер 1','2. Ölçü':'Размер 2','3. Ölçü':'Размер 3','Seçenek adı *':'Название варианта *','Marka Görseli':'Изображение бренда','SULTANZADE ana sayfa görselini buradan yükleyebilirsin.':'Загрузите здесь изображение SULTANZADE для главной страницы.','Bilgisayardan marka fotoğrafı seç':'Выбрать изображение бренда с компьютера','İlk kez giriş yapıyorum / Şifre oluştur':'Первый вход / Создать пароль','Yönetici yetkisi yalnızca mağaza sahibinin doğrulanmış hesabıyla verilir.':'Доступ администратора предоставляется только подтверждённой учётной записи владельца магазина.','Hesabım':'Мой аккаунт','Siparişlerim':'Мои заказы','Faturalarım':'Мои счета','Güvenli Hesap':'Безопасный аккаунт','Bu portalda yalnızca kendi sipariş ve faturalarınızı görebilirsiniz.':'В этом портале вы можете видеть только свои заказы и счета.','Müşteri kartını doldurun. Bu bilgiler firma sahibinin CRM panelinde tutulur.':'Заполните карточку клиента. Эти данные хранятся в CRM владельца.','Müşteri Tipi':'Тип клиента','Ad Soyad / Firma Adı *':'Имя / Название компании *','Ülke':'Страна','Şehir':'Город','Firma İçi Not':'Внутренняя заметка','Müşteriyi Kaydet':'Сохранить клиента','Vazgeç':'Отмена','Düzenle':'Изменить','Fatura':'Счёт','Tutar *':'Сумма *','Tarih':'Дата','Ödeme Yöntemi':'Способ оплаты','Kredi Kartı':'Кредитная карта','Diğer':'Другое','Tahsilatı Kaydet':'Сохранить платёж','Müşteri Adı':'Имя клиента','Müşteri E-posta':'Эл. почта клиента','Açıklama / Ürün':'Описание / Товар','Tutar':'Сумма','Ödeme Bekliyor':'Ожидает оплаты','Ödendi':'Оплачено','İptal':'Отменено','Son Ödeme Tarihi':'Срок оплаты','Faturayı Kaydet':'Сохранить счёт','Mağazamız':'Наш магазин','Haritada Aç':'Открыть карту','Ödeme Bilgileri':'Платёжная информация','Yönetici panelinden girilecek':'Вводится из панели управления','Ödeme açıklaması:':'Описание платежа:','Ürün bedeli':'Стоимость товара','Kargo & Sipariş':'Доставка и заказ','Teslim süresi kargo firmasına bağlıdır.':'Срок доставки зависит от службы доставки.','WhatsApp ile Sipariş':'Заказать через WhatsApp','İletişim & Destek':'Контакты и поддержка','WhatsApp Destek Hattı':'Поддержка WhatsApp','© 2026 SULTANZADE. Tüm hakları saklıdır.':'© 2026 SULTANZADE. Все права защищены.',"Veya resim URL yapıştırın (Enter'a basın)":'Или вставьте URL изображения (нажмите Enter)','Örn: Osmanlı Kahve Seti':'Напр.: Османский кофейный набор','Ürünün kısa ve etkileyici açıklaması...':'Краткое и выразительное описание товара...','Örn: 2026 Özel Seri':'Напр.: Спецсерия 2026','Örn: Küçük':'Напр.: Малый','Örn: Orta':'Напр.: Средний','Örn: Büyük':'Напр.: Большой','Örn: Pirinç, ahşap, kadife':'Напр.: Латунь, дерево, бархат','Örn: Ceviz / Altın':'Напр.: Орех / Золото','El işçiliği, üretim süresi veya müşterinin bilmesi gereken özel bilgiler...':'Ручная работа, срок производства или важная информация для клиента...','Ad, e-posta veya telefon ile müşteri ara...':'Поиск клиента по имени, эл. почте или телефону...','Sipariş no, müşteri, ürün veya e-posta ara...':'Поиск по номеру заказа, клиенту, товару или эл. почте...','Fatura no, müşteri veya e-posta ara...':'Поиск по номеру счёта, клиенту или эл. почте...','Müşteri, fatura no veya ödeme yöntemi ara...':'Поиск по клиенту, номеру счёта или способу оплаты...','VIP, Toptan, Perakende...':'VIP, Опт, Розница...','Bu notu yalnızca firma sahibi görür.':'Эту заметку видит только владелец магазина.',
+      'SULTANZADE Hesap':'Аккаунт SULTANZADE','SULTANZADE Müşteri':'Клиент SULTANZADE','SULTANZADE Firma Sahibi':'Владелец SULTANZADE','Müşteri / Firma Sahibi':'Клиент / Владелец магазина','Müşteri Hesabım':'Мой аккаунт','Sipariş & Destek':'Заказы и поддержка','Yönetici Paneli':'Панель управления','Ücretsiz Kargo':'Бесплатная доставка','Tüm ülkelere gönderim.':'Доставка во все страны.','Güvenli Ödeme':'Безопасная оплата','Banka havalesi / EFT.':'Банковский перевод / EFT.','El İşçiliği':'Ручная работа','Özenli SULTANZADE koleksiyonları.':'Тщательно изготовленные коллекции SULTANZADE.','WhatsApp Destek':'Поддержка WhatsApp','Hızlı iletişim ve sipariş desteği.':'Быстрая связь и помощь с заказами.',
+      'İletişim':'Контакты','Kategorilerimiz':'Наши коллекции','Kategori Ekle':'Добавить категорию','Sipariş Ver':'Заказать','WhatsApp’tan Bilgi Al':'Спросить в WhatsApp',"WhatsApp'tan Bilgi Al":'Спросить в WhatsApp','Sipariş Bilgileri':'Данные заказа','Bilgilerinizi girin; sipariş özetiniz WhatsApp üzerinden gönderilecektir.':'Введите данные; сводка заказа будет отправлена через WhatsApp.','Ülke *':'Страна *','Ad Soyad *':'Имя и фамилия *','Telefon / WhatsApp *':'Телефон / WhatsApp *','E-posta *':'Эл. почта *','Şehir *':'Город *','İlçe / Bölge':'Район / Область','Açık Adres *':'Полный адрес *','Sipariş Notu':'Примечание к заказу','WhatsApp ile Siparişi Gönder':'Отправить заказ через WhatsApp',
+      'Yönetici Girişi':'Вход администратора','Sadece yetkili SULTANZADE yöneticisi mağaza bilgilerini değiştirebilir.':'Только авторизованный администратор SULTANZADE может изменять данные магазина.','E-posta':'Эл. почта','Şifre':'Пароль','Giriş Yap':'Войти','Çıkış Yap':'Выйти','Yalnızca owner yetkisi':'Только владелец','Genel Bakış':'Обзор','Mağaza':'Магазин','Ödeme':'Оплата','Kargo':'Доставка','Çalışma Saatleri':'Часы работы','Müşteriler':'Клиенты','Siparişler':'Заказы','Faturalar':'Счета','Tahsilatlar':'Платежи','Görünüm':'Внешний вид',
+      'Mağaza özeti':'Обзор магазина','Sitenin müşteriye gösterdiği bilgileri tek panelden yönetin.':'Управляйте всей информацией для клиентов из одной панели.','YÖNETİM MERKEZİ':'ЦЕНТР УПРАВЛЕНИЯ','Mağazanız hazır.':'Ваш магазин готов.','Banka, adres, kargo, iletişim ve çalışma saatlerini buradan güncelleyebilirsiniz.':'Здесь можно обновить банк, адрес, доставку, контакты и часы работы.','MAĞAZA':'МАГАЗИН','KARGO':'ДОСТАВКА','SAATLER':'ЧАСЫ','Adres':'Адрес','Ücretsiz kargo':'Бесплатная доставка',
+      'Mağaza & Adres':'Магазин и адрес','Müşterinin göreceği mağaza bilgileri.':'Информация магазина для клиентов.','Mağaza Adresi':'Адрес магазина','Google Maps Bağlantısı':'Ссылка Google Maps','Mağaza Çalışma Saatleri (özet)':'Часы работы (кратко)','Ödeme & IBAN':'Оплата и IBAN','Banka Adı':'Банк','Hesap Sahibi':'Владелец счета','Ödeme Açıklaması':'Назначение платежа','Kargo & Gönderim':'Доставка и отправка','Kargo Bilgisi':'Информация о доставке','Teslim Süresi':'Срок доставки','Gönderim Ülkeleri':'Страны доставки','Tüm ülkeler':'Все страны','İletişim':'Контакты','Telefon':'Телефон','WhatsApp siparişleri':'Заказы WhatsApp',
+      'TOPLAM MÜŞTERİ':'ВСЕГО КЛИЕНТОВ','SİPARİŞ VEREN':'СДЕЛАЛИ ЗАКАЗ','TOPLAM SİPARİŞ':'ВСЕГО ЗАКАЗОВ','FATURALI MÜŞTERİ':'КЛИЕНТЫ СО СЧЕТАМИ','Yeni Müşteri':'Новый клиент','Yenile':'Обновить','MÜŞTERİ':'КЛИЕНТ','E-POSTA':'ЭЛ. ПОЧТА','TELEFON':'ТЕЛЕФОН','ŞEHİR / ÜLKE':'ГОРОД / СТРАНА','SİPARİŞ':'ЗАКАЗ','SON HAREKET':'ПОСЛЕДНЯЯ АКТИВНОСТЬ','İŞLEM':'ДЕЙСТВИЕ','BEKLEYEN':'ОЖИДАЕТ','TAMAMLANAN':'ЗАВЕРШЕНО','FATURALANAN':'ВЫСТАВЛЕН СЧЕТ','ÜRÜN':'ТОВАР','FİYAT':'ЦЕНА','TARİH':'ДАТА','DURUM':'СТАТУС','TOPLAM FATURA':'ВСЕГО СЧЕТОВ','ÖDENDİ':'ОПЛАЧЕНО','TOPLAM TUTAR':'ОБЩАЯ СУММА','Yeni Fatura':'Новый счет','FATURA NO':'№ СЧЕТА','TUTAR':'СУММА','TOPLAM TAHSİLAT':'ВСЕГО ПЛАТЕЖЕЙ','TAHSİLAT SAYISI':'КОЛ-ВО ПЛАТЕЖЕЙ','BU AY':'В ЭТОМ МЕСЯЦЕ','BEKLEYEN FATURA':'НЕОПЛАЧЕННЫЕ СЧЕТА','Tahsilat Ekle':'Добавить платеж','FATURA':'СЧЕТ','YÖNTEM':'МЕТОД','NOT':'ПРИМЕЧАНИЕ',
+      'Hero Görseli':'Главное изображение','Yeni hero görseli seç':'Выбрать новое изображение','Değişiklikleri Kaydet':'Сохранить изменения','SULTANZADE Müşteri Portalı':'Портал клиента SULTANZADE','Siparişlerinizi ve faturalarınızı tek hesabınızdan takip edin.':'Отслеживайте заказы и счета в одном аккаунте.','Müşteri Girişi':'Вход клиента','Yeni Hesap':'Новый аккаунт','Ad Soyad':'Имя и фамилия','Müşteri Hesabı Oluştur':'Создать аккаунт клиента','Özet':'Сводка','Ödemeler':'Платежи','Notlar':'Заметки','Tahsilat Kaydı':'Запись платежа','Müşteri':'Клиент','Sipariş Detayı':'Детали заказа','Müşteri Bilgileri':'Данные клиента','Sipariş No':'№ заказа','Ürün':'Товар','Ölçü':'Размер','Fiyat':'Цена','Siparişi Sil':'Удалить заказ','Fatura Oluştur':'Создать счет','Durumu Kaydet':'Сохранить статус','Yeni':'Новый','Bekliyor':'Ожидает','Hazırlanıyor':'Готовится','Kargoya Verildi':'Отправлен','Tamamlandı':'Завершен','İptal Edildi':'Отменен','Malzeme':'Материал','Renk':'Цвет','Üretim / Not':'Производство / Примечание','En':'Ширина','Boy':'Длина','Yükseklik':'Высота','Ağırlık':'Вес','Ölçü seçin':'Выберите размер','Seçilen ölçü':'Выбранный размер','Ürün Detayı':'Детали товара','Kaydet ve Ekle':'Сохранить и добавить'
+    },
+    ar:{
+      'Havale/EFT bilgileri müşteriye burada gösterilir.':'تُعرض معلومات التحويل البنكي للعملاء هنا.','Teslimat ve kargo mesajlarını yönetin.':'إدارة رسائل الشحن والتوصيل.','Mağaza mesajı':'رسالة المتجر','Kargo ücreti ücretsizdir. Teslim süresi seçilen kargo firmasına göre değişebilir.':'الشحن مجاني. وقد تختلف مدة التسليم حسب شركة الشحن المختارة.','Alt bölümde ve iletişim alanında gösterilir.':'يظهر في أسفل الموقع وفي قسم التواصل.','İpucu':'نصيحة','Buradaki metin müşteriye doğrudan gösterilir. Özet saat alanı ile birlikte güncellenir.':'يظهر هذا النص مباشرة للعميل ويتم تحديثه مع ملخص ساعات العمل.','Telefon, WhatsApp ve e-posta.':'الهاتف وواتساب والبريد الإلكتروني.','Ürün seçimi, ölçü, fiyat ve müşteri bilgileri WhatsApp mesajına otomatik eklenir.':'تُضاف معلومات المنتج والمقاس والسعر والعميل تلقائياً إلى رسالة واتساب.','Ana sayfadaki marka görseli.':'صورة العلامة التجارية في الصفحة الرئيسية.','Bordo & altın tema':'سمة خمري وذهبي','Yönetici paneli mağazanın bordo kadife ve altın estetiğine uyumlu olarak tasarlanmıştır.':'تم تصميم لوحة الإدارة لتتوافق مع الطابع الخمري والذهبي للمتجر.','Değişiklikler yalnızca yetkili yöneticiye açıktır.':'التعديلات متاحة فقط للمدير المخوّل.','Mevcut müşteri hesabınızla devam edin.':'تابع باستخدام حساب العميل الحالي.','Fatura ve sipariş geçmişinizi saklamak için hesap oluşturun.':'أنشئ حساباً للاحتفاظ بسجل الطلبات والفواتير.','Sipariş durumunu değiştir':'تغيير حالة الطلب','Üretim / Özel Not':'الإنتاج / ملاحظة خاصة','Ölçü Seçeneği':'خيار المقاس','Koleksiyon Serisi / Etiket':'سلسلة المجموعة / الوسم','Henüz Kategori Bulunmuyor':'لا توجد فئات بعد','Yukarıdaki "+ Kategori Ekle" butonuna tıklayarak ilk kategorinizi oluşturabilirsiniz.':'اضغط على زر «+ إضافة فئة» أعلاه لإنشاء أول فئة.','Yeni Kategori Ekle':'إضافة فئة جديدة','Görsel, fiyat ve kategori detaylarını girin.':'أدخل الصورة والسعر وتفاصيل الفئة.','Ürün Görselleri * (Çoklu)':'صور المنتج * (متعددة)','Birden fazla fotoğraf seçebilirsiniz':'يمكنك اختيار عدة صور','Ürün Bilgileri':'معلومات المنتج','Ürününüzü müşteriye gösterecek temel bilgiler.':'المعلومات الأساسية التي تظهر للعميل.','Ürün Adı *':'اسم المنتج *','Açıklama *':'الوصف *','3 Farklı Ölçü / Fiyat Seçeneği':'3 خيارات مختلفة للمقاس / السعر','Müşteri ürüne girdiğinde bu 3 seçenekten birini seçer; seçilen ölçünün fiyatı otomatik değişir.':'عند فتح المنتج يختار العميل واحداً من هذه الخيارات الثلاثة ويتغير السعر تلقائياً.','1. Ölçü':'المقاس 1','2. Ölçü':'المقاس 2','3. Ölçü':'المقاس 3','Seçenek adı *':'اسم الخيار *','Marka Görseli':'صورة العلامة التجارية','SULTANZADE ana sayfa görselini buradan yükleyebilirsin.':'يمكنك رفع صورة SULTANZADE للصفحة الرئيسية من هنا.','Bilgisayardan marka fotoğrafı seç':'اختر صورة العلامة التجارية من الكمبيوتر','İlk kez giriş yapıyorum / Şifre oluştur':'تسجيل الدخول لأول مرة / إنشاء كلمة مرور','Yönetici yetkisi yalnızca mağaza sahibinin doğrulanmış hesabıyla verilir.':'تُمنح صلاحية الإدارة فقط لحساب مالك المتجر الموثّق.','Hesabım':'حسابي','Siparişlerim':'طلباتي','Faturalarım':'فواتيري','Güvenli Hesap':'حساب آمن','Bu portalda yalnızca kendi sipariş ve faturalarınızı görebilirsiniz.':'يمكنك في هذه البوابة رؤية طلباتك وفواتيرك فقط.','Müşteri kartını doldurun. Bu bilgiler firma sahibinin CRM panelinde tutulur.':'املأ بطاقة العميل. تُحفظ هذه المعلومات في لوحة CRM الخاصة بمالك المتجر.','Müşteri Tipi':'نوع العميل','Ad Soyad / Firma Adı *':'الاسم الكامل / اسم الشركة *','Ülke':'الدولة','Şehir':'المدينة','Firma İçi Not':'ملاحظة داخلية للشركة','Müşteriyi Kaydet':'حفظ العميل','Vazgeç':'إلغاء','Düzenle':'تعديل','Fatura':'فاتورة','Tutar *':'المبلغ *','Tarih':'التاريخ','Ödeme Yöntemi':'طريقة الدفع','Kredi Kartı':'بطاقة ائتمان','Diğer':'أخرى','Tahsilatı Kaydet':'حفظ الدفعة','Müşteri Adı':'اسم العميل','Müşteri E-posta':'بريد العميل الإلكتروني','Açıklama / Ürün':'الوصف / المنتج','Tutar':'المبلغ','Ödeme Bekliyor':'بانتظار الدفع','Ödendi':'مدفوع','İptal':'ملغي','Son Ödeme Tarihi':'تاريخ الاستحقاق','Faturayı Kaydet':'حفظ الفاتورة','Mağazamız':'متجرنا','Haritada Aç':'فتح على الخريطة','Ödeme Bilgileri':'معلومات الدفع','Yönetici panelinden girilecek':'يُدخل من لوحة الإدارة','Ödeme açıklaması:':'وصف الدفع:','Ürün bedeli':'قيمة المنتج','Kargo & Sipariş':'الشحن والطلب','Teslim süresi kargo firmasına bağlıdır.':'مدة التسليم تعتمد على شركة الشحن.','WhatsApp ile Sipariş':'اطلب عبر واتساب','İletişim & Destek':'التواصل والدعم','WhatsApp Destek Hattı':'دعم واتساب','© 2026 SULTANZADE. Tüm hakları saklıdır.':'© 2026 SULTANZADE. جميع الحقوق محفوظة.',"Veya resim URL yapıştırın (Enter'a basın)":'أو ألصق رابط الصورة (اضغط Enter)','Örn: Osmanlı Kahve Seti':'مثال: طقم قهوة عثماني','Ürünün kısa ve etkileyici açıklaması...':'وصف مختصر وجذاب للمنتج...','Örn: 2026 Özel Seri':'مثال: سلسلة خاصة 2026','Örn: Küçük':'مثال: صغير','Örn: Orta':'مثال: متوسط','Örn: Büyük':'مثال: كبير','Örn: Pirinç, ahşap, kadife':'مثال: نحاس، خشب، مخمل','Örn: Ceviz / Altın':'مثال: جوز / ذهبي','El işçiliği, üretim süresi veya müşterinin bilmesi gereken özel bilgiler...':'العمل اليدوي أو مدة الإنتاج أو معلومات خاصة يجب أن يعرفها العميل...','Ad, e-posta veya telefon ile müşteri ara...':'ابحث عن العميل بالاسم أو البريد أو الهاتف...','Sipariş no, müşteri, ürün veya e-posta ara...':'ابحث برقم الطلب أو العميل أو المنتج أو البريد...','Fatura no, müşteri veya e-posta ara...':'ابحث برقم الفاتورة أو العميل أو البريد...','Müşteri, fatura no veya ödeme yöntemi ara...':'ابحث بالعميل أو رقم الفاتورة أو طريقة الدفع...','VIP, Toptan, Perakende...':'VIP، جملة، تجزئة...','Bu notu yalnızca firma sahibi görür.':'هذه الملاحظة يراها مالك المتجر فقط.',
+      'SULTANZADE Hesap':'حساب SULTANZADE','SULTANZADE Müşteri':'عميل SULTANZADE','SULTANZADE Firma Sahibi':'مالك SULTANZADE','Müşteri / Firma Sahibi':'العميل / مالك المتجر','Müşteri Hesabım':'حسابي','Sipariş & Destek':'الطلبات والدعم','Yönetici Paneli':'لوحة الإدارة','Ücretsiz Kargo':'شحن مجاني','Tüm ülkelere gönderim.':'شحن إلى جميع الدول.','Güvenli Ödeme':'دفع آمن','Banka havalesi / EFT.':'تحويل بنكي / EFT.','El İşçiliği':'صناعة يدوية','Özenli SULTANZADE koleksiyonları.':'مجموعات SULTANZADE مصنوعة بعناية.','WhatsApp Destek':'دعم واتساب','Hızlı iletişim ve sipariş desteği.':'تواصل سريع ودعم للطلبات.',
+      'İletişim':'اتصل بنا','Kategorilerimiz':'مجموعاتنا','Kategori Ekle':'إضافة فئة','Sipariş Ver':'اطلب الآن','WhatsApp’tan Bilgi Al':'تواصل عبر واتساب',"WhatsApp'tan Bilgi Al":'تواصل عبر واتساب','Sipariş Bilgileri':'معلومات الطلب','Bilgilerinizi girin; sipariş özetiniz WhatsApp üzerinden gönderilecektir.':'أدخل معلوماتك؛ سيتم إرسال ملخص الطلب عبر واتساب.','Ülke *':'الدولة *','Ad Soyad *':'الاسم الكامل *','Telefon / WhatsApp *':'الهاتف / واتساب *','E-posta *':'البريد الإلكتروني *','Şehir *':'المدينة *','İlçe / Bölge':'المنطقة / الحي','Açık Adres *':'العنوان الكامل *','Sipariş Notu':'ملاحظة الطلب','WhatsApp ile Siparişi Gönder':'إرسال الطلب عبر واتساب',
+      'Yönetici Girişi':'دخول المدير','Sadece yetkili SULTANZADE yöneticisi mağaza bilgilerini değiştirebilir.':'يمكن فقط لمدير SULTANZADE المعتمد تعديل معلومات المتجر.','E-posta':'البريد الإلكتروني','Şifre':'كلمة المرور','Giriş Yap':'تسجيل الدخول','Çıkış Yap':'تسجيل الخروج','Yalnızca owner yetkisi':'صلاحية المالك فقط','Genel Bakış':'نظرة عامة','Mağaza':'المتجر','Ödeme':'الدفع','Kargo':'الشحن','Çalışma Saatleri':'ساعات العمل','Müşteriler':'العملاء','Siparişler':'الطلبات','Faturalar':'الفواتير','Tahsilatlar':'المدفوعات','Görünüm':'المظهر',
+      'Mağaza özeti':'ملخص المتجر','Sitenin müşteriye gösterdiği bilgileri tek panelden yönetin.':'أدر جميع المعلومات الظاهرة للعملاء من لوحة واحدة.','YÖNETİM MERKEZİ':'مركز الإدارة','Mağazanız hazır.':'متجرك جاهز.','Banka, adres, kargo, iletişim ve çalışma saatlerini buradan güncelleyebilirsiniz.':'يمكنك تحديث البنك والعنوان والشحن والتواصل وساعات العمل من هنا.','MAĞAZA':'المتجر','KARGO':'الشحن','SAATLER':'الساعات','Adres':'العنوان','Ücretsiz kargo':'شحن مجاني',
+      'Mağaza & Adres':'المتجر والعنوان','Müşterinin göreceği mağaza bilgileri.':'معلومات المتجر التي يراها العميل.','Mağaza Adresi':'عنوان المتجر','Google Maps Bağlantısı':'رابط خرائط Google','Mağaza Çalışma Saatleri (özet)':'ساعات عمل المتجر (مختصر)','Ödeme & IBAN':'الدفع وIBAN','Banka Adı':'اسم البنك','Hesap Sahibi':'صاحب الحساب','Ödeme Açıklaması':'وصف الدفع','Kargo & Gönderim':'الشحن والتوصيل','Kargo Bilgisi':'معلومات الشحن','Teslim Süresi':'مدة التسليم','Gönderim Ülkeleri':'دول الشحن','Tüm ülkeler':'جميع الدول','İletişim':'التواصل','Telefon':'الهاتف','WhatsApp siparişleri':'طلبات واتساب',
+      'TOPLAM MÜŞTERİ':'إجمالي العملاء','SİPARİŞ VEREN':'قاموا بالطلب','TOPLAM SİPARİŞ':'إجمالي الطلبات','FATURALI MÜŞTERİ':'عملاء لديهم فواتير','Yeni Müşteri':'عميل جديد','Yenile':'تحديث','MÜŞTERİ':'العميل','E-POSTA':'البريد الإلكتروني','TELEFON':'الهاتف','ŞEHİR / ÜLKE':'المدينة / الدولة','SİPARİŞ':'الطلب','SON HAREKET':'آخر نشاط','İŞLEM':'الإجراء','BEKLEYEN':'قيد الانتظار','TAMAMLANAN':'مكتمل','FATURALANAN':'تمت الفوترة','ÜRÜN':'المنتج','FİYAT':'السعر','TARİH':'التاريخ','DURUM':'الحالة','TOPLAM FATURA':'إجمالي الفواتير','ÖDENDİ':'مدفوع','TOPLAM TUTAR':'الإجمالي','Yeni Fatura':'فاتورة جديدة','FATURA NO':'رقم الفاتورة','TUTAR':'المبلغ','TOPLAM TAHSİLAT':'إجمالي المدفوعات','TAHSİLAT SAYISI':'عدد المدفوعات','BU AY':'هذا الشهر','BEKLEYEN FATURA':'فواتير مستحقة','Tahsilat Ekle':'إضافة دفعة','FATURA':'الفاتورة','YÖNTEM':'الطريقة','NOT':'ملاحظة',
+      'Hero Görseli':'صورة الواجهة','Yeni hero görseli seç':'اختر صورة واجهة جديدة','Değişiklikleri Kaydet':'حفظ التغييرات','SULTANZADE Müşteri Portalı':'بوابة عملاء SULTANZADE','Siparişlerinizi ve faturalarınızı tek hesabınızdan takip edin.':'تابع طلباتك وفواتيرك من حساب واحد.','Müşteri Girişi':'دخول العميل','Yeni Hesap':'حساب جديد','Ad Soyad':'الاسم الكامل','Müşteri Hesabı Oluştur':'إنشاء حساب عميل','Özet':'الملخص','Ödemeler':'المدفوعات','Notlar':'الملاحظات','Tahsilat Kaydı':'سجل دفعة','Müşteri':'العميل','Sipariş Detayı':'تفاصيل الطلب','Müşteri Bilgileri':'معلومات العميل','Sipariş No':'رقم الطلب','Ürün':'المنتج','Ölçü':'المقاس','Fiyat':'السعر','Siparişi Sil':'حذف الطلب','Fatura Oluştur':'إنشاء فاتورة','Durumu Kaydet':'حفظ الحالة','Yeni':'جديد','Bekliyor':'قيد الانتظار','Hazırlanıyor':'قيد التجهيز','Kargoya Verildi':'تم الشحن','Tamamlandı':'مكتمل','İptal Edildi':'ملغي','Malzeme':'المادة','Renk':'اللون','Üretim / Not':'الإنتاج / ملاحظة','En':'العرض','Boy':'الطول','Yükseklik':'الارتفاع','Ağırlık':'الوزن','Ölçü seçin':'اختر المقاس','Seçilen ölçü':'المقاس المحدد','Ürün Detayı':'تفاصيل المنتج','Kaydet ve Ekle':'حفظ وإضافة'
+    }
+  };
+
+  const TR_KEYS = new Set(Object.keys(D.en));
+  function canonicalFullKey(value){
+    const text=String(value||'').replace(/\s+/g,' ').trim();
+    if(!text) return text;
+    if(TR_KEYS.has(text)) return text;
+    for(const code of ['en','ru','ar']){
+      const dict=D[code]||{};
+      for(const key of TR_KEYS){
+        if(String(dict[key]||'').replace(/\s+/g,' ').trim()===text) return key;
+      }
+    }
+    return text;
+  }
+  function translateText(raw, lang){
+    const trimmed=String(raw||'').trim(); if(!trimmed) return raw;
+    const key=canonicalFullKey(trimmed);
+    if(!TR_KEYS.has(key)) return raw;
+    const v=lang==='tr' ? key : (D[lang]?.[key] || key);
+    return String(raw).replace(trimmed,v);
+  }
+  function apply(root=document){
+    const lang=window.currentLang || localStorage.getItem('sultanzade_lang') || 'tr';
+    const titles={tr:'SULTANZADE | Özel Koleksiyonlar, El İşçiliği ve Lüks Satranç Setleri',en:'SULTANZADE | Special Collections, Handcrafted Luxury Chess Sets',ru:'SULTANZADE | Особые коллекции и роскошные шахматные наборы ручной работы',ar:'SULTANZADE | مجموعات خاصة وأطقم شطرنج فاخرة مصنوعة يدوياً'}; document.title=titles[lang]||titles.tr;
+    const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+    let n; const nodes=[]; while(n=walker.nextNode()) nodes.push(n);
+    nodes.forEach(node=>{ if(node.parentElement && !['SCRIPT','STYLE','OPTION'].includes(node.parentElement.tagName)){ const x=translateText(node.nodeValue,lang); if(x!==node.nodeValue) node.nodeValue=x; }});
+    root.querySelectorAll?.('input[placeholder],textarea[placeholder]').forEach(el=>{
+      const current=el.getAttribute('placeholder')||'';
+      const key=canonicalFullKey(current);
+      if(TR_KEYS.has(key)) el.setAttribute('placeholder', lang==='tr' ? key : (D[lang]?.[key] || key));
+    });
+  }
+  window.applyFullI18n=()=>apply(document);
+  let applying=false;
+  const obs=new MutationObserver(()=>{
+    if(applying) return;
+    applying=true;
+    setTimeout(()=>{ try{ apply(document); } finally{ applying=false; } },0);
+  });
+  document.addEventListener('DOMContentLoaded',()=>{apply(document);obs.observe(document.body,{childList:true,subtree:true,characterData:true});});
+})();
+</script>
+
+
+<script>
+/* ===== SULTANZADE GUEST STORE + ROLE UI ===== */
+(function(){
+  const OWNER = String(window.OWNER_EMAIL || 'y.sultanzade07@gmail.com').toLowerCase();
+
+  async function getSessionUser(){
+    try{
+      const { data } = await supabaseClient.auth.getSession();
+      return data?.session?.user || null;
+    }catch(e){ return null; }
+  }
+
+  async function applyRoleUI(){
+    const user = await getSessionUser();
+    const isOwner = !!user && String(user.email || '').toLowerCase() === OWNER;
+    const managerItem = document.getElementById('ownerManagerAccessItem');
+    const logoutItem = document.getElementById('ownerLogoutItem');
+    const addButton = document.getElementById('ownerAddCategoryButton');
+    const profileName = document.getElementById('profileDisplayName');
+    const profileEmail = document.getElementById('profileDisplayEmail');
+
+    if(managerItem) managerItem.style.display = isOwner ? '' : 'none';
+    if(addButton) addButton.style.display = isOwner ? '' : 'none';
+    if(logoutItem) logoutItem.style.display = user ? '' : 'none';
+    if(profileName) profileName.textContent = isOwner ? 'SULTANZADE Firma Sahibi' : (user ? 'SULTANZADE Müşteri' : 'Misafir');
+    if(profileEmail) profileEmail.textContent = user?.email || 'Giriş yapmadan ürünleri inceleyebilirsiniz.';
+
+    return {user,isOwner};
+  }
+
+  const oldUpdate = window.updateOwnerControls;
+  window.updateOwnerControls = async function(){
+    try{ if(typeof oldUpdate === 'function') await oldUpdate(); }catch(e){}
+    return applyRoleUI();
+  };
+
+  window.openManagerAccess = async function(){
+    const role = await applyRoleUI();
+    if(!role.user){
+      window.location.href = './login.html?mode=manager';
+      return;
+    }
+    if(!role.isOwner){
+      alert('Bu bölüm yalnızca SULTANZADE yöneticisine açıktır.');
+      return;
+    }
+    await openManagerPanel();
+  };
+
+  window.managerLogout = async function(){
+    try{ await supabaseClient.auth.signOut(); }catch(e){}
+    try{ closeModal('managerPanelOverlay'); }catch(e){}
+    await applyRoleUI();
+  };
+
+  async function boot(){
+    const role = await applyRoleUI();
+    const params = new URLSearchParams(window.location.search);
+    const managerMode = params.get('panel') === 'manager' || sessionStorage.getItem('sultanzade_open_manager') === '1';
+    if(role.isOwner && managerMode){
+      sessionStorage.removeItem('sultanzade_open_manager');
+      setTimeout(async()=>{
+        try{ await openManagerPanel(); }
+        catch(e){ console.error('Yönetici paneli açılamadı', e); }
+      },250);
+      if(history.replaceState) history.replaceState({}, document.title, './index.html');
+    }
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+
+  try{
+    supabaseClient.auth.onAuthStateChange(()=>setTimeout(applyRoleUI,0));
+  }catch(e){}
+})();
+</script>
+
 </body>
 </html>
