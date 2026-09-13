@@ -223,6 +223,8 @@ body{
 html[dir="rtl"] .brand-side,html[dir="rtl"] .auth-side{text-align:right}
 html[dir="rtl"] .auth-top{flex-direction:row-reverse}
 </style>
+
+<style id="mobile-final-fix">@media(max-width:700px){html,body{max-width:100%;overflow-x:hidden}.shell,.card,.panel,main{max-width:100%!important;box-sizing:border-box}img{max-width:100%;height:auto}input,select,button{max-width:100%;box-sizing:border-box}}</style>
 </head>
 <body>
 <main class="auth-shell">
@@ -386,7 +388,8 @@ async function signIn(email,password,managerMode){
   }
 
   if(managerMode) sessionStorage.setItem('sultanzade_open_manager','1');
-  window.location.href=managerMode?'./index.html?panel=manager':'./index.html';
+  const wantsOrder=new URLSearchParams(window.location.search).get('return')==='order';
+  window.location.href=managerMode?'./index.html?panel=manager':(wantsOrder?'./index.html?resume=order':'./index.html');
 }
 
 $('customerForm').onsubmit=async e=>{
@@ -417,7 +420,7 @@ $('signupForm').onsubmit=async e=>{
     options:{data:{full_name:$('signupName').value.trim(),phone:$('signupPhone').value.trim(),role:'customer'}}
   });
   if(error){m.textContent=error.message;m.className='msg error';b.disabled=false;b.textContent=t.signupButton;return;}
-  if(data.session){window.location.href='./index.html';return;}
+  if(data.session){const wantsOrder=new URLSearchParams(window.location.search).get('return')==='order';window.location.href=wantsOrder?'./index.html?resume=order':'./index.html';return;}
   m.textContent=t.created;m.className='msg ok';b.disabled=false;b.textContent=t.signupButton;$('signupForm').reset();
   setTimeout(()=>setPanel('customer'),1400);
 };
