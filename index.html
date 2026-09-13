@@ -1229,6 +1229,70 @@ img, video { max-width: 100%; height: auto; }
 }
 </style>
 
+<style id="sultanzade-mobile-v2">
+/* 2026-09-13 phone-first accessibility patch. Desktop remains unchanged. */
+@media (max-width: 768px) {
+  html { width:100%; overflow-x:hidden; -webkit-text-size-adjust:100%; }
+  body { width:100%; min-width:0!important; overflow-x:hidden!important; }
+
+  header { min-height:64px!important; padding:10px 12px!important; display:flex!important; align-items:center!important; justify-content:space-between!important; gap:8px!important; flex-wrap:nowrap!important; }
+  .brand-logo { font-size:1.05rem!important; letter-spacing:3px!important; white-space:nowrap!important; max-width:42vw!important; overflow:hidden!important; text-overflow:ellipsis!important; }
+  .header-actions { display:flex!important; align-items:center!important; justify-content:flex-end!important; gap:6px!important; min-width:0!important; }
+  .header-actions .lang-select { min-height:42px!important; min-width:54px!important; padding:8px 10px!important; font-size:.82rem!important; }
+  .header-actions button.lang-select { max-width:92px!important; overflow:hidden!important; white-space:nowrap!important; }
+  .btn-profile-trigger { width:42px!important; height:42px!important; min-width:42px!important; }
+  .profile-dropdown { position:fixed!important; top:66px!important; right:10px!important; left:10px!important; width:auto!important; max-width:none!important; z-index:9999!important; }
+
+  .hero { height:auto!important; min-height:0!important; aspect-ratio:16/9!important; background-size:cover!important; background-position:center!important; }
+  .hero img, .hero-image, #brandHeroImage { width:100%!important; height:100%!important; object-fit:cover!important; }
+
+  .catalog-container { width:100%!important; padding:18px 12px 42px!important; margin:0!important; }
+  .section-header { margin:0 0 14px!important; padding:0 2px 10px!important; }
+  .section-title { font-size:1.75rem!important; line-height:1.1!important; }
+  .products-grid, #productsGrid { display:grid!important; grid-template-columns:minmax(0,1fr)!important; gap:18px!important; width:100%!important; }
+  .product-card { width:100%!important; min-width:0!important; margin:0!important; overflow:hidden!important; border-radius:14px!important; }
+  .gallery-container { width:100%!important; height:auto!important; aspect-ratio:4/3!important; }
+  .gallery-container img, .product-card img { width:100%!important; height:100%!important; object-fit:cover!important; }
+  .product-info { padding:14px 14px 16px!important; }
+  .product-title { font-size:1.25rem!important; line-height:1.2!important; }
+  .product-description { font-size:.95rem!important; line-height:1.55!important; }
+  .btn-open-modal, .btn-submit, .btn-whatsapp, .size-option, .crm-action, .manager-nav button, .manager-close { min-height:46px!important; font-size:15px!important; touch-action:manipulation!important; }
+  .btn-open-modal, .btn-submit, .btn-whatsapp { width:100%!important; display:flex!important; align-items:center!important; justify-content:center!important; }
+
+  .modal-overlay, .crm-order-detail-overlay { padding:0!important; align-items:flex-start!important; overflow-y:auto!important; }
+  .modal-card, .modal-content, .detail-modal, .order-modal, .crm-order-detail-card { width:100%!important; max-width:100%!important; min-width:0!important; max-height:none!important; min-height:100dvh!important; margin:0!important; border-radius:0!important; overflow:visible!important; }
+  .detail-layout, .product-detail-grid, .order-grid, .form-grid, .settings-grid, .crm-form-grid, .crm-detail-grid { grid-template-columns:1fr!important; }
+  .detail-gallery { width:100%!important; height:auto!important; min-height:260px!important; }
+  .detail-info, .crm-order-detail-body { padding:16px!important; }
+  .size-options, #detailSizeOptions, .size-form-grid, .dimension-grid, .spec-list { grid-template-columns:1fr!important; }
+  input, select, textarea { width:100%!important; min-height:46px!important; font-size:16px!important; }
+  textarea { min-height:110px!important; }
+
+  /* Manager: never hide navigation on phones. Make it a reachable horizontal toolbar. */
+  .manager-overlay { padding:0!important; overflow:auto!important; }
+  .manager-shell { width:100%!important; height:auto!important; min-height:100dvh!important; max-height:none!important; display:block!important; border-radius:0!important; overflow:visible!important; }
+  .manager-sidebar { display:block!important; width:100%!important; position:sticky!important; top:0!important; z-index:50!important; padding:10px!important; background:#310b13!important; overflow:visible!important; }
+  .manager-sidebar .manager-brand, .manager-sidebar .manager-owner-note { display:none!important; }
+  .manager-nav { display:flex!important; flex-direction:row!important; gap:8px!important; overflow-x:auto!important; overflow-y:hidden!important; padding:2px 0 8px!important; -webkit-overflow-scrolling:touch!important; scrollbar-width:thin!important; }
+  .manager-nav button, .manager-nav .manager-nav-item { flex:0 0 auto!important; width:auto!important; min-width:max-content!important; padding:10px 14px!important; white-space:nowrap!important; }
+  .manager-sidebar .manager-logout, .manager-sidebar [onclick*="logout"], .manager-sidebar [onclick*="Logout"] { width:100%!important; min-height:44px!important; margin-top:4px!important; }
+  .manager-main { width:100%!important; min-width:0!important; padding:14px!important; overflow:visible!important; }
+  .manager-stats, .crm-kpis, .account-grid, .account-auth-grid { grid-template-columns:1fr!important; }
+  .manager-footer-actions { position:sticky!important; bottom:0!important; z-index:30!important; padding:10px!important; background:rgba(49,11,19,.96)!important; }
+
+  .table-wrap, .crm-table-wrap { width:100%!important; overflow-x:auto!important; -webkit-overflow-scrolling:touch!important; }
+  table { min-width:620px!important; }
+
+  footer { padding:28px 14px 20px!important; margin-top:28px!important; }
+  .contact-section { grid-template-columns:1fr!important; gap:18px!important; padding:24px 14px 0!important; }
+}
+@media (max-width: 380px) {
+  .brand-logo { font-size:.92rem!important; letter-spacing:2px!important; max-width:38vw!important; }
+  .header-actions button.lang-select span { display:none!important; }
+  .header-actions button.lang-select { min-width:42px!important; width:42px!important; padding:8px!important; }
+  .catalog-container { padding-left:10px!important; padding-right:10px!important; }
+}
+</style>
 </head>
 <body>
 
