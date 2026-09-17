@@ -13,11 +13,11 @@
     <meta property="og:title" content="SULTANZADE | Özel Koleksiyonlar" />
     <meta property="og:description" content="SULTANZADE özel koleksiyonları ve el işçiliği ürünler." />
     <meta property="og:url" content="https://sultanzade.vercel.app/" />
-    <meta property="og:image" content="https://sultanzade.vercel.app/sultanzade-hero-original.jpeg" />
+    <meta property="og:image" content="https://www.sultanzadomozaik.com/sultanzade-chess-1.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="SULTANZADE | Özel Koleksiyonlar" />
     <meta name="twitter:description" content="SULTANZADE özel koleksiyonları ve el işçiliği ürünler." />
-    <meta name="twitter:image" content="https://sultanzade.vercel.app/sultanzade-hero-original.jpeg" />
+    <meta name="twitter:image" content="https://www.sultanzadomozaik.com/sultanzade-chess-1.png" />
     <script type="application/ld+json">
     {
       "@context":"https://schema.org",
@@ -25,7 +25,7 @@
       "name":"SULTANZADE",
       "url":"https://sultanzade.vercel.app/",
       "description":"SULTANZADE özel koleksiyonları, el işçiliği satranç setleri ve lüks ürünler.",
-      "image":"https://sultanzade.vercel.app/sultanzade-hero-original.jpeg",
+      "image":"https://www.sultanzadomozaik.com/sultanzade-chess-1.png",
       "sameAs":["https://www.instagram.com/sultanzade_satranc_imalathanesi/"]
     }
     </script>
@@ -1442,9 +1442,8 @@ img, video { max-width: 100%; height: auto; }
 
     <section class="hero hero-slider" id="brandHero" aria-label="SULTANZADE">
         <div class="hero-slides" aria-live="off">
-            <img id="brandHeroImage" class="hero-image hero-slide active" src="sultanzade-hero-original.jpeg" alt="SULTANZADE" decoding="async">
-            <img class="hero-image hero-slide" src="sultanzade-chess-1.png" alt="SULTANZADE satranç koleksiyonu" loading="eager" decoding="async">
-            <img class="hero-image hero-slide" src="sultanzade-chess-2.png" alt="SULTANZADE satranç tasarımı" loading="lazy" decoding="async">
+            <img id="brandHeroImage" class="hero-image hero-slide active" src="sultanzade-chess-1.png" alt="SULTANZADE satranç koleksiyonu" decoding="async" onerror="this.onerror=null;this.src='sultanzade-chess-1.png'">
+            <img class="hero-image hero-slide" src="sultanzade-chess-2.png" alt="SULTANZADE satranç tasarımı" loading="eager" decoding="async">
             <img class="hero-image hero-slide" src="sultanzade-chess-3.png" alt="SULTANZADE satranç seçkisi" loading="lazy" decoding="async">
         </div>
         <button class="hero-arrow hero-prev" type="button" aria-label="Önceki görsel">‹</button>
@@ -1453,7 +1452,6 @@ img, video { max-width: 100%; height: auto; }
             <button class="hero-dot active" type="button" aria-label="1. görsel"></button>
             <button class="hero-dot" type="button" aria-label="2. görsel"></button>
             <button class="hero-dot" type="button" aria-label="3. görsel"></button>
-            <button class="hero-dot" type="button" aria-label="4. görsel"></button>
         </div>
     </section>
 
@@ -3037,7 +3035,7 @@ Pazar: Kapalı"></textarea></div>
             if (!image) return;
             const managed = await localGetSetting('brandHeroManaged');
             const url = managed ? await localGetSetting('brandHero') : null;
-            image.src = url || 'sultanzade-hero-original.jpeg';
+            image.src = url || 'sultanzade-chess-1.png';
         }
 
         function normalizeRemoteRow(row) {
