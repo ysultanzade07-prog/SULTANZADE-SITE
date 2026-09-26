@@ -4134,7 +4134,7 @@ async function deleteCRMPayment(id){
     const profileEmail = document.getElementById('profileDisplayEmail');
 
     if(managerItem) managerItem.style.display = ''; // Yönetici girişi misafir dahil herkese görünür; yetki girişte doğrulanır.
-    if(addButton) addButton.style.display = isOwner ? '' : 'none';
+    if(addButton) addButton.style.setProperty('display', isOwner ? 'flex' : 'none', 'important');
     if(logoutItem) logoutItem.style.display = user ? '' : 'none';
     if(profileName) profileName.textContent = isOwner ? 'SULTANZADE Firma Sahibi' : (user ? 'SULTANZADE Müşteri' : 'Misafir');
     if(profileEmail) profileEmail.textContent = user?.email || 'Giriş yapmadan ürünleri inceleyebilirsiniz.';
