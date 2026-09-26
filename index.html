@@ -1409,6 +1409,52 @@ img, video { max-width: 100%; height: auto; }
   .header-contact-btn span{display:none!important;}
 }
 </style>
+
+<style id="sultanzade-desktop-responsive-fix">
+/* Orta boy masaüstü/pencere görünümü: görsellerin aşırı büyümesini engeller. */
+@media (min-width: 769px) and (max-width: 1180px) {
+  .hero-slider {
+    aspect-ratio: 16 / 7.4 !important;
+    max-height: 520px !important;
+  }
+  .catalog-container {
+    width: min(1040px, 94%) !important;
+    padding-top: 1.8rem !important;
+  }
+  .products-grid, #productsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 1.15rem !important;
+  }
+  .gallery-container {
+    height: auto !important;
+    aspect-ratio: 4 / 3 !important;
+  }
+  .gallery-container img, .product-card img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+}
+
+@media (min-width: 1181px) {
+  .hero-slider {
+    aspect-ratio: 16 / 6.2 !important;
+    max-height: 600px !important;
+  }
+  .products-grid, #productsGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+  .gallery-container {
+    height: auto !important;
+    aspect-ratio: 4 / 3 !important;
+  }
+  .gallery-container img, .product-card img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+}
+</style>
 </head>
 <body>
 
