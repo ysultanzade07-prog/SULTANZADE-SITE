@@ -1399,13 +1399,23 @@ img, video { max-width: 100%; height: auto; }
  .hero-slider .hero-slide{object-fit:cover!important}
 }
 </style>
+
+<style id="sultanzade-header-contact-fix">
+/* Header iletişim bağlantısını telefon ve masaüstünde okunaklı tutar. */
+.header-contact-btn{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;white-space:nowrap!important;min-width:max-content!important;width:auto!important;padding:7px 12px!important;}
+.header-contact-btn i{flex:0 0 auto!important;}
+@media(max-width:768px){
+  .header-contact-btn{width:42px!important;min-width:42px!important;height:42px!important;padding:0!important;border-radius:50%!important;}
+  .header-contact-btn span{display:none!important;}
+}
+</style>
 </head>
 <body>
 
     <header>
         <a href="#" class="brand-logo">SULTANZADE</a>
         <div class="header-actions">
-            <button class="lang-select" style="border:none;" onclick="document.getElementById('contact-footer').scrollIntoView({behavior: 'smooth'})">
+            <button class="lang-select header-contact-btn" style="border:none;" onclick="document.getElementById('contact-footer').scrollIntoView({behavior: 'smooth'})" aria-label="İletişim">
                 <i class="fa-solid fa-location-dot"></i> <span id="i18n-nav-contact">İletişim</span>
             </button>
             
@@ -4123,7 +4133,7 @@ async function deleteCRMPayment(id){
     const profileName = document.getElementById('profileDisplayName');
     const profileEmail = document.getElementById('profileDisplayEmail');
 
-    if(managerItem) managerItem.style.display = isOwner ? '' : 'none';
+    if(managerItem) managerItem.style.display = ''; // Yönetici girişi misafir dahil herkese görünür; yetki girişte doğrulanır.
     if(addButton) addButton.style.display = isOwner ? '' : 'none';
     if(logoutItem) logoutItem.style.display = user ? '' : 'none';
     if(profileName) profileName.textContent = isOwner ? 'SULTANZADE Firma Sahibi' : (user ? 'SULTANZADE Müşteri' : 'Misafir');
