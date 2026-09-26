@@ -1440,6 +1440,14 @@ img, video { max-width: 100%; height: auto; }
   .product-title { font-size:.86rem !important; }
 }
 </style>
+
+<style id="owner-product-edit-styles">
+.owner-product-actions{display:none;gap:8px;margin-top:10px;flex-wrap:wrap}
+body.sultanzade-owner .owner-product-actions{display:flex}
+.owner-product-actions button{border:1px solid #c99b43;background:#3a2419;color:#fff;padding:8px 12px;border-radius:999px;cursor:pointer;font:inherit;font-size:12px;font-weight:700}
+.owner-product-actions .owner-delete-product{border-color:#9d4b4b;background:#5a1f25}
+@media(max-width:700px){.owner-product-actions{gap:5px}.owner-product-actions button{font-size:10px;padding:7px 9px}}
+</style>
 </head>
 <body>
 
@@ -2253,6 +2261,7 @@ Pazar: Kapalı"></textarea></div>
 
         let categories = [];
         let currentUploadedImages = [];
+        let currentEditingProductId = null;
         let currentLang = localStorage.getItem('sultanzade_lang') || 'tr';
         let activeDetailImages = [];
         let currentDetailImgIndex = 0;
@@ -3299,7 +3308,12 @@ Pazar: Kapalı"></textarea></div>
                 alert('Yönetici yetkisi doğrulanamadı.');
                 return;
             }
+            currentEditingProductId = null;
             document.getElementById('addModalOverlay').classList.add('active');
+            const modalTitle = document.getElementById('i18n-modal-title');
+            if (modalTitle) modalTitle.textContent = 'Yeni Kategori Ekle';
+            const submit = document.querySelector('#addCategoryForm .btn-submit');
+            if (submit) submit.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Kaydet ve Ekle';
             currentUploadedImages = [];
             document.getElementById('previewThumbs').innerHTML = '';
             document.getElementById('addCategoryForm').reset();
@@ -3490,46 +3504,50 @@ Pazar: Kapalı"></textarea></div>
                 };
                 const price = sizes[0].price;
                 const badge = document.getElementById('pBadge').value.trim() || translations[currentLang].defaultBadge;
-                const localProduct = {
-                    id: `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-                    title, price, badge, desc, images: localImages, details, sizes,
-                    translations: translationsData, synced: false
-                };
-
-                // KESİN KAYIT: önce tarayıcıya kaydet, sonra uzak sunucuya göndermeyi dene.
-                await localPutProduct(localProduct);
-                categories.unshift(localProduct);
-                renderCategories();
-
-                try {
-                    const remoteImages = [];
-                    for (const item of currentUploadedImages) {
-                        if (item.file) remoteImages.push(await uploadFileToSupabase(item.file));
-                        else if (item.url) remoteImages.push(item.url);
-                    }
-                    const { data, error } = await supabaseClient.from('categories').insert({
-                        title, price, badge, desc,
-                        images: { urls: remoteImages, details, sizes, translations: translationsData }
-                    }).select().single();
-                    if (!error && data) {
-                        const synced = normalizeRemoteRow(data);
-                        await localDeleteProduct(localProduct.id);
-                        await localPutProduct(synced);
-                        const idx = categories.findIndex(c => c.id === localProduct.id);
-                        if (idx >= 0) categories[idx] = synced;
-                        renderCategories();
-                    } else if (error) {
-                        console.warn('Supabase kayıt başarısız; ürün yerelde kaldı:', error.message);
-                    }
-                } catch (remoteError) {
-                    console.warn('Supabase erişilemedi; ürün yerelde kaldı:', remoteError);
+                const remoteImages = [];
+                for (const item of currentUploadedImages) {
+                    if (item.file) remoteImages.push(await uploadFileToSupabase(item.file));
+                    else if (item.url) remoteImages.push(item.url);
                 }
 
-                closeModal('addModalOverlay');
-                event.target.reset();
-                currentUploadedImages = [];
-                document.getElementById('previewThumbs').innerHTML = '';
-                alert('Ürün başarıyla online kaydedildi. Fotoğraflar ve 3 ölçü/fiyat seçeneği artık internet üzerinde saklanıyor.');
+                if (currentEditingProductId !== null) {
+                    if (!(await requireOwnerForProductChange())) throw new Error('Yönetici yetkisi doğrulanamadı.');
+                    const existing = categories.find(c => String(c.id) === String(currentEditingProductId));
+                    if (!existing) throw new Error('Düzenlenecek ürün bulunamadı.');
+                    const payload = { title, price, badge, desc, images: { urls: remoteImages, details, sizes, translations: translationsData } };
+                    let updated;
+                    if (existing.synced && !String(existing.id).startsWith('local-')) {
+                        const { data, error } = await supabaseClient.from('categories').update(payload).eq('id', existing.id).select().single();
+                        if (error) throw error;
+                        updated = normalizeRemoteRow(data);
+                    } else {
+                        updated = { ...existing, title, price, badge, desc, images: remoteImages, details, sizes, translations: translationsData };
+                    }
+                    await localDeleteProduct(existing.id);
+                    await localPutProduct(updated);
+                    const idx = categories.findIndex(c => String(c.id) === String(existing.id));
+                    if (idx >= 0) categories[idx] = updated;
+                    currentEditingProductId = null;
+                    renderCategories();
+                    closeModal('addModalOverlay'); event.target.reset(); currentUploadedImages=[]; document.getElementById('previewThumbs').innerHTML='';
+                    alert('Ürün değişiklikleri kaydedildi.');
+                } else {
+                    const localProduct = {
+                        id: `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+                        title, price, badge, desc, images: localImages, details, sizes,
+                        translations: translationsData, synced: false
+                    };
+                    await localPutProduct(localProduct); categories.unshift(localProduct); renderCategories();
+                    try {
+                        const { data, error } = await supabaseClient.from('categories').insert({ title, price, badge, desc, images: { urls: remoteImages, details, sizes, translations: translationsData } }).select().single();
+                        if (!error && data) {
+                            const synced = normalizeRemoteRow(data); await localDeleteProduct(localProduct.id); await localPutProduct(synced);
+                            const idx = categories.findIndex(c => c.id === localProduct.id); if (idx >= 0) categories[idx] = synced; renderCategories();
+                        } else if (error) console.warn('Supabase kayıt başarısız; ürün yerelde kaldı:', error.message);
+                    } catch (remoteError) { console.warn('Supabase erişilemedi; ürün yerelde kaldı:', remoteError); }
+                    closeModal('addModalOverlay'); event.target.reset(); currentUploadedImages=[]; document.getElementById('previewThumbs').innerHTML='';
+                    alert('Ürün başarıyla online kaydedildi.');
+                }
             } catch (error) {
                 console.error('Kaydetme hatası:', error);
                 alert('Kayıt sırasında hata oluştu: ' + (error.message || 'Bilinmeyen hata'));
@@ -3567,9 +3585,63 @@ Pazar: Kapalı"></textarea></div>
                             <h3 class="product-title serif-font">${escapeHTML(text.title || '')}</h3>
                             <p class="product-description">${escapeHTML(text.desc || '')}</p>
                             <div class="product-open-label"><span>${Array.isArray(cat.sizes) && cat.sizes.length > 1 ? `${cat.sizes.length} Ölçü Seçeneği` : 'Ürün Detayı'}</span><i class="fa-solid fa-arrow-right"></i></div>
+                            <div class="owner-product-actions" onclick="event.stopPropagation()">
+                                <button type="button" onclick="openEditProduct('${escapeHTML(String(cat.id))}')"><i class="fa-solid fa-pen"></i> Düzenle</button>
+                                <button type="button" class="owner-delete-product" onclick="deleteProduct('${escapeHTML(String(cat.id))}')"><i class="fa-solid fa-trash"></i> Sil</button>
+                            </div>
                         </div>
                     </article>`;
             });
+        }
+
+        async function requireOwnerForProductChange() {
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                return !!user && String(user.email || '').trim().toLowerCase() === OWNER_EMAIL.toLowerCase();
+            } catch (e) { return false; }
+        }
+
+        function setFieldValue(id, value) {
+            const el = document.getElementById(id);
+            if (el) el.value = value ?? '';
+        }
+
+        async function openEditProduct(id) {
+            if (!(await requireOwnerForProductChange())) { alert('Ürün düzenlemek için mağaza sahibi olarak giriş yapmalısınız.'); return; }
+            const cat = categories.find(c => String(c.id) === String(id));
+            if (!cat) return;
+            currentEditingProductId = cat.id;
+            const tr = cat.translations || {};
+            const trTR = tr.tr || {};
+            setFieldValue('pTitleTr', trTR.title || cat.title || ''); setFieldValue('pDescTr', trTR.desc || cat.desc || '');
+            setFieldValue('pTitleEn', tr.en?.title || ''); setFieldValue('pDescEn', tr.en?.desc || '');
+            setFieldValue('pTitleRu', tr.ru?.title || ''); setFieldValue('pDescRu', tr.ru?.desc || '');
+            setFieldValue('pTitleAr', tr.ar?.title || ''); setFieldValue('pDescAr', tr.ar?.desc || '');
+            setFieldValue('pBadge', cat.badge || '');
+            setFieldValue('pMaterial', trTR.material || cat.details?.material || ''); setFieldValue('pColor', trTR.color || cat.details?.color || ''); setFieldValue('pProduction', trTR.production || cat.details?.production || '');
+            for (const lang of ['En','Ru','Ar']) {
+                const key=lang.toLowerCase(); setFieldValue('pMaterial'+lang,tr[key]?.material||''); setFieldValue('pColor'+lang,tr[key]?.color||''); setFieldValue('pProduction'+lang,tr[key]?.production||'');
+            }
+            const sizes = legacySizesFromDetails(cat);
+            for (let i=1;i<=3;i++) {
+                const z=sizes[i-1]||{};
+                setFieldValue(`pSize${i}Name`, z.name||trTR.sizeNames?.[i-1]||''); setFieldValue(`pSize${i}Price`,z.price||''); setFieldValue(`pSize${i}Width`,z.width||''); setFieldValue(`pSize${i}Length`,z.length||''); setFieldValue(`pSize${i}Height`,z.height||''); setFieldValue(`pSize${i}Weight`,z.weight||'');
+                for (const [lang,suffix] of [['en','En'],['ru','Ru'],['ar','Ar']]) setFieldValue(`pSize${i}Name${suffix}`,tr[lang]?.sizeNames?.[i-1]||'');
+            }
+            currentUploadedImages=(cat.images||[]).map(url=>({url,previewUrl:url})); renderPreviewThumbs();
+            const title=document.getElementById('i18n-modal-title'); if(title) title.textContent='Ürünü Düzenle';
+            const submit=document.querySelector('#addCategoryForm .btn-submit'); if(submit) submit.innerHTML='<i class="fa-solid fa-floppy-disk"></i> Değişiklikleri Kaydet';
+            document.getElementById('addModalOverlay').classList.add('active'); showProductLanguage('tr');
+        }
+
+        async function deleteProduct(id) {
+            if (!(await requireOwnerForProductChange())) { alert('Ürün silmek için mağaza sahibi olarak giriş yapmalısınız.'); return; }
+            const cat=categories.find(c=>String(c.id)===String(id)); if(!cat) return;
+            if(!confirm(`“${cat.title||'Bu ürün'}” kalıcı olarak silinsin mi?`)) return;
+            try {
+                if(cat.synced && !String(cat.id).startsWith('local-')) { const {error}=await supabaseClient.from('categories').delete().eq('id',cat.id); if(error) throw error; }
+                await localDeleteProduct(cat.id); categories=categories.filter(c=>String(c.id)!==String(cat.id)); renderCategories(); alert('Ürün silindi.');
+            } catch(e) { alert('Ürün silinemedi: '+(e.message||e)); }
         }
 
         function openDetailModal(id) {
@@ -4158,6 +4230,7 @@ async function deleteCRMPayment(id){
   async function applyRoleUI(){
     const user = await getSessionUser();
     const isOwner = !!user && String(user.email || '').toLowerCase() === OWNER;
+    document.body.classList.toggle('sultanzade-owner', isOwner);
     const managerItem = document.getElementById('ownerManagerAccessItem');
     const logoutItem = document.getElementById('ownerLogoutItem');
     const addButton = document.getElementById('ownerAddCategoryButton');
