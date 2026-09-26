@@ -1455,6 +1455,35 @@ img, video { max-width: 100%; height: auto; }
   }
 }
 </style>
+
+<style id="sultanzade-final-catalog-responsive-v2">
+/* Final katalog ölçekleri: masaüstü 3, orta ekran 2, telefon 2 kart. */
+@media (min-width: 1181px) {
+  .products-grid, #productsGrid { grid-template-columns: repeat(3,minmax(0,1fr)) !important; gap: 1.35rem !important; }
+  .gallery-container { height:auto !important; aspect-ratio: 4 / 3 !important; }
+}
+@media (min-width: 769px) and (max-width: 1180px) {
+  .products-grid, #productsGrid { grid-template-columns: repeat(2,minmax(0,1fr)) !important; gap: 16px !important; }
+  .gallery-container { height:auto !important; aspect-ratio: 4 / 3 !important; max-height: 330px !important; }
+}
+@media (max-width: 768px) {
+  .catalog-container { width: 96% !important; padding-left: 0 !important; padding-right: 0 !important; }
+  .products-grid, #productsGrid { grid-template-columns: repeat(2,minmax(0,1fr)) !important; gap: 10px !important; align-items:start !important; }
+  .product-card { width:100% !important; min-width:0 !important; border-radius:12px !important; }
+  .gallery-container { width:100% !important; height:auto !important; aspect-ratio: 4 / 5 !important; max-height:none !important; }
+  .gallery-container img, .product-card .gallery-container img { width:100% !important; height:100% !important; object-fit:cover !important; }
+  .product-info { padding:10px 9px 12px !important; }
+  .product-title { font-size: .93rem !important; line-height:1.15 !important; margin:.2rem 0 .3rem !important; }
+  .product-description { font-size:.76rem !important; line-height:1.35 !important; }
+  .product-price, .product-badge { font-size:.72rem !important; }
+  .detail-link { font-size:.72rem !important; }
+}
+@media (max-width: 390px) {
+  .products-grid, #productsGrid { gap:8px !important; }
+  .product-info { padding:8px 7px 10px !important; }
+  .product-title { font-size:.86rem !important; }
+}
+</style>
 </head>
 <body>
 
