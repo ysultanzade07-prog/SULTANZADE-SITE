@@ -1586,13 +1586,14 @@ body.sultanzade-owner .owner-product-actions{display:flex}
 
                     <div class="form-group"><label id="i18n-lbl-badge">Koleksiyon Serisi / Etiket</label><input type="text" id="pBadge" class="form-control" placeholder="Örn: 2026 Özel Seri"></div>
 
-                    <div class="form-section-title serif-font">3 Farklı Ölçü / Fiyat Seçeneği</div>
-                    <div class="form-section-subtitle">Müşteri ürüne girdiğinde bu 3 seçenekten birini seçer; seçilen ölçünün fiyatı otomatik değişir.</div>
-                    <div class="size-form-grid">
+                    <div class="form-section-title serif-font">Ölçü / Fiyat Seçenekleri</div>
+                    <div class="form-section-subtitle">Bu ürün için kaç farklı ölçü satılacağını sen belirle. Yalnızca seçtiğin kadar ölçü müşteriye gösterilir.</div>
+                    <div class="form-group full-width" style="max-width:260px"><label>Kaç ölçü seçeneği var?</label><select id="pSizeCount" class="form-control" onchange="updateSizeCount()"><option value="1">1 ölçü</option><option value="2">2 ölçü</option><option value="3" selected>3 ölçü</option></select></div>
+                    <div class="size-form-grid" id="sizeFormGrid">
                         <div class="size-form-card">
                             <h4>1. Ölçü</h4>
-                            <div class="form-group"><label>Seçenek adı *</label><input type="text" id="pSize1Name" class="form-control" placeholder="Örn: Küçük" required></div>
-                            <div class="form-group"><label>Fiyat *</label><input type="text" id="pSize1Price" class="form-control" placeholder="Örn: 12.500 ₺" required></div>
+                            <div class="form-group"><label>Seçenek adı *</label><input type="text" id="pSize1Name" class="form-control" placeholder="Örn: Küçük"></div>
+                            <div class="form-group"><label>Fiyat *</label><input type="text" id="pSize1Price" class="form-control" placeholder="Örn: 12.500 ₺"></div>
                             <div class="form-group"><label>En</label><input type="text" id="pSize1Width" class="form-control" placeholder="35 cm"></div>
                             <div class="form-group"><label>Boy</label><input type="text" id="pSize1Length" class="form-control" placeholder="50 cm"></div>
                             <div class="form-group"><label>Yükseklik</label><input type="text" id="pSize1Height" class="form-control" placeholder="12 cm"></div>
@@ -1600,8 +1601,8 @@ body.sultanzade-owner .owner-product-actions{display:flex}
                         </div>
                         <div class="size-form-card">
                             <h4>2. Ölçü</h4>
-                            <div class="form-group"><label>Seçenek adı *</label><input type="text" id="pSize2Name" class="form-control" placeholder="Örn: Orta" required></div>
-                            <div class="form-group"><label>Fiyat *</label><input type="text" id="pSize2Price" class="form-control" placeholder="Örn: 15.500 ₺" required></div>
+                            <div class="form-group"><label>Seçenek adı *</label><input type="text" id="pSize2Name" class="form-control" placeholder="Örn: Orta"></div>
+                            <div class="form-group"><label>Fiyat *</label><input type="text" id="pSize2Price" class="form-control" placeholder="Örn: 15.500 ₺"></div>
                             <div class="form-group"><label>En</label><input type="text" id="pSize2Width" class="form-control" placeholder="40 cm"></div>
                             <div class="form-group"><label>Boy</label><input type="text" id="pSize2Length" class="form-control" placeholder="60 cm"></div>
                             <div class="form-group"><label>Yükseklik</label><input type="text" id="pSize2Height" class="form-control" placeholder="14 cm"></div>
@@ -1609,8 +1610,8 @@ body.sultanzade-owner .owner-product-actions{display:flex}
                         </div>
                         <div class="size-form-card">
                             <h4>3. Ölçü</h4>
-                            <div class="form-group"><label>Seçenek adı *</label><input type="text" id="pSize3Name" class="form-control" placeholder="Örn: Büyük" required></div>
-                            <div class="form-group"><label>Fiyat *</label><input type="text" id="pSize3Price" class="form-control" placeholder="Örn: 19.500 ₺" required></div>
+                            <div class="form-group"><label>Seçenek adı *</label><input type="text" id="pSize3Name" class="form-control" placeholder="Örn: Büyük"></div>
+                            <div class="form-group"><label>Fiyat *</label><input type="text" id="pSize3Price" class="form-control" placeholder="Örn: 19.500 ₺"></div>
                             <div class="form-group"><label>En</label><input type="text" id="pSize3Width" class="form-control" placeholder="45 cm"></div>
                             <div class="form-group"><label>Boy</label><input type="text" id="pSize3Length" class="form-control" placeholder="70 cm"></div>
                             <div class="form-group"><label>Yükseklik</label><input type="text" id="pSize3Height" class="form-control" placeholder="16 cm"></div>
@@ -3454,6 +3455,13 @@ Pazar: Kapalı"></textarea></div>
             }
         }
 
+        function updateSizeCount() {
+            const count = Math.max(1, Math.min(3, Number(document.getElementById('pSizeCount')?.value || 1)));
+            document.querySelectorAll('#sizeFormGrid .size-form-card').forEach((card, idx) => { card.style.display = idx < count ? '' : 'none'; });
+        }
+
+        function getActiveSizeCount() { return Math.max(1, Math.min(3, Number(document.getElementById('pSizeCount')?.value || 1))); }
+
         async function handleFormSubmit(event) {
             event.preventDefault();
             if (currentUploadedImages.length === 0) { alert('Lütfen en az bir görsel ekleyin!'); return; }
@@ -3476,16 +3484,16 @@ Pazar: Kapalı"></textarea></div>
                         material: document.getElementById('pMaterial').value.trim(),
                         color: document.getElementById('pColor').value.trim(),
                         production: document.getElementById('pProduction').value.trim(),
-                        sizeNames: [1,2,3].map(i => document.getElementById(`pSize${i}Name`).value.trim()) },
+                        sizeNames: Array.from({length:getActiveSizeCount()},(_,k) => document.getElementById(`pSize${k+1}Name`).value.trim()) },
                     en: { title: document.getElementById('pTitleEn').value.trim(), desc: document.getElementById('pDescEn').value.trim(),
                         material: document.getElementById('pMaterialEn')?.value.trim() || '', color: document.getElementById('pColorEn')?.value.trim() || '', production: document.getElementById('pProductionEn')?.value.trim() || '',
-                        sizeNames: [1,2,3].map(i => document.getElementById(`pSize${i}NameEn`)?.value.trim() || '') },
+                        sizeNames: Array.from({length:getActiveSizeCount()},(_,k) => document.getElementById(`pSize${k+1}NameEn`)?.value.trim() || '') },
                     ru: { title: document.getElementById('pTitleRu').value.trim(), desc: document.getElementById('pDescRu').value.trim(),
                         material: document.getElementById('pMaterialRu')?.value.trim() || '', color: document.getElementById('pColorRu')?.value.trim() || '', production: document.getElementById('pProductionRu')?.value.trim() || '',
-                        sizeNames: [1,2,3].map(i => document.getElementById(`pSize${i}NameRu`)?.value.trim() || '') },
+                        sizeNames: Array.from({length:getActiveSizeCount()},(_,k) => document.getElementById(`pSize${k+1}NameRu`)?.value.trim() || '') },
                     ar: { title: document.getElementById('pTitleAr').value.trim(), desc: document.getElementById('pDescAr').value.trim(),
                         material: document.getElementById('pMaterialAr')?.value.trim() || '', color: document.getElementById('pColorAr')?.value.trim() || '', production: document.getElementById('pProductionAr')?.value.trim() || '',
-                        sizeNames: [1,2,3].map(i => document.getElementById(`pSize${i}NameAr`)?.value.trim() || '') }
+                        sizeNames: Array.from({length:getActiveSizeCount()},(_,k) => document.getElementById(`pSize${k+1}NameAr`)?.value.trim() || '') }
                 };
                 ['en','ru','ar'].forEach(lang => {
                     if (!translationsData[lang].title) translationsData[lang].title = title;
@@ -3495,8 +3503,9 @@ Pazar: Kapalı"></textarea></div>
                     if (!translationsData[lang].production) translationsData[lang].production = translationsData.tr.production;
                     translationsData[lang].sizeNames = translationsData[lang].sizeNames.map((x,i)=>x || translationsData.tr.sizeNames[i] || '');
                 });
-                const sizes = [1,2,3].map(readSizeOption);
-                if (sizes.some(s => !s.name || !s.price)) throw new Error('Lütfen 3 ölçü seçeneğinin adını ve fiyatını doldurun.');
+                const sizeCount = getActiveSizeCount();
+                const sizes = Array.from({length:sizeCount},(_,k)=>readSizeOption(k+1));
+                if (sizes.some(s => !s.name || !s.price)) throw new Error(`Lütfen seçtiğiniz ${sizeCount} ölçünün adını ve fiyatını doldurun.`);
                 const details = {
                     material: document.getElementById('pMaterial').value.trim(),
                     color: document.getElementById('pColor').value.trim(),
@@ -3584,7 +3593,7 @@ Pazar: Kapalı"></textarea></div>
                             <div class="product-header-row"><span class="product-badge">${escapeHTML(cat.badge || 'Özel Seri')}</span><span class="product-price">${escapeHTML(cardPrice)}</span></div>
                             <h3 class="product-title serif-font">${escapeHTML(text.title || '')}</h3>
                             <p class="product-description">${escapeHTML(text.desc || '')}</p>
-                            <div class="product-open-label"><span>${Array.isArray(cat.sizes) && cat.sizes.length > 1 ? `${cat.sizes.length} Ölçü Seçeneği` : 'Ürün Detayı'}</span><i class="fa-solid fa-arrow-right"></i></div>
+                            <div class="product-open-label"><span>${Array.isArray(cat.sizes) && cat.sizes.length > 1 ? (window.sultanzadeUiText?.('sizes',cat.sizes.length) || `${cat.sizes.length} Ölçü Seçeneği`) : (window.sultanzadeUiText?.('detail') || 'Ürün Detayı')}</span><i class="fa-solid fa-arrow-right"></i></div>
                             <div class="owner-product-actions" onclick="event.stopPropagation()">
                                 <button type="button" onclick="openEditProduct('${escapeHTML(String(cat.id))}')"><i class="fa-solid fa-pen"></i> Düzenle</button>
                                 <button type="button" class="owner-delete-product" onclick="deleteProduct('${escapeHTML(String(cat.id))}')"><i class="fa-solid fa-trash"></i> Sil</button>
@@ -3623,6 +3632,8 @@ Pazar: Kapalı"></textarea></div>
                 const key=lang.toLowerCase(); setFieldValue('pMaterial'+lang,tr[key]?.material||''); setFieldValue('pColor'+lang,tr[key]?.color||''); setFieldValue('pProduction'+lang,tr[key]?.production||'');
             }
             const sizes = legacySizesFromDetails(cat);
+            setFieldValue('pSizeCount', Math.max(1, Math.min(3, sizes.length || 1)));
+            updateSizeCount();
             for (let i=1;i<=3;i++) {
                 const z=sizes[i-1]||{};
                 setFieldValue(`pSize${i}Name`, z.name||trTR.sizeNames?.[i-1]||''); setFieldValue(`pSize${i}Price`,z.price||''); setFieldValue(`pSize${i}Width`,z.width||''); setFieldValue(`pSize${i}Length`,z.length||''); setFieldValue(`pSize${i}Height`,z.height||''); setFieldValue(`pSize${i}Weight`,z.weight||'');
@@ -3677,6 +3688,8 @@ Pazar: Kapalı"></textarea></div>
             if (whatsappButton) {
                 whatsappButton.innerHTML = currentLang === 'ar' ? '<i class="fa-brands fa-whatsapp"></i> تواصل عبر واتساب' : currentLang === 'ru' ? '<i class="fa-brands fa-whatsapp"></i> Связаться в WhatsApp' : currentLang === 'en' ? '<i class="fa-brands fa-whatsapp"></i> Ask on WhatsApp' : '<i class="fa-brands fa-whatsapp"></i> WhatsApp’tan Bilgi Al';
             }
+            const orderBtn = document.querySelector('#detailModalOverlay button[onclick="openOrderModal()"]');
+            if (orderBtn) orderBtn.innerHTML = `<i class="fa-solid fa-bag-shopping"></i> ${window.sultanzadeUiText?.('order') || 'Sipariş Ver'}`;
             updateDetailGalleryView();
             document.getElementById('detailModalOverlay').classList.add('active');
         }
@@ -4132,7 +4145,7 @@ async function deleteCRMPayment(id){
 (function(){
   const D={
     en:{
-      'Havale/EFT bilgileri müşteriye burada gösterilir.':'Bank transfer information is shown to customers here.','Teslimat ve kargo mesajlarını yönetin.':'Manage delivery and shipping messages.','Mağaza mesajı':'Store message','Kargo ücreti ücretsizdir. Teslim süresi seçilen kargo firmasına göre değişebilir.':'Shipping is free. Delivery time may vary depending on the carrier.','Alt bölümde ve iletişim alanında gösterilir.':'Shown in the footer and contact area.','İpucu':'Tip','Buradaki metin müşteriye doğrudan gösterilir. Özet saat alanı ile birlikte güncellenir.':'This text is shown directly to customers and updates with the summary hours.','Telefon, WhatsApp ve e-posta.':'Phone, WhatsApp and email.','Ürün seçimi, ölçü, fiyat ve müşteri bilgileri WhatsApp mesajına otomatik eklenir.':'Product, size, price and customer details are automatically added to the WhatsApp message.','Ana sayfadaki marka görseli.':'Brand image on the home page.','Bordo & altın tema':'Burgundy & gold theme','Yönetici paneli mağazanın bordo kadife ve altın estetiğine uyumlu olarak tasarlanmıştır.':'The manager panel is designed to match the store’s burgundy velvet and gold aesthetic.','Değişiklikler yalnızca yetkili yöneticiye açıktır.':'Changes are available only to the authorized manager.','Mevcut müşteri hesabınızla devam edin.':'Continue with your existing customer account.','Fatura ve sipariş geçmişinizi saklamak için hesap oluşturun.':'Create an account to keep your invoice and order history.','Sipariş durumunu değiştir':'Change order status','Üretim / Özel Not':'Production / Special Note','Ölçü Seçeneği':'Size Option','Koleksiyon Serisi / Etiket':'Collection Series / Tag','Henüz Kategori Bulunmuyor':'No Categories Yet','Yukarıdaki "+ Kategori Ekle" butonuna tıklayarak ilk kategorinizi oluşturabilirsiniz.':'Click the "+ Add Category" button above to create your first category.','Yeni Kategori Ekle':'Add New Category','Görsel, fiyat ve kategori detaylarını girin.':'Enter image, price and category details.','Ürün Görselleri * (Çoklu)':'Product Images * (Multiple)','Birden fazla fotoğraf seçebilirsiniz':'You can select multiple photos','Ürün Bilgileri':'Product Information','Ürününüzü müşteriye gösterecek temel bilgiler.':'Basic information shown to customers.','Ürün Adı *':'Product Name *','Açıklama *':'Description *','3 Farklı Ölçü / Fiyat Seçeneği':'3 Different Size / Price Options','Müşteri ürüne girdiğinde bu 3 seçenekten birini seçer; seçilen ölçünün fiyatı otomatik değişir.':'When a customer opens the product, they choose one of these 3 options; the price changes automatically.','1. Ölçü':'Size 1','2. Ölçü':'Size 2','3. Ölçü':'Size 3','Seçenek adı *':'Option name *','Marka Görseli':'Brand Image','SULTANZADE ana sayfa görselini buradan yükleyebilirsin.':'Upload the SULTANZADE home-page image here.','Bilgisayardan marka fotoğrafı seç':'Choose brand image from computer','İlk kez giriş yapıyorum / Şifre oluştur':'First time signing in / Create password','Yönetici yetkisi yalnızca mağaza sahibinin doğrulanmış hesabıyla verilir.':'Manager access is granted only to the verified store-owner account.','Hesabım':'My Account','Siparişlerim':'My Orders','Faturalarım':'My Invoices','Güvenli Hesap':'Secure Account','Bu portalda yalnızca kendi sipariş ve faturalarınızı görebilirsiniz.':'In this portal you can only view your own orders and invoices.','Müşteri kartını doldurun. Bu bilgiler firma sahibinin CRM panelinde tutulur.':'Fill in the customer card. This information is stored in the owner CRM panel.','Müşteri Tipi':'Customer Type','Ad Soyad / Firma Adı *':'Full Name / Company Name *','Ülke':'Country','Şehir':'City','Firma İçi Not':'Internal Company Note','Müşteriyi Kaydet':'Save Customer','Vazgeç':'Cancel','Düzenle':'Edit','Fatura':'Invoice','Tutar *':'Amount *','Tarih':'Date','Ödeme Yöntemi':'Payment Method','Kredi Kartı':'Credit Card','Diğer':'Other','Tahsilatı Kaydet':'Save Payment','Müşteri Adı':'Customer Name','Müşteri E-posta':'Customer Email','Açıklama / Ürün':'Description / Product','Tutar':'Amount','Ödeme Bekliyor':'Payment Pending','Ödendi':'Paid','İptal':'Cancelled','Son Ödeme Tarihi':'Due Date','Faturayı Kaydet':'Save Invoice','Mağazamız':'Our Store','Haritada Aç':'Open Map','Ödeme Bilgileri':'Payment Information','Yönetici panelinden girilecek':'Entered from manager panel','Ödeme açıklaması:':'Payment description:','Ürün bedeli':'Product price','Kargo & Sipariş':'Shipping & Order','Teslim süresi kargo firmasına bağlıdır.':'Delivery time depends on the shipping company.','WhatsApp ile Sipariş':'Order via WhatsApp','İletişim & Destek':'Contact & Support','WhatsApp Destek Hattı':'WhatsApp Support Line','© 2026 SULTANZADE. Tüm hakları saklıdır.':'© 2026 SULTANZADE. All rights reserved.',"Veya resim URL yapıştırın (Enter'a basın)":'Or paste an image URL (press Enter)','Örn: Osmanlı Kahve Seti':'E.g. Ottoman Coffee Set','Ürünün kısa ve etkileyici açıklaması...':'A short and compelling product description...','Örn: 2026 Özel Seri':'E.g. 2026 Special Series','Örn: Küçük':'E.g. Small','Örn: Orta':'E.g. Medium','Örn: Büyük':'E.g. Large','Örn: Pirinç, ahşap, kadife':'E.g. Brass, wood, velvet','Örn: Ceviz / Altın':'E.g. Walnut / Gold','El işçiliği, üretim süresi veya müşterinin bilmesi gereken özel bilgiler...':'Handcraft, production time or special information the customer should know...','Ad, e-posta veya telefon ile müşteri ara...':'Search customer by name, email or phone...','Sipariş no, müşteri, ürün veya e-posta ara...':'Search order no, customer, product or email...','Fatura no, müşteri veya e-posta ara...':'Search invoice no, customer or email...','Müşteri, fatura no veya ödeme yöntemi ara...':'Search customer, invoice no or payment method...','VIP, Toptan, Perakende...':'VIP, Wholesale, Retail...','Bu notu yalnızca firma sahibi görür.':'Only the store owner can see this note.',
+      'Havale/EFT bilgileri müşteriye burada gösterilir.':'Bank transfer information is shown to customers here.','Teslimat ve kargo mesajlarını yönetin.':'Manage delivery and shipping messages.','Mağaza mesajı':'Store message','Kargo ücreti ücretsizdir. Teslim süresi seçilen kargo firmasına göre değişebilir.':'Shipping is free. Delivery time may vary depending on the carrier.','Alt bölümde ve iletişim alanında gösterilir.':'Shown in the footer and contact area.','İpucu':'Tip','Buradaki metin müşteriye doğrudan gösterilir. Özet saat alanı ile birlikte güncellenir.':'This text is shown directly to customers and updates with the summary hours.','Telefon, WhatsApp ve e-posta.':'Phone, WhatsApp and email.','Ürün seçimi, ölçü, fiyat ve müşteri bilgileri WhatsApp mesajına otomatik eklenir.':'Product, size, price and customer details are automatically added to the WhatsApp message.','Ana sayfadaki marka görseli.':'Brand image on the home page.','Bordo & altın tema':'Burgundy & gold theme','Yönetici paneli mağazanın bordo kadife ve altın estetiğine uyumlu olarak tasarlanmıştır.':'The manager panel is designed to match the store’s burgundy velvet and gold aesthetic.','Değişiklikler yalnızca yetkili yöneticiye açıktır.':'Changes are available only to the authorized manager.','Mevcut müşteri hesabınızla devam edin.':'Continue with your existing customer account.','Fatura ve sipariş geçmişinizi saklamak için hesap oluşturun.':'Create an account to keep your invoice and order history.','Sipariş durumunu değiştir':'Change order status','Üretim / Özel Not':'Production / Special Note','Ölçü Seçeneği':'Size Option','Koleksiyon Serisi / Etiket':'Collection Series / Tag','Henüz Kategori Bulunmuyor':'No Categories Yet','Yukarıdaki "+ Kategori Ekle" butonuna tıklayarak ilk kategorinizi oluşturabilirsiniz.':'Click the "+ Add Category" button above to create your first category.','Yeni Kategori Ekle':'Add New Category','Görsel, fiyat ve kategori detaylarını girin.':'Enter image, price and category details.','Ürün Görselleri * (Çoklu)':'Product Images * (Multiple)','Birden fazla fotoğraf seçebilirsiniz':'You can select multiple photos','Ürün Bilgileri':'Product Information','Ürününüzü müşteriye gösterecek temel bilgiler.':'Basic information shown to customers.','Ürün Adı *':'Product Name *','Açıklama *':'Description *','3 Farklı Ölçü / Fiyat Seçeneği':'3 Different Size / Price Options','Ölçü / Fiyat Seçenekleri':'Size / Price Options','Bu ürün için kaç farklı ölçü satılacağını sen belirle. Yalnızca seçtiğin kadar ölçü müşteriye gösterilir.':'Choose how many sizes this product has. Only the selected number of sizes will be shown to customers.','Kaç ölçü seçeneği var?':'How many size options?','1 ölçü':'1 size','2 ölçü':'2 sizes','3 ölçü':'3 sizes','Ölçü Seçeneği':'Size Option','Ürün Detayı':'Product Details','Müşteri ürüne girdiğinde bu 3 seçenekten birini seçer; seçilen ölçünün fiyatı otomatik değişir.':'When a customer opens the product, they choose one of these 3 options; the price changes automatically.','1. Ölçü':'Size 1','2. Ölçü':'Size 2','3. Ölçü':'Size 3','Seçenek adı *':'Option name *','Marka Görseli':'Brand Image','SULTANZADE ana sayfa görselini buradan yükleyebilirsin.':'Upload the SULTANZADE home-page image here.','Bilgisayardan marka fotoğrafı seç':'Choose brand image from computer','İlk kez giriş yapıyorum / Şifre oluştur':'First time signing in / Create password','Yönetici yetkisi yalnızca mağaza sahibinin doğrulanmış hesabıyla verilir.':'Manager access is granted only to the verified store-owner account.','Hesabım':'My Account','Siparişlerim':'My Orders','Faturalarım':'My Invoices','Güvenli Hesap':'Secure Account','Bu portalda yalnızca kendi sipariş ve faturalarınızı görebilirsiniz.':'In this portal you can only view your own orders and invoices.','Müşteri kartını doldurun. Bu bilgiler firma sahibinin CRM panelinde tutulur.':'Fill in the customer card. This information is stored in the owner CRM panel.','Müşteri Tipi':'Customer Type','Ad Soyad / Firma Adı *':'Full Name / Company Name *','Ülke':'Country','Şehir':'City','Firma İçi Not':'Internal Company Note','Müşteriyi Kaydet':'Save Customer','Vazgeç':'Cancel','Düzenle':'Edit','Fatura':'Invoice','Tutar *':'Amount *','Tarih':'Date','Ödeme Yöntemi':'Payment Method','Kredi Kartı':'Credit Card','Diğer':'Other','Tahsilatı Kaydet':'Save Payment','Müşteri Adı':'Customer Name','Müşteri E-posta':'Customer Email','Açıklama / Ürün':'Description / Product','Tutar':'Amount','Ödeme Bekliyor':'Payment Pending','Ödendi':'Paid','İptal':'Cancelled','Son Ödeme Tarihi':'Due Date','Faturayı Kaydet':'Save Invoice','Mağazamız':'Our Store','Haritada Aç':'Open Map','Ödeme Bilgileri':'Payment Information','Yönetici panelinden girilecek':'Entered from manager panel','Ödeme açıklaması:':'Payment description:','Ürün bedeli':'Product price','Kargo & Sipariş':'Shipping & Order','Teslim süresi kargo firmasına bağlıdır.':'Delivery time depends on the shipping company.','WhatsApp ile Sipariş':'Order via WhatsApp','İletişim & Destek':'Contact & Support','WhatsApp Destek Hattı':'WhatsApp Support Line','© 2026 SULTANZADE. Tüm hakları saklıdır.':'© 2026 SULTANZADE. All rights reserved.',"Veya resim URL yapıştırın (Enter'a basın)":'Or paste an image URL (press Enter)','Örn: Osmanlı Kahve Seti':'E.g. Ottoman Coffee Set','Ürünün kısa ve etkileyici açıklaması...':'A short and compelling product description...','Örn: 2026 Özel Seri':'E.g. 2026 Special Series','Örn: Küçük':'E.g. Small','Örn: Orta':'E.g. Medium','Örn: Büyük':'E.g. Large','Örn: Pirinç, ahşap, kadife':'E.g. Brass, wood, velvet','Örn: Ceviz / Altın':'E.g. Walnut / Gold','El işçiliği, üretim süresi veya müşterinin bilmesi gereken özel bilgiler...':'Handcraft, production time or special information the customer should know...','Ad, e-posta veya telefon ile müşteri ara...':'Search customer by name, email or phone...','Sipariş no, müşteri, ürün veya e-posta ara...':'Search order no, customer, product or email...','Fatura no, müşteri veya e-posta ara...':'Search invoice no, customer or email...','Müşteri, fatura no veya ödeme yöntemi ara...':'Search customer, invoice no or payment method...','VIP, Toptan, Perakende...':'VIP, Wholesale, Retail...','Bu notu yalnızca firma sahibi görür.':'Only the store owner can see this note.',
       'SULTANZADE Hesap':'SULTANZADE Account','SULTANZADE Müşteri':'SULTANZADE Customer','SULTANZADE Firma Sahibi':'SULTANZADE Store Owner','Müşteri / Firma Sahibi':'Customer / Store Owner','Müşteri Hesabım':'My Account','Sipariş & Destek':'Orders & Support','Yönetici Paneli':'Manager Panel','Ücretsiz Kargo':'Free Shipping','Tüm ülkelere gönderim.':'Worldwide shipping.','Güvenli Ödeme':'Secure Payment','Banka havalesi / EFT.':'Bank transfer / EFT.','El İşçiliği':'Handcrafted','Özenli SULTANZADE koleksiyonları.':'Carefully crafted SULTANZADE collections.','WhatsApp Destek':'WhatsApp Support','Hızlı iletişim ve sipariş desteği.':'Fast communication and order support.',
       'İletişim':'Contact','Kategorilerimiz':'Our Collections','Kategori Ekle':'Add Category','Sipariş Ver':'Order Now','WhatsApp’tan Bilgi Al':'Ask on WhatsApp',"WhatsApp'tan Bilgi Al":'Ask on WhatsApp',
       'Sipariş Bilgileri':'Order Information','Bilgilerinizi girin; sipariş özetiniz WhatsApp üzerinden gönderilecektir.':'Enter your details; your order summary will be sent via WhatsApp.','Ülke *':'Country *','Ad Soyad *':'Full Name *','Telefon / WhatsApp *':'Phone / WhatsApp *','E-posta *':'Email *','Şehir *':'City *','İlçe / Bölge':'District / Region','Açık Adres *':'Full Address *','Sipariş Notu':'Order Note','WhatsApp ile Siparişi Gönder':'Send Order via WhatsApp',
@@ -4214,6 +4227,20 @@ async function deleteCRMPayment(id){
 })();
 </script>
 
+
+
+<script>
+/* SULTANZADE dynamic product/detail i18n additions */
+(function(){
+ const M={
+  tr:{detail:'Ürün Detayı',sizes:n=>`${n} Ölçü Seçeneği`,order:'Sipariş Ver'},
+  en:{detail:'Product Details',sizes:n=>`${n} Size Options`,order:'Order Now'},
+  ru:{detail:'Детали товара',sizes:n=>`${n} варианта размера`,order:'Заказать'},
+  ar:{detail:'تفاصيل المنتج',sizes:n=>`${n} خيارات للمقاس`,order:'اطلب الآن'}
+ };
+ window.sultanzadeUiText=(key,n)=>{const l=window.currentLang||localStorage.getItem('sultanzade_lang')||'tr';const v=(M[l]||M.tr)[key];return typeof v==='function'?v(n):v;};
+})();
+</script>
 
 <script>
 /* ===== SULTANZADE GUEST STORE + ROLE UI ===== */
