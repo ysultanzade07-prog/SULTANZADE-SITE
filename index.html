@@ -3140,15 +3140,18 @@ Pazar: Kapalı"></textarea></div>
         function normalizeRemoteRow(row) {
             const stored = row.images;
             const meta = stored && !Array.isArray(stored) && typeof stored === 'object' ? stored : {};
+            const topTranslations = row.translations && typeof row.translations === 'object' ? row.translations : {};
+            const topDetails = row.details && typeof row.details === 'object' ? row.details : {};
+            const topSizes = Array.isArray(row.sizes) ? row.sizes : [];
             return {
                 id: row.id,
                 title: row.title || '', price: row.price || '',
                 badge: row.badge || translations[currentLang]?.defaultBadge || 'Özel Seri',
                 desc: row.desc || '',
                 images: Array.isArray(stored) ? stored : (Array.isArray(meta.urls) ? meta.urls : []),
-                details: meta.details || {},
-                sizes: Array.isArray(meta.sizes) ? meta.sizes : [],
-                translations: meta.translations || { tr: { title: row.title || '', desc: row.desc || '' } },
+                details: Object.keys(topDetails).length ? topDetails : (meta.details || {}),
+                sizes: topSizes.length ? topSizes : (Array.isArray(meta.sizes) ? meta.sizes : []),
+                translations: Object.keys(topTranslations).length ? topTranslations : (meta.translations || { tr: { title: row.title || '', desc: row.desc || '' } }),
                 synced: true
             };
         }
@@ -3189,7 +3192,10 @@ Pazar: Kapalı"></textarea></div>
                     const { data, error } = await supabaseClient.from('categories').insert({
                         title: product.title, price: product.price, badge: product.badge,
                         desc: product.desc,
-                        images: { urls: remoteImages, details: product.details || {}, translations: product.translations || {} }
+                        images: { urls: remoteImages, details: product.details || {}, sizes: product.sizes || [], translations: product.translations || {} },
+                        details: product.details || {},
+                        sizes: product.sizes || [],
+                        translations: product.translations || {}
                     }).select().single();
                     if (error) throw error;
                     const synced = normalizeRemoteRow(data);
@@ -3568,7 +3574,7 @@ Pazar: Kapalı"></textarea></div>
                     if (!(await requireOwnerForProductChange())) throw new Error('Yönetici yetkisi doğrulanamadı.');
                     const existing = categories.find(c => String(c.id) === String(currentEditingProductId));
                     if (!existing) throw new Error('Düzenlenecek ürün bulunamadı.');
-                    const payload = { title, price, badge, desc, images: { urls: remoteImages, details, sizes, translations: translationsData } };
+                    const payload = { title, price, badge, desc, images: { urls: remoteImages, details, sizes, translations: translationsData }, details, sizes, translations: translationsData };
                     let updated;
                     if (existing.synced && !String(existing.id).startsWith('local-')) {
                         const { data, error } = await supabaseClient.from('categories').update(payload).eq('id', existing.id).select().single();
@@ -3593,7 +3599,7 @@ Pazar: Kapalı"></textarea></div>
                     };
                     await localPutProduct(localProduct); categories.unshift(localProduct); renderCategories();
                     try {
-                        const { data, error } = await supabaseClient.from('categories').insert({ title, price, badge, desc, images: { urls: remoteImages, details, sizes, translations: translationsData } }).select().single();
+                        const { data, error } = await supabaseClient.from('categories').insert({ title, price, badge, desc, images: { urls: remoteImages, details, sizes, translations: translationsData }, details, sizes, translations: translationsData }).select().single();
                         if (!error && data) {
                             const synced = normalizeRemoteRow(data); await localDeleteProduct(localProduct.id); await localPutProduct(synced);
                             const idx = categories.findIndex(c => c.id === localProduct.id); if (idx >= 0) categories[idx] = synced; renderCategories();
@@ -4944,6 +4950,111 @@ function sultanzadeFormatMoney(value,currency){
    };
  }
  document.addEventListener('DOMContentLoaded',()=>setTimeout(translateRenderedLegacy,100));
+})();
+</script>
+
+
+<script>
+(function(){
+ const oldEdit=window.openEditProduct;
+ if(typeof oldEdit==='function'){
+  window.openEditProduct=async function(id){
+   const r=await oldEdit.apply(this,arguments);
+   const cat=(window.categories||[]).find(x=>String(x.id)===String(id));
+   if(!cat)return r;
+   const langs={En:'en',Ru:'ru',Ar:'ar'};
+   for(const [s,lang] of Object.entries(langs)){
+     const t=cat.translations?.[lang]||{};
+     const vals={Title:t.title||'',Desc:t.desc||'',Material:t.material||'',Color:t.color||'',Production:t.production||''};
+     for(const [k,v] of Object.entries(vals)){const e=document.getElementById('p'+k+s);if(e)e.value=v;}
+     for(let i=1;i<=3;i++){const e=document.getElementById(`pSize${i}Name${s}`);if(e)e.value=t.sizeNames?.[i-1]||'';}
+   }
+   return r;
+  };
+ }
+})();
+</script>
+
+
+<style>
+/* FINAL RTL/RU CARD LAYOUT FIX */
+html[dir="rtl"] .products-grid,
+body[dir="rtl"] .products-grid{
+  direction: rtl;
+}
+html[dir="rtl"] .product-card,
+body[dir="rtl"] .product-card{
+  direction: rtl;
+  text-align: right;
+}
+html[dir="rtl"] .product-card img{
+  direction:ltr;
+}
+@media (min-width: 901px){
+  .products-grid{
+    align-items: stretch !important;
+  }
+  .product-card{
+    height:100%;
+  }
+}
+</style>
+<script>
+/* Force every rendered card to use the selected language consistently. */
+(function(){
+ function localizeAllCards(){
+   const lang=window.currentLang||'tr';
+   document.documentElement.lang=lang;
+   document.documentElement.dir=lang==='ar'?'rtl':'ltr';
+   if(document.body) document.body.dir=lang==='ar'?'rtl':'ltr';
+
+   document.querySelectorAll('.product-card').forEach(card=>{
+     const raw=card.getAttribute('onclick')||'';
+     const id=(raw.match(/openDetailModal\('([^']+)'\)/)||[])[1];
+     const cat=(window.categories||[]).find(x=>String(x.id)===String(id));
+     if(!cat)return;
+
+     const t=cat.translations||{};
+     const chosen=t[lang]||{};
+     const tr=t.tr||{};
+     const legacy=window.sultanzadeTranslateLegacy || ((v)=>v);
+
+     const title=chosen.title || (lang==='tr' ? (tr.title||cat.title||'') : legacy(tr.title||cat.title||'',lang));
+     const desc=chosen.desc || (lang==='tr' ? (tr.desc||cat.desc||'') : legacy(tr.desc||cat.desc||'',lang));
+     const badge=lang==='tr' ? (cat.badge||'') : legacy(cat.badge||'',lang);
+
+     const titleEl=card.querySelector('.product-title');
+     const descEl=card.querySelector('.product-desc');
+     const badgeEl=card.querySelector('.product-badge');
+     if(titleEl) titleEl.textContent=title;
+     if(descEl) descEl.textContent=desc;
+     if(badgeEl) badgeEl.textContent=badge;
+
+     card.dir=lang==='ar'?'rtl':'ltr';
+   });
+ }
+ window.sultanzadeLocalizeAllCards=localizeAllCards;
+
+ const oldRender=window.renderCategories;
+ if(typeof oldRender==='function'){
+   window.renderCategories=function(){
+     const r=oldRender.apply(this,arguments);
+     setTimeout(localizeAllCards,0);
+     return r;
+   };
+ }
+ const oldChange=window.changeLanguage;
+ if(typeof oldChange==='function'){
+   window.changeLanguage=function(lang){
+     const r=oldChange.apply(this,arguments);
+     setTimeout(()=>{
+       try{ if(typeof window.renderCategories==='function') window.renderCategories(); }catch(e){}
+       localizeAllCards();
+     },10);
+     return r;
+   };
+ }
+ document.addEventListener('DOMContentLoaded',()=>setTimeout(localizeAllCards,150));
 })();
 </script>
 
