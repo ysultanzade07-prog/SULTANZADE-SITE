@@ -1650,7 +1650,7 @@ body.sultanzade-owner .owner-product-actions{display:flex}
                     <div class="form-group"><label>Renk</label><input type="text" id="pColor" class="form-control" placeholder="Örn: Ceviz / Altın"></div>
                     <div class="form-group full-width"><label>Üretim / Özel Not</label><textarea id="pProduction" class="form-control" rows="2" placeholder="El işçiliği, üretim süresi veya müşterinin bilmesi gereken özel bilgiler..."></textarea></div>
 
-                    <button type="submit" class="btn-submit full-width"><i class="fa-solid fa-plus"></i> <span id="i18n-btn-save">Kaydet ve Ekle</span></button>
+                    <button type="button" id="productSaveButton" class="btn-submit full-width" onclick="handleFormSubmit({preventDefault:function(){},target:document.getElementById('addCategoryForm')})"><i class="fa-solid fa-plus"></i> <span id="i18n-btn-save">Kaydet ve Ekle</span></button>
                 </div>
             </form>
         </div>
