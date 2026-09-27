@@ -4686,7 +4686,7 @@ function sultanzadeFormatMoney(value,currency){
 
    const title=document.getElementById('i18n-modal-title');
    if(title){
-     const editing=window.currentEditingProductId!==null && window.currentEditingProductId!==undefined;
+     const editing=(typeof currentEditingProductId !== 'undefined' && currentEditingProductId !== null);
      title.textContent=editing?l.modalEdit:l.modalNew;
    }
 
@@ -4728,7 +4728,7 @@ function sultanzadeFormatMoney(value,currency){
 
    const submit=modal.querySelector('#addCategoryForm .btn-submit');
    if(submit){
-     const editing=window.currentEditingProductId!==null && window.currentEditingProductId!==undefined;
+     const editing=(typeof currentEditingProductId !== 'undefined' && currentEditingProductId !== null);
      submit.innerHTML='<i class="fa-solid fa-floppy-disk"></i> '+(editing?l.saveEdit:l.save);
    }
 
