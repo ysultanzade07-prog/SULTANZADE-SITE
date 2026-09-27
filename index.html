@@ -1684,22 +1684,8 @@ body.sultanzade-owner .owner-product-actions{display:flex}
         </div>
     </div>
 
-    <div class="modal-overlay" id="settingsModalOverlay" onclick="closeModalOnOverlay(event, 'settingsModalOverlay')">
-        <div class="modal-card">
-            <button class="modal-close" onclick="closeModal('settingsModalOverlay')"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="box-title serif-font">Marka Görseli</h3>
-            <p class="box-subtitle">SULTANZADE ana sayfa görselini buradan yükleyebilirsin.</p>
-            <img id="brandPreview" class="brand-settings-preview" alt="SULTANZADE marka görseli">
-            <div class="brand-upload-zone" onclick="document.getElementById('brandFileInput').click()">
-                <i class="fa-solid fa-image" style="font-size:1.5rem;color:var(--accent-gold)"></i>
-                <p style="margin-top:.5rem">Bilgisayardan marka fotoğrafı seç</p>
-                <input id="brandFileInput" type="file" accept="image/*" style="display:none" onchange="uploadBrandImage(event)">
-            </div>
-        </div>
-    </div>
-
-
-    <!-- SİPARİŞ FORMU -->
+    <!-- Hero görselleri artık doğrudan Yönetici Paneli > Görünüm bölümünden yönetilir. -->
+<!-- SİPARİŞ FORMU -->
     <div class="modal-overlay" id="orderModalOverlay" onclick="closeModalOnOverlay(event, 'orderModalOverlay')">
         <div class="modal-card order-card">
             <button class="modal-close" onclick="closeModal('orderModalOverlay')"><i class="fa-solid fa-xmark"></i></button>
@@ -1948,17 +1934,23 @@ Pazar: Kapalı"></textarea></div>
                 </section>
 
                 <section class="manager-tab" data-manager-tab="appearance">
-                    <div class="settings-grid">
-                        <div class="setting-card"><div class="setting-card-head"><i class="fa-solid fa-image"></i><div><h4>Hero Görseli</h4><p>Ana sayfadaki marka görseli.</p></div></div>
-                            <div class="brand-upload-zone manager-upload" onclick="document.getElementById('brandFileInput').click()"><i class="fa-solid fa-image"></i><p>Yeni hero görseli seç</p><small>JPG, JPEG, PNG</small><input id="brandFileInput" type="file" accept="image/*" style="display:none" onchange="uploadBrandImage(event)"></div>
-                        </div>
-                        <div class="manager-tip"><i class="fa-solid fa-wand-magic-sparkles"></i><div><strong>Bordo & altın tema</strong><p>Yönetici paneli mağazanın bordo kadife ve altın estetiğine uyumlu olarak tasarlanmıştır.</p></div></div>
-                    </div>
-                </section>
-
-                <div class="manager-footer-actions">
+  <div class="settings-grid" style="grid-template-columns:1fr">
+    <div class="setting-card">
+      <div class="setting-card-head"><i class="fa-solid fa-images"></i><div>
+        <h4>Hero Görselleri</h4>
+        <p>Ana sayfadaki 3 büyük görseli buradan değiştir. Seçtiğin görsel anında kaydedilir.</p>
+      </div></div>
+      <div id="heroManagerGrid" class="sultanzade-hero-manager-grid"></div>
+      <div class="manager-tip" style="margin-top:14px"><i class="fa-solid fa-circle-info"></i><div>
+        <strong>Önerilen oran: 16:9</strong>
+        <p>JPG, JPEG, PNG veya WEBP kullanabilirsin. Her kutu ana sayfadaki aynı sıradaki hero görselini değiştirir.</p>
+      </div></div>
+    </div>
+  </div>
+</section>
+<div class="manager-footer-actions">
                     <span><i class="fa-solid fa-lock"></i> Değişiklikler yalnızca yetkili yöneticiye açıktır.</span>
-                    <button class="btn-submit" onclick="saveSiteSettings()"><i class="fa-solid fa-floppy-disk"></i> Değişiklikleri Kaydet</button>
+                    <button type="button" id="managerSaveSettingsBtn" class="btn-submit" onclick="saveSiteSettings(event)"><i class="fa-solid fa-floppy-disk"></i> Değişiklikleri Kaydet</button>
                 </div>
             </main>
         </div>
@@ -2612,20 +2604,49 @@ Pazar: Kapalı"></textarea></div>
             await refreshCRMData();
         }
 
-        async function saveSiteSettings() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            if (!user || String(user?.email || '').toLowerCase() !== OWNER_EMAIL.toLowerCase()) { alert('Yetkiniz yok.'); return; }
-            const ids = { bankName:'setBankName', accountHolder:'setAccountHolder', iban:'setIban', paymentNote:'setPaymentNote', address:'setAddress', mapUrl:'setMapUrl', hours:'setHours', phone:'setPhone', whatsapp:'setWhatsapp', email:'setEmail', shipping:'setShipping', delivery:'setDelivery', countries:'setCountries' };
-            Object.entries(ids).forEach(([key,id]) => { const el = document.getElementById(id); if (el) siteSettings[key] = el.value.trim(); });
-            const detailHours = document.getElementById('setHoursDetailed');
-            if (detailHours && detailHours.value.trim()) { siteSettings.hoursDetailed = detailHours.value.trim(); }
-            await localPutSetting('siteSettings', siteSettings);
+        async function saveSiteSettings(event) {
+            if (event) { event.preventDefault(); event.stopPropagation(); }
+            const saveBtn = document.getElementById('managerSaveSettingsBtn');
+            const oldHtml = saveBtn ? saveBtn.innerHTML : '';
+            if (saveBtn) { saveBtn.disabled = true; saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Kaydediliyor...'; }
             try {
-                const { error } = await supabaseClient.from('site_settings').upsert({ key:'business', value:siteSettings });
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user || String(user?.email || '').toLowerCase() !== OWNER_EMAIL.toLowerCase()) {
+                    alert('Yönetici oturumunuz açık değil. Lütfen tekrar giriş yapın.');
+                    return;
+                }
+                const ids = {
+                    bankName:'setBankName', accountHolder:'setAccountHolder', iban:'setIban',
+                    paymentNote:'setPaymentNote', address:'setAddress', mapUrl:'setMapUrl',
+                    hours:'setHours', phone:'setPhone', whatsapp:'setWhatsapp',
+                    email:'setEmail', shipping:'setShipping', delivery:'setDelivery',
+                    countries:'setCountries'
+                };
+                Object.entries(ids).forEach(([key,id]) => {
+                    const el = document.getElementById(id);
+                    if (el) siteSettings[key] = String(el.value ?? '').trim();
+                });
+                const detailHours = document.getElementById('setHoursDetailed');
+                if (detailHours) siteSettings.hoursDetailed = detailHours.value.trim();
+
+                // Always update this browser immediately.
+                await localPutSetting('siteSettings', siteSettings);
+                applySiteSettingsToPage();
+
+                // Then persist for every device/customer via Supabase.
+                const { error } = await supabaseClient
+                    .from('site_settings')
+                    .upsert({ key:'business', value:siteSettings }, { onConflict:'key' });
                 if (error) throw error;
-            } catch (e) { console.warn('Online ayar kaydı başarısız; yerelde saklandı:', e.message); }
-            applySiteSettingsToPage();
-            alert('Mağaza bilgileri güncellendi.');
+
+                applySiteSettingsToPage();
+                alert('Kaydedildi. Adres, telefon ve mağaza bilgileri siteye uygulandı.');
+            } catch (e) {
+                console.error('Mağaza bilgileri kayıt hatası:', e);
+                alert('Online kayıt yapılamadı: ' + (e?.message || 'Bilinmeyen hata') + '\\n\\nBu hata artık gizlenmeyecek; böylece neden kaydetmediğini görebiliriz.');
+            } finally {
+                if (saveBtn) { saveBtn.disabled = false; saveBtn.innerHTML = oldHtml; }
+            }
         }
 
         async function managerLogout() {
@@ -3594,7 +3615,7 @@ Pazar: Kapalı"></textarea></div>
                         if (error) throw error;
                         updated = normalizeRemoteRow(data);
                     } else {
-                        updated = { ...existing, title, price, badge, desc, images: remoteImages, details, sizes, translations: translationsData };
+                        updated = { ...existing, title, price, badge, desc, images: remoteImages, details, sizes, translations: translationsData, in_stock: document.getElementById('pInStock')?.value !== 'false' };
                     }
                     await localDeleteProduct(existing.id);
                     await localPutProduct(updated);
@@ -3608,11 +3629,11 @@ Pazar: Kapalı"></textarea></div>
                     const localProduct = {
                         id: `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
                         title, price, badge, desc, images: localImages, details, sizes,
-                        translations: translationsData, synced: false
+                        translations: translationsData, in_stock: document.getElementById('pInStock')?.value !== 'false', synced: false
                     };
                     await localPutProduct(localProduct); categories.unshift(localProduct); renderCategories();
                     try {
-                        const { data, error } = await supabaseClient.from('categories').insert({ title, price, badge, desc, images: { urls: remoteImages, details, sizes, translations: translationsData }, details, sizes, translations: translationsData }).select().single();
+                        const { data, error } = await supabaseClient.from('categories').insert({ title, price, badge, desc, images: { urls: remoteImages, details, sizes, translations: translationsData }, details, sizes, translations: translationsData, in_stock: document.getElementById('pInStock')?.value !== 'false' }).select().single();
                         if (!error && data) {
                             const synced = normalizeRemoteRow(data); await localDeleteProduct(localProduct.id); await localPutProduct(synced);
                             const idx = categories.findIndex(c => c.id === localProduct.id); if (idx >= 0) categories[idx] = synced; renderCategories();
@@ -3659,7 +3680,8 @@ Pazar: Kapalı"></textarea></div>
                 const imgCount = cat.images?.length || 0;
                 const cardPrice = (Array.isArray(cat.sizes) && cat.sizes.length ? cat.sizes[0].price : cat.price) || '';
                 grid.innerHTML += `
-                    <article class="product-card" onclick="openDetailModal('${escapeHTML(String(cat.id))}')">
+                    <article class="product-card${cat.in_stock === false ? ' sultanzade-out-of-stock' : ''}" onclick="openDetailModal('${escapeHTML(String(cat.id))}')">
+                        ${cat.in_stock === false ? `<div class="sultanzade-stock-badge">${escapeHTML(({tr:'STOKTA YOK',en:'OUT OF STOCK',ru:'НЕТ В НАЛИЧИИ',ar:'غير متوفر'}[currentLang]||'STOKTA YOK'))}</div>` : ''}
                         <div class="gallery-container"><img src="${escapeHTML(firstImg)}" alt="${escapeHTML(text.title)}" loading="lazy">${imgCount > 1 ? `<span class="photo-count-badge"><i class="fa-solid fa-camera"></i> ${imgCount}</span>` : ''}</div>
                         <div class="product-info">
                             <div class="product-header-row"><span class="product-badge">${escapeHTML(getProductBadge(cat))}</span><span class="product-price">${escapeHTML(sultanzadeFormatMoney(cardPrice, (Array.isArray(cat.sizes)&&cat.sizes.length?cat.sizes[0].currency:"USD")))}</span></div>
@@ -5081,11 +5103,14 @@ html[dir="rtl"] .product-card img{
 
 
 <style>
-.product-card.sultanzade-out-of-stock{opacity:.78}
+.product-card.sultanzade-out-of-stock{position:relative}
 .sultanzade-stock-badge{
- position:absolute;top:12px;right:12px;z-index:8;
- padding:7px 11px;border-radius:999px;background:#6b1022;color:#fff;
- font-size:12px;font-weight:700;letter-spacing:.2px
+ position:absolute;top:14px;right:-7px;z-index:20;
+ padding:9px 14px;border-radius:8px 0 0 8px;
+ background:#a31222;color:#fff;
+ box-shadow:0 4px 12px rgba(0,0,0,.22);
+ font-size:12px;font-weight:800;letter-spacing:.6px;
+ text-transform:uppercase;pointer-events:none
 }
 html[dir="rtl"] .sultanzade-stock-badge{right:auto;left:12px}
 .sultanzade-disabled-order{opacity:.5!important;pointer-events:none!important;cursor:not-allowed!important}
@@ -5154,6 +5179,132 @@ html[dir="rtl"] .sultanzade-stock-badge{right:auto;left:12px}
    const r=oldDetail.apply(this,arguments); setTimeout(applyStock,0); return r;
  };
  document.addEventListener('DOMContentLoaded',()=>setTimeout(applyStock,150));
+})();
+</script>
+
+
+<style id="sultanzade-manager-save-mobile-fix">
+@media(max-width:768px){
+  #managerPanelOverlay .manager-main{padding-bottom:110px!important}
+  #managerPanelOverlay .manager-footer-actions{
+    position:sticky!important;bottom:0!important;z-index:999!important;
+    display:block!important;padding:12px!important;
+    background:#310b13!important;border-top:1px solid rgba(226,185,98,.35)!important
+  }
+  #managerSaveSettingsBtn{
+    display:flex!important;width:100%!important;min-width:0!important;
+    min-height:52px!important;align-items:center!important;justify-content:center!important;
+    position:relative!important;z-index:1000!important;pointer-events:auto!important;
+    touch-action:manipulation!important
+  }
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const b=document.getElementById('managerSaveSettingsBtn');
+  if(b){
+    b.addEventListener('touchend', function(e){
+      e.preventDefault();
+      saveSiteSettings(e);
+    }, {passive:false});
+  }
+});
+</script>
+
+
+<style id="sultanzade-hero-manager-fix">
+.sultanzade-hero-manager-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:16px}
+.sultanzade-hero-manager-item{border:1px solid rgba(226,185,98,.25);border-radius:14px;padding:12px;background:rgba(25,6,11,.35)}
+.sultanzade-hero-manager-item img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;background:#18050a}
+.sultanzade-hero-manager-item strong{display:block;color:#f3d9a3;margin:10px 0 8px}
+.sultanzade-hero-change{width:100%;min-height:44px;border:1px solid #c99b42;border-radius:10px;background:#4b2509;color:#fff;font-weight:700;cursor:pointer}
+.sultanzade-hero-change:disabled{opacity:.65;cursor:wait}
+@media(max-width:760px){.sultanzade-hero-manager-grid{grid-template-columns:1fr}.sultanzade-hero-change{min-height:50px}}
+</style>
+<script id="sultanzade-hero-manager-script">
+(function(){
+  const HERO_KEY='brandHeroSlidesV2';
+
+  function heroSlides(){
+    return [...document.querySelectorAll('#brandHero .hero-slide')];
+  }
+  function heroUrls(){
+    return heroSlides().map(img=>img.currentSrc || img.src || '');
+  }
+  async function saveHeroUrls(urls){
+    try{ await localPutSetting(HERO_KEY, urls); }catch(e){ console.warn(e); }
+    try{
+      const {error}=await supabaseClient.from('site_settings')
+        .upsert({key:'hero_slides',value:{images:urls}}, {onConflict:'key'});
+      if(error) throw error;
+    }catch(e){
+      console.warn('Hero URL Supabase ayar kaydı yapılamadı:',e);
+      /* Storage URL itself is still permanent; local setting keeps current admin view. */
+    }
+  }
+  function applyHeroUrls(urls){
+    if(!Array.isArray(urls) || !urls.length) return;
+    const slides=heroSlides();
+    slides.forEach((img,i)=>{ if(urls[i]) img.src=urls[i]; });
+    renderHeroManager();
+  }
+  async function loadHeroUrls(){
+    let urls=null;
+    try{
+      const {data,error}=await supabaseClient.from('site_settings')
+        .select('value').eq('key','hero_slides').maybeSingle();
+      if(!error && data?.value?.images) urls=data.value.images;
+    }catch(e){}
+    if(!urls){
+      try{ urls=await localGetSetting(HERO_KEY); }catch(e){}
+    }
+    if(urls) applyHeroUrls(urls);
+  }
+  function renderHeroManager(){
+    const grid=document.getElementById('heroManagerGrid');
+    if(!grid) return;
+    const urls=heroUrls();
+    grid.innerHTML=urls.map((url,i)=>`
+      <div class="sultanzade-hero-manager-item">
+        <img src="${String(url).replace(/"/g,'&quot;')}" alt="Hero ${i+1}">
+        <strong>Hero ${i+1}</strong>
+        <button type="button" class="sultanzade-hero-change" onclick="window.changeHeroSlide(${i},this)">
+          <i class="fa-solid fa-image"></i> Görseli Değiştir
+        </button>
+      </div>`).join('');
+  }
+  window.changeHeroSlide=function(index,button){
+    const input=document.createElement('input');
+    input.type='file'; input.accept='image/jpeg,image/png,image/webp';
+    input.onchange=async function(){
+      const file=input.files?.[0]; if(!file) return;
+      const old=button.innerHTML;
+      button.disabled=true; button.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Yükleniyor...';
+      try{
+        const url=await uploadFileToSupabase(file);
+        const urls=heroUrls();
+        urls[index]=url;
+        applyHeroUrls(urls);
+        await saveHeroUrls(urls);
+        alert('Hero '+(index+1)+' görseli kaydedildi.');
+      }catch(e){
+        console.error(e);
+        alert('Hero görseli kaydedilemedi: '+(e?.message||'Bilinmeyen hata'));
+      }finally{
+        button.disabled=false; button.innerHTML=old;
+        renderHeroManager();
+      }
+    };
+    input.click();
+  };
+  window.renderHeroManager=renderHeroManager;
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',()=>{loadHeroUrls();setTimeout(renderHeroManager,400);});
+  }else{loadHeroUrls();setTimeout(renderHeroManager,400);}
+  document.addEventListener('click',e=>{
+    const b=e.target.closest?.('[data-manager-target="appearance"],[data-tab="appearance"]');
+    if(b) setTimeout(renderHeroManager,100);
+  });
 })();
 </script>
 
