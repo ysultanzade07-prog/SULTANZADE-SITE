@@ -2044,7 +2044,7 @@ Pazar: Kapalı"></textarea></div>
                 <div class="crm-top-actions">
                     <button class="crm-primary" onclick="invoiceFromOpenCustomer()"><i class="fa-solid fa-file-invoice"></i> Fatura Oluştur</button>
                     <button class="crm-secondary" onclick="paymentFromOpenCustomer()"><i class="fa-solid fa-money-bill-transfer"></i> Tahsilat Ekle</button>
-                    <button class="crm-secondary" onclick="editOpenCustomer()"><i class="fa-solid fa-pen"></i> Düzenle</button>
+                    <button class="crm-secondary" onclick="editOpenCustomer()"><i class="fa-solid fa-pen"></i> ${({tr:'Düzenle',en:'Edit',ru:'Редактировать',ar:'تعديل'}[currentLang]||'Düzenle')}</button>
                 </div>
             </div>
             <div class="crm-detail-grid">
@@ -3640,8 +3640,8 @@ Pazar: Kapalı"></textarea></div>
                             <p class="product-description">${escapeHTML(text.desc || '')}</p>
                             <div class="product-open-label"><span>${Array.isArray(cat.sizes) && cat.sizes.length > 1 ? (window.sultanzadeUiText?.('sizes',cat.sizes.length) || `${cat.sizes.length} Ölçü Seçeneği`) : (window.sultanzadeUiText?.('detail') || 'Ürün Detayı')}</span><i class="fa-solid fa-arrow-right"></i></div>
                             <div class="owner-product-actions" onclick="event.stopPropagation()">
-                                <button type="button" onclick="openEditProduct('${escapeHTML(String(cat.id))}')"><i class="fa-solid fa-pen"></i> Düzenle</button>
-                                <button type="button" class="owner-delete-product" onclick="deleteProduct('${escapeHTML(String(cat.id))}')"><i class="fa-solid fa-trash"></i> Sil</button>
+                                <button type="button" onclick="openEditProduct('${escapeHTML(String(cat.id))}')"><i class="fa-solid fa-pen"></i> ${({tr:'Düzenle',en:'Edit',ru:'Редактировать',ar:'تعديل'}[currentLang]||'Düzenle')}</button>
+                                <button type="button" class="owner-delete-product" onclick="deleteProduct('${escapeHTML(String(cat.id))}')"><i class="fa-solid fa-trash"></i> ${({tr:'Sil',en:'Delete',ru:'Удалить',ar:'حذف'}[currentLang]||'Sil')}</button>
                             </div>
                         </div>
                     </article>`;
@@ -4717,6 +4717,87 @@ function sultanzadeFormatMoney(value,currency){
     };
   }
   document.addEventListener('DOMContentLoaded',translateProductForm);
+})();
+</script>
+
+
+<script>
+/* SULTANZADE FINAL GLOBAL I18N PATCH */
+(function(){
+ const G={
+  tr:{edit:'Düzenle',del:'Sil',details:'Ürün Detayı',sizeOptions:n=>`${n} Ölçü Seçeneği`,choose:'Ölçü seçin',selected:'Seçilen ölçü',ask:'WhatsApp’tan Bilgi Al',order:'Sipariş Ver',
+      width:'En',length:'Boy',height:'Yükseklik',weight:'Ağırlık',material:'Malzeme',color:'Renk',production:'Üretim / Not'},
+  en:{edit:'Edit',del:'Delete',details:'Product Details',sizeOptions:n=>`${n} Size Option${n===1?'':'s'}`,choose:'Choose a size',selected:'Selected size',ask:'Ask on WhatsApp',order:'Order Now',
+      width:'Width',length:'Length',height:'Height',weight:'Weight',material:'Material',color:'Color',production:'Production / Note'},
+  ru:{edit:'Редактировать',del:'Удалить',details:'Подробнее',sizeOptions:n=>`${n} вариант(а) размера`,choose:'Выберите размер',selected:'Выбранный размер',ask:'Написать в WhatsApp',order:'Оформить заказ',
+      width:'Ширина',length:'Длина',height:'Высота',weight:'Вес',material:'Материал',color:'Цвет',production:'Производство / Примечание'},
+  ar:{edit:'تعديل',del:'حذف',details:'تفاصيل المنتج',sizeOptions:n=>`${n} خيارات للمقاس`,choose:'اختر المقاس',selected:'المقاس المحدد',ask:'تواصل عبر واتساب',order:'اطلب الآن',
+      width:'العرض',length:'الطول',height:'الارتفاع',weight:'الوزن',material:'المادة',color:'اللون',production:'الإنتاج / ملاحظة'}
+ };
+ function L(){return G[window.currentLang]||G.tr}
+ function apply(){
+   const l=L();
+   document.querySelectorAll('.owner-product-actions').forEach(box=>{
+     const bs=box.querySelectorAll('button');
+     if(bs[0]) bs[0].innerHTML='<i class="fa-solid fa-pen"></i> '+l.edit;
+     if(bs[1]) bs[1].innerHTML='<i class="fa-solid fa-trash"></i> '+l.del;
+   });
+   document.querySelectorAll('.product-open-label span').forEach(el=>{
+     const card=el.closest('.product-card');
+     const id=card?.getAttribute('onclick')?.match(/openDetailModal\('([^']+)'\)/)?.[1];
+     const cat=(window.categories||[]).find(c=>String(c.id)===String(id));
+     const n=cat && typeof legacySizesFromDetails==='function' ? legacySizesFromDetails(cat).length : 0;
+     el.textContent=n>1?l.sizeOptions(n):l.details;
+   });
+   const choose=document.getElementById('detailSizeTitle'); if(choose)choose.textContent=l.choose;
+   const wa=document.getElementById('detailWhatsapp'); if(wa)wa.innerHTML='<i class="fa-brands fa-whatsapp"></i> '+l.ask;
+   const order=document.getElementById('detailOrderButton'); if(order)order.innerHTML='<i class="fa-solid fa-bag-shopping"></i> '+l.order;
+ }
+ window.sultanzadeApplyGlobalI18n=apply;
+
+ // Product translations: use selected language; Turkish only as fallback for OLD products without that translation.
+ window.getProductText=function(cat){
+   const t=cat?.translations||{};
+   const chosen=t[window.currentLang]||{};
+   const tr=t.tr||{};
+   return {
+     title: chosen.title || tr.title || cat?.title || '',
+     desc: chosen.desc || tr.desc || cat?.desc || ''
+   };
+ };
+ window.getLocalizedProductField=function(cat,key){
+   const t=cat?.translations||{};
+   return t[window.currentLang]?.[key] || t.tr?.[key] || cat?.details?.[key] || '';
+ };
+ window.getLocalizedSizeName=function(cat,size,index=0){
+   const t=cat?.translations||{};
+   const defaults={tr:'Standart',en:'Standard',ru:'Стандартный',ar:'قياسي'};
+   return t[window.currentLang]?.sizeNames?.[index] || t.tr?.sizeNames?.[index] || size?.name || defaults[window.currentLang] || defaults.tr;
+ };
+
+ // Replace render after original definitions are available.
+ const oldRender=window.renderCategories;
+ if(typeof oldRender==='function'){
+   window.renderCategories=function(){
+     const r=oldRender.apply(this,arguments);
+     apply(); return r;
+   };
+ }
+ const oldChange=window.changeLanguage;
+ if(typeof oldChange==='function'){
+   window.changeLanguage=function(lang){
+     const r=oldChange.apply(this,arguments);
+     try{ if(typeof renderCategories==='function') renderCategories(); }catch(e){}
+     try{
+       if(window.activeDetailProduct && document.getElementById('detailModalOverlay')?.classList.contains('active')){
+         openDetailModal(window.activeDetailProduct.id);
+       }
+     }catch(e){}
+     setTimeout(()=>{apply(); if(typeof window.translateProductFormUI==='function')window.translateProductFormUI();},0);
+     return r;
+   };
+ }
+ document.addEventListener('DOMContentLoaded',()=>setTimeout(apply,50));
 })();
 </script>
 
