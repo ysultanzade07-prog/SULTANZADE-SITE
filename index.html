@@ -3639,6 +3639,14 @@ Pazar: Kapalı"></textarea></div>
             });
         }
 
+        function getProductBadge(cat) {
+            const lang = currentLang || 'tr';
+            const all = (cat && cat.translations && typeof cat.translations === 'object') ? cat.translations : {};
+            const chosen = all[lang] || {};
+            if (lang === 'tr') return chosen.badge || cat.badge || 'Özel Seri';
+            return chosen.badge || '';
+        }
+
         function renderCategories() {
             const grid = document.getElementById('productsGrid');
             const emptyState = document.getElementById('emptyState');
@@ -3654,7 +3662,7 @@ Pazar: Kapalı"></textarea></div>
                     <article class="product-card" onclick="openDetailModal('${escapeHTML(String(cat.id))}')">
                         <div class="gallery-container"><img src="${escapeHTML(firstImg)}" alt="${escapeHTML(text.title)}" loading="lazy">${imgCount > 1 ? `<span class="photo-count-badge"><i class="fa-solid fa-camera"></i> ${imgCount}</span>` : ''}</div>
                         <div class="product-info">
-                            <div class="product-header-row"><span class="product-badge">${escapeHTML(cat.badge || 'Özel Seri')}</span><span class="product-price">${escapeHTML(sultanzadeFormatMoney(cardPrice, (Array.isArray(cat.sizes)&&cat.sizes.length?cat.sizes[0].currency:"USD")))}</span></div>
+                            <div class="product-header-row"><span class="product-badge">${escapeHTML(getProductBadge(cat))}</span><span class="product-price">${escapeHTML(sultanzadeFormatMoney(cardPrice, (Array.isArray(cat.sizes)&&cat.sizes.length?cat.sizes[0].currency:"USD")))}</span></div>
                             <h3 class="product-title serif-font">${escapeHTML(text.title || '')}</h3>
                             <p class="product-description">${escapeHTML(text.desc || '')}</p>
                             <div class="product-open-label"><span>${Array.isArray(cat.sizes) && cat.sizes.length > 1 ? (window.sultanzadeUiText?.('sizes',cat.sizes.length) || `${cat.sizes.length} Ölçü Seçeneği`) : (window.sultanzadeUiText?.('detail') || 'Ürün Detayı')}</span><i class="fa-solid fa-arrow-right"></i></div>
@@ -3727,7 +3735,7 @@ Pazar: Kapalı"></textarea></div>
             currentDetailImgIndex = 0;
             activeDetailSizeIndex = 0;
             const text = getProductText(cat);
-            document.getElementById('detailBadge').innerText = cat.badge || '';
+            document.getElementById('detailBadge').innerText = getProductBadge(cat);
             document.getElementById('detailTitle').innerText = text.title || '';
             document.getElementById('detailDesc').innerText = text.desc || '';
 
@@ -5034,10 +5042,10 @@ html[dir="rtl"] .product-card img{
 
      const title=chosen.title || (lang==='tr' ? (tr.title||cat.title||'') : legacy(tr.title||cat.title||'',lang));
      const desc=chosen.desc || (lang==='tr' ? (tr.desc||cat.desc||'') : legacy(tr.desc||cat.desc||'',lang));
-     const badge=lang==='tr' ? (cat.badge||'') : legacy(cat.badge||'',lang);
+     const badge = chosen.badge || (lang==='tr' ? (cat.badge||'') : legacy(cat.badge||'',lang));
 
      const titleEl=card.querySelector('.product-title');
-     const descEl=card.querySelector('.product-desc');
+     const descEl=card.querySelector('.product-description');
      const badgeEl=card.querySelector('.product-badge');
      if(titleEl) titleEl.textContent=title;
      if(descEl) descEl.textContent=desc;
@@ -5150,4 +5158,4 @@ html[dir="rtl"] .sultanzade-stock-badge{right:auto;left:12px}
 </script>
 
 </body>
-</html>\n<script>\n/* SULTANZADE PRODUCT BADGE I18N FINAL FIX */\n(function(){\n  const COLORS={\n    en:{'mavi':'Blue','kırmızı':'Red','kirmizi':'Red','bal sarısı':'Honey Yellow','bal sarisi':'Honey Yellow','mor':'Purple','yeşil':'Green','yesil':'Green','siyah':'Black','beyaz':'White','kahverengi':'Brown','turuncu':'Orange','pembe':'Pink','sarı':'Yellow','sari':'Yellow'},\n    ru:{'mavi':'Синий','kırmızı':'Красный','kirmizi':'Красный','bal sarısı':'Медово-жёлтый','bal sarisi':'Медово-жёлтый','mor':'Фиолетовый','yeşil':'Зелёный','yesil':'Зелёный','siyah':'Чёрный','beyaz':'Белый','kahverengi':'Коричневый','turuncu':'Оранжевый','pembe':'Розовый','sarı':'Жёлтый','sari':'Жёлтый'},\n    ar:{'mavi':'أزرق','kırmızı':'أحمر','kirmizi':'أحمر','bal sarısı':'أصفر عسلي','bal sarisi':'أصفر عسلي','mor':'بنفسجي','yeşil':'أخضر','yesil':'أخضر','siyah':'أسود','beyaz':'أبيض','kahverengi':'بني','turuncu':'برتقالي','pembe':'وردي','sarı':'أصفر','sari':'أصفر'}\n  };\n  function trLower(v){return String(v||'').trim().toLocaleLowerCase('tr-TR')}\n  function badge(v,lang){\n    if(!v||lang==='tr') return v||'';\n    if(window.sultanzadeTranslateLegacy){const x=window.sultanzadeTranslateLegacy(v,lang);if(x!==v)return x;}\n    let low=trLower(v);\n    const special={\n      en:{'özel seri':'Special Series','2026 özel seri':'2026 Special Series'},\n      ru:{'özel seri':'Специальная серия','2026 özel seri':'Специальная серия 2026'},\n      ar:{'özel seri':'سلسلة خاصة','2026 özel seri':'سلسلة خاصة 2026'}\n    };\n    if(special[lang]?.[low]) return special[lang][low];\n    const suffixes=[' satranç takımı',' satranc takimi',' chess set'];\n    for(const suffix of suffixes){\n      if(low.endsWith(suffix)){\n        const color=low.slice(0,-suffix.length).trim();\n        const c=COLORS[lang]?.[color];\n        if(c){\n          if(lang==='en') return (c+' Chess Set').toUpperCase();\n          if(lang==='ru') return (c+' шахматный набор').toUpperCase();\n          if(lang==='ar') return 'طقم شطرنج '+c;\n        }\n      }\n    }\n    return v;\n  }\n  window.sultanzadeTranslateBadge=badge;\n  function apply(){\n    const lang=window.currentLang||'tr';\n    document.querySelectorAll('.product-card').forEach(card=>{\n      const raw=card.getAttribute('onclick')||'';\n      const id=(raw.match(/openDetailModal\\('([^']+)'\\)/)||[])[1];\n      const cat=(window.categories||[]).find(x=>String(x.id)===String(id));\n      const el=card.querySelector('.product-badge');\n      if(cat&&el) el.textContent=badge(cat.badge||'',lang);\n    });\n  }\n  window.sultanzadeApplyBadgeI18n=apply;\n  const prevChange=window.changeLanguage;\n  if(typeof prevChange==='function') window.changeLanguage=function(lang){const r=prevChange.apply(this,arguments);setTimeout(apply,30);return r};\n  const prevRender=window.renderCategories;\n  if(typeof prevRender==='function') window.renderCategories=function(){const r=prevRender.apply(this,arguments);setTimeout(apply,10);return r};\n  document.addEventListener('DOMContentLoaded',()=>setTimeout(apply,250));\n})();\n</script>\n
+</html>\n<script>\n/* SULTANZADE PRODUCT BADGE I18N FINAL FIX */\n(function(){\n  const COLORS={\n    en:{'mavi':'Blue','kırmızı':'Red','kirmizi':'Red','bal sarısı':'Honey Yellow','bal sarisi':'Honey Yellow','mor':'Purple','yeşil':'Green','yesil':'Green','siyah':'Black','beyaz':'White','kahverengi':'Brown','kahve':'Coffee Brown','ceviz kahve':'Walnut Brown','turkuaz':'Turquoise','turuncu':'Orange','pembe':'Pink','sarı':'Yellow','sari':'Yellow'},\n    ru:{'mavi':'Синий','kırmızı':'Красный','kirmizi':'Красный','bal sarısı':'Медово-жёлтый','bal sarisi':'Медово-жёлтый','mor':'Фиолетовый','yeşil':'Зелёный','yesil':'Зелёный','siyah':'Чёрный','beyaz':'Белый','kahverengi':'Коричневый','kahve':'Кофейный','ceviz kahve':'Орехово-коричневый','turkuaz':'Бирюзовый','turuncu':'Оранжевый','pembe':'Розовый','sarı':'Жёлтый','sari':'Жёлтый'},\n    ar:{'mavi':'أزرق','kırmızı':'أحمر','kirmizi':'أحمر','bal sarısı':'أصفر عسلي','bal sarisi':'أصفر عسلي','mor':'بنفسجي','yeşil':'أخضر','yesil':'أخضر','siyah':'أسود','beyaz':'أبيض','kahverengi':'بني','kahve':'بني قهوي','ceviz kahve':'بني جوزي','turkuaz':'فيروزي','turuncu':'برتقالي','pembe':'وردي','sarı':'أصفر','sari':'أصفر'}\n  };\n  function trLower(v){return String(v||'').trim().toLocaleLowerCase('tr-TR')}\n  function badge(v,lang){\n    if(!v||lang==='tr') return v||'';\n    if(window.sultanzadeTranslateLegacy){const x=window.sultanzadeTranslateLegacy(v,lang);if(x!==v)return x;}\n    let low=trLower(v);\n    const special={\n      en:{'özel seri':'Special Series','2026 özel seri':'2026 Special Series'},\n      ru:{'özel seri':'Специальная серия','2026 özel seri':'Специальная серия 2026'},\n      ar:{'özel seri':'سلسلة خاصة','2026 özel seri':'سلسلة خاصة 2026'}\n    };\n    if(special[lang]?.[low]) return special[lang][low];\n    const suffixes=[' satranç takımı',' satranc takimi',' chess set'];\n    for(const suffix of suffixes){\n      if(low.endsWith(suffix)){\n        const color=low.slice(0,-suffix.length).trim();\n        const c=COLORS[lang]?.[color];\n        if(c){\n          if(lang==='en') return (c+' Chess Set').toUpperCase();\n          if(lang==='ru') return (c+' шахматный набор').toUpperCase();\n          if(lang==='ar') return 'طقم شطرنج '+c;\n        }\n      }\n    }\n    return v;\n  }\n  window.sultanzadeTranslateBadge=badge;\n  function apply(){\n    const lang=window.currentLang||'tr';\n    document.querySelectorAll('.product-card').forEach(card=>{\n      const raw=card.getAttribute('onclick')||'';\n      const id=(raw.match(/openDetailModal\\('([^']+)'\\)/)||[])[1];\n      const cat=(window.categories||[]).find(x=>String(x.id)===String(id));\n      const el=card.querySelector('.product-badge');\n      if(cat&&el) el.textContent=badge(cat.badge||'',lang);\n    });\n  }\n  window.sultanzadeApplyBadgeI18n=apply;\n  const prevChange=window.changeLanguage;\n  if(typeof prevChange==='function') window.changeLanguage=function(lang){const r=prevChange.apply(this,arguments);setTimeout(apply,30);return r};\n  const prevRender=window.renderCategories;\n  if(typeof prevRender==='function') window.renderCategories=function(){const r=prevRender.apply(this,arguments);setTimeout(apply,10);return r};\n  document.addEventListener('DOMContentLoaded',()=>setTimeout(apply,250));\n})();\n</script>\n
