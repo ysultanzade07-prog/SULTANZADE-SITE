@@ -1593,7 +1593,15 @@ body.sultanzade-owner .owner-product-actions{display:flex}
 
                     <div class="form-section-title serif-font">Ölçü / Fiyat Seçenekleri</div>
                     <div class="form-section-subtitle">Bu ürün için kaç farklı ölçü satılacağını sen belirle. Yalnızca seçtiğin kadar ölçü müşteriye gösterilir.</div>
-                    <div class="form-group full-width" style="max-width:260px"><label>Kaç ölçü seçeneği var?</label><select id="pSizeCount" class="form-control" onchange="updateSizeCount()"><option value="1">1 ölçü</option><option value="2">2 ölçü</option><option value="3" selected>3 ölçü</option></select></div>
+                    
+<div class="form-group" id="stockStatusGroup">
+  <label for="pInStock">Stok Durumu</label>
+  <select id="pInStock">
+    <option value="true">Stokta Var</option>
+    <option value="false">Stokta Yok</option>
+  </select>
+</div>
+<div class="form-group full-width" style="max-width:260px"><label>Kaç ölçü seçeneği var?</label><select id="pSizeCount" class="form-control" onchange="updateSizeCount()"><option value="1">1 ölçü</option><option value="2">2 ölçü</option><option value="3" selected>3 ölçü</option></select></div>
                     <div class="size-form-grid" id="sizeFormGrid">
                         <div class="size-form-card">
                             <h4>1. Ölçü</h4>
@@ -3152,6 +3160,7 @@ Pazar: Kapalı"></textarea></div>
                 details: Object.keys(topDetails).length ? topDetails : (meta.details || {}),
                 sizes: topSizes.length ? topSizes : (Array.isArray(meta.sizes) ? meta.sizes : []),
                 translations: Object.keys(topTranslations).length ? topTranslations : (meta.translations || { tr: { title: row.title || '', desc: row.desc || '' } }),
+                in_stock: row.in_stock !== false,
                 synced: true
             };
         }
@@ -3374,6 +3383,10 @@ Pazar: Kapalı"></textarea></div>
             document.getElementById('addCategoryForm').reset();
             const sc=document.getElementById('pSizeCount'); if(sc) sc.value='1';
             updateSizeCountUI();
+            
+            const stockSelect=document.getElementById('pInStock');
+            if(stockSelect) stockSelect.value = cat.in_stock === false ? 'false' : 'true';
+
             showProductLanguage('tr');
         }
 
@@ -3574,7 +3587,7 @@ Pazar: Kapalı"></textarea></div>
                     if (!(await requireOwnerForProductChange())) throw new Error('Yönetici yetkisi doğrulanamadı.');
                     const existing = categories.find(c => String(c.id) === String(currentEditingProductId));
                     if (!existing) throw new Error('Düzenlenecek ürün bulunamadı.');
-                    const payload = { title, price, badge, desc, images: { urls: remoteImages, details, sizes, translations: translationsData }, details, sizes, translations: translationsData };
+                    const payload = { title, price, badge, desc, images: { urls: remoteImages, details, sizes, translations: translationsData }, details, sizes, translations: translationsData, in_stock: document.getElementById('pInStock')?.value !== 'false' };
                     let updated;
                     if (existing.synced && !String(existing.id).startsWith('local-')) {
                         const { data, error } = await supabaseClient.from('categories').update(payload).eq('id', existing.id).select().single();
@@ -5055,6 +5068,84 @@ html[dir="rtl"] .product-card img{
    };
  }
  document.addEventListener('DOMContentLoaded',()=>setTimeout(localizeAllCards,150));
+})();
+</script>
+
+
+<style>
+.product-card.sultanzade-out-of-stock{opacity:.78}
+.sultanzade-stock-badge{
+ position:absolute;top:12px;right:12px;z-index:8;
+ padding:7px 11px;border-radius:999px;background:#6b1022;color:#fff;
+ font-size:12px;font-weight:700;letter-spacing:.2px
+}
+html[dir="rtl"] .sultanzade-stock-badge{right:auto;left:12px}
+.sultanzade-disabled-order{opacity:.5!important;pointer-events:none!important;cursor:not-allowed!important}
+</style>
+<script>
+/* SULTANZADE STOCK SYSTEM */
+(function(){
+ const WORDS={
+   tr:{in:'Stokta Var',out:'Stokta Yok',status:'Stok Durumu'},
+   en:{in:'In Stock',out:'Out of Stock',status:'Stock Status'},
+   ru:{in:'В наличии',out:'Нет в наличии',status:'Наличие'},
+   ar:{in:'متوفر',out:'غير متوفر',status:'حالة المخزون'}
+ };
+ function lang(){return ['tr','en','ru','ar'].includes(window.currentLang)?window.currentLang:'tr'}
+ function applyStock(){
+   const w=WORDS[lang()];
+   const lab=document.querySelector('label[for="pInStock"]');
+   if(lab) lab.textContent=w.status;
+   const sel=document.getElementById('pInStock');
+   if(sel){sel.options[0].textContent=w.in;sel.options[1].textContent=w.out;}
+
+   document.querySelectorAll('.product-card').forEach(card=>{
+     const raw=card.getAttribute('onclick')||'';
+     const id=(raw.match(/openDetailModal\('([^']+)'\)/)||[])[1];
+     const cat=(window.categories||[]).find(x=>String(x.id)===String(id));
+     if(!cat)return;
+     let badge=card.querySelector('.sultanzade-stock-badge');
+     if(cat.in_stock===false){
+       card.classList.add('sultanzade-out-of-stock');
+       if(!badge){badge=document.createElement('div');badge.className='sultanzade-stock-badge';card.appendChild(badge);}
+       badge.textContent=w.out;
+     }else{
+       card.classList.remove('sultanzade-out-of-stock');
+       badge?.remove();
+     }
+   });
+
+   const active=window.activeDetailProduct;
+   if(active){
+     const current=(window.categories||[]).find(x=>String(x.id)===String(active.id))||active;
+     const btn=document.getElementById('detailOrderButton');
+     if(btn){
+       if(current.in_stock===false){
+         btn.classList.add('sultanzade-disabled-order');
+         btn.disabled=true;
+         btn.innerHTML='<i class="fa-solid fa-ban"></i> '+w.out;
+       }else{
+         btn.classList.remove('sultanzade-disabled-order');
+         btn.disabled=false;
+       }
+     }
+   }
+ }
+ window.sultanzadeApplyStock=applyStock;
+
+ const oldRender=window.renderCategories;
+ if(typeof oldRender==='function') window.renderCategories=function(){
+   const r=oldRender.apply(this,arguments); setTimeout(applyStock,0); return r;
+ };
+ const oldLang=window.changeLanguage;
+ if(typeof oldLang==='function') window.changeLanguage=function(){
+   const r=oldLang.apply(this,arguments); setTimeout(applyStock,20); return r;
+ };
+ const oldDetail=window.openDetailModal;
+ if(typeof oldDetail==='function') window.openDetailModal=function(){
+   const r=oldDetail.apply(this,arguments); setTimeout(applyStock,0); return r;
+ };
+ document.addEventListener('DOMContentLoaded',()=>setTimeout(applyStock,150));
 })();
 </script>
 
