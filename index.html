@@ -3406,7 +3406,7 @@ Pazar: Kapalı"></textarea></div>
             updateSizeCountUI();
             
             const stockSelect=document.getElementById('pInStock');
-            if(stockSelect) stockSelect.value = cat.in_stock === false ? 'false' : 'true';
+            if(stockSelect) stockSelect.value = 'true';
 
             showProductLanguage('tr');
         }
@@ -3597,6 +3597,7 @@ Pazar: Kapalı"></textarea></div>
                     production: document.getElementById('pProduction').value.trim()
                 };
                 const price = sizes[0].price;
+                const inStock = document.getElementById('pInStock').value === 'true';
                 const badge = document.getElementById('pBadge').value.trim() || translations[currentLang].defaultBadge;
                 const remoteImages = [];
                 for (const item of currentUploadedImages) {
@@ -3608,14 +3609,14 @@ Pazar: Kapalı"></textarea></div>
                     if (!(await requireOwnerForProductChange())) throw new Error('Yönetici yetkisi doğrulanamadı.');
                     const existing = categories.find(c => String(c.id) === String(currentEditingProductId));
                     if (!existing) throw new Error('Düzenlenecek ürün bulunamadı.');
-                    const payload = { title, price, badge, desc, images: { urls: remoteImages, details, sizes, translations: translationsData }, details, sizes, translations: translationsData, in_stock: document.getElementById('pInStock')?.value !== 'false' };
+                    const payload = { title, price, badge, desc, images: { urls: remoteImages, details, sizes, translations: translationsData }, details, sizes, translations: translationsData, in_stock: inStock };
                     let updated;
                     if (existing.synced && !String(existing.id).startsWith('local-')) {
                         const { data, error } = await supabaseClient.from('categories').update(payload).eq('id', existing.id).select().single();
                         if (error) throw error;
                         updated = normalizeRemoteRow(data);
                     } else {
-                        updated = { ...existing, title, price, badge, desc, images: remoteImages, details, sizes, translations: translationsData, in_stock: document.getElementById('pInStock')?.value !== 'false' };
+                        updated = { ...existing, title, price, badge, desc, images: remoteImages, details, sizes, translations: translationsData, in_stock: inStock };
                     }
                     await localDeleteProduct(existing.id);
                     await localPutProduct(updated);
@@ -3629,11 +3630,11 @@ Pazar: Kapalı"></textarea></div>
                     const localProduct = {
                         id: `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
                         title, price, badge, desc, images: localImages, details, sizes,
-                        translations: translationsData, in_stock: document.getElementById('pInStock')?.value !== 'false', synced: false
+                        translations: translationsData, in_stock: inStock, synced: false
                     };
                     await localPutProduct(localProduct); categories.unshift(localProduct); renderCategories();
                     try {
-                        const { data, error } = await supabaseClient.from('categories').insert({ title, price, badge, desc, images: { urls: remoteImages, details, sizes, translations: translationsData }, details, sizes, translations: translationsData, in_stock: document.getElementById('pInStock')?.value !== 'false' }).select().single();
+                        const { data, error } = await supabaseClient.from('categories').insert({ title, price, badge, desc, images: { urls: remoteImages, details, sizes, translations: translationsData }, details, sizes, translations: translationsData, in_stock: inStock }).select().single();
                         if (!error && data) {
                             const synced = normalizeRemoteRow(data); await localDeleteProduct(localProduct.id); await localPutProduct(synced);
                             const idx = categories.findIndex(c => c.id === localProduct.id); if (idx >= 0) categories[idx] = synced; renderCategories();
@@ -3714,6 +3715,8 @@ Pazar: Kapalı"></textarea></div>
             const cat = categories.find(c => String(c.id) === String(id));
             if (!cat) return;
             currentEditingProductId = cat.id;
+            const stockSelect = document.getElementById('pInStock');
+            if (stockSelect) stockSelect.value = cat.in_stock === false ? 'false' : 'true';
             const tr = cat.translations || {};
             const trTR = tr.tr || {};
             setFieldValue('pTitleTr', trTR.title || cat.title || ''); setFieldValue('pDescTr', trTR.desc || cat.desc || '');
@@ -5115,72 +5118,7 @@ html[dir="rtl"] .product-card img{
 html[dir="rtl"] .sultanzade-stock-badge{right:auto;left:12px}
 .sultanzade-disabled-order{opacity:.5!important;pointer-events:none!important;cursor:not-allowed!important}
 </style>
-<script>
-/* SULTANZADE STOCK SYSTEM */
-(function(){
- const WORDS={
-   tr:{in:'Stokta Var',out:'Stokta Yok',status:'Stok Durumu'},
-   en:{in:'In Stock',out:'Out of Stock',status:'Stock Status'},
-   ru:{in:'В наличии',out:'Нет в наличии',status:'Наличие'},
-   ar:{in:'متوفر',out:'غير متوفر',status:'حالة المخزون'}
- };
- function lang(){return ['tr','en','ru','ar'].includes(window.currentLang)?window.currentLang:'tr'}
- function applyStock(){
-   const w=WORDS[lang()];
-   const lab=document.querySelector('label[for="pInStock"]');
-   if(lab) lab.textContent=w.status;
-   const sel=document.getElementById('pInStock');
-   if(sel){sel.options[0].textContent=w.in;sel.options[1].textContent=w.out;}
 
-   document.querySelectorAll('.product-card').forEach(card=>{
-     const raw=card.getAttribute('onclick')||'';
-     const id=(raw.match(/openDetailModal\('([^']+)'\)/)||[])[1];
-     const cat=(window.categories||[]).find(x=>String(x.id)===String(id));
-     if(!cat)return;
-     let badge=card.querySelector('.sultanzade-stock-badge');
-     if(cat.in_stock===false){
-       card.classList.add('sultanzade-out-of-stock');
-       if(!badge){badge=document.createElement('div');badge.className='sultanzade-stock-badge';card.appendChild(badge);}
-       badge.textContent=w.out;
-     }else{
-       card.classList.remove('sultanzade-out-of-stock');
-       badge?.remove();
-     }
-   });
-
-   const active=window.activeDetailProduct;
-   if(active){
-     const current=(window.categories||[]).find(x=>String(x.id)===String(active.id))||active;
-     const btn=document.getElementById('detailOrderButton');
-     if(btn){
-       if(current.in_stock===false){
-         btn.classList.add('sultanzade-disabled-order');
-         btn.disabled=true;
-         btn.innerHTML='<i class="fa-solid fa-ban"></i> '+w.out;
-       }else{
-         btn.classList.remove('sultanzade-disabled-order');
-         btn.disabled=false;
-       }
-     }
-   }
- }
- window.sultanzadeApplyStock=applyStock;
-
- const oldRender=window.renderCategories;
- if(typeof oldRender==='function') window.renderCategories=function(){
-   const r=oldRender.apply(this,arguments); setTimeout(applyStock,0); return r;
- };
- const oldLang=window.changeLanguage;
- if(typeof oldLang==='function') window.changeLanguage=function(){
-   const r=oldLang.apply(this,arguments); setTimeout(applyStock,20); return r;
- };
- const oldDetail=window.openDetailModal;
- if(typeof oldDetail==='function') window.openDetailModal=function(){
-   const r=oldDetail.apply(this,arguments); setTimeout(applyStock,0); return r;
- };
- document.addEventListener('DOMContentLoaded',()=>setTimeout(applyStock,150));
-})();
-</script>
 
 
 <style id="sultanzade-manager-save-mobile-fix">
@@ -5306,6 +5244,94 @@ document.addEventListener('DOMContentLoaded', function(){
     if(b) setTimeout(renderHeroManager,100);
   });
 })();
+</script>
+
+
+<style id="sultanzade-stock-final-css">
+.product-card.sultanzade-out-of-stock{position:relative}
+.sultanzade-stock-badge{
+ position:absolute;top:14px;right:-7px;z-index:30;padding:9px 14px;
+ border-radius:8px 0 0 8px;background:#b20f24;color:#fff;
+ box-shadow:0 4px 12px rgba(0,0,0,.25);font-size:12px;font-weight:800;
+ letter-spacing:.6px;text-transform:uppercase;pointer-events:none
+}
+html[dir="rtl"] .sultanzade-stock-badge{right:auto;left:-7px;border-radius:0 8px 8px 0}
+.sultanzade-disabled-order{opacity:.55!important;pointer-events:none!important;cursor:not-allowed!important}
+</style>
+<script id="sultanzade-stock-final-js">
+(function(){
+ const W={
+  tr:{out:'STOKTA YOK'},en:{out:'OUT OF STOCK'},
+  ru:{out:'НЕТ В НАЛИЧИИ'},ar:{out:'غير متوفر'}
+ };
+ function word(){return (W[window.currentLang]||W.tr).out}
+ function applyDetailStock(){
+   try{
+     if(typeof activeDetailProduct==='undefined' || !activeDetailProduct) return;
+     const p=categories.find(x=>String(x.id)===String(activeDetailProduct.id))||activeDetailProduct;
+     const btn=document.getElementById('detailOrderButton');
+     if(!btn)return;
+     if(p.in_stock===false){
+       btn.disabled=true;btn.classList.add('sultanzade-disabled-order');
+       btn.innerHTML='<i class="fa-solid fa-ban"></i> '+word();
+     }
+   }catch(e){console.warn('Stok detay görünümü:',e)}
+ }
+ const oldDetail=window.openDetailModal;
+ if(typeof oldDetail==='function'){
+   window.openDetailModal=function(){
+     const r=oldDetail.apply(this,arguments);
+     setTimeout(applyDetailStock,0);
+     return r;
+   };
+ }
+ const oldLang=window.changeLanguage;
+ if(typeof oldLang==='function'){
+   window.changeLanguage=function(){
+     const r=oldLang.apply(this,arguments);
+     setTimeout(applyDetailStock,20);
+     return r;
+   };
+ }
+})();
+</script>
+
+
+<script id="sultanzade-stock-autosave">
+document.addEventListener('DOMContentLoaded',function(){
+ const sel=document.getElementById('pInStock');
+ if(!sel)return;
+ sel.addEventListener('change',async function(){
+   if(typeof currentEditingProductId==='undefined' || currentEditingProductId===null) return;
+   const id=currentEditingProductId;
+   const inStock=this.value==='true';
+   try{
+     const existing=categories.find(x=>String(x.id)===String(id));
+     if(!existing) throw new Error('Ürün bulunamadı.');
+     if(existing.synced && !String(existing.id).startsWith('local-')){
+       const {data,error}=await supabaseClient.from('categories')
+         .update({in_stock:inStock}).eq('id',existing.id).select().single();
+       if(error) throw error;
+       const updated=normalizeRemoteRow(data);
+       const idx=categories.findIndex(x=>String(x.id)===String(existing.id));
+       if(idx>=0) categories[idx]=updated;
+       await localDeleteProduct(existing.id); await localPutProduct(updated);
+     }else{
+       existing.in_stock=inStock;
+       await localPutProduct(existing);
+     }
+     renderCategories();
+     const note=document.getElementById('sultanzadeStockSaveNote')||document.createElement('div');
+     note.id='sultanzadeStockSaveNote';
+     note.style.cssText='margin-top:8px;font-size:13px;font-weight:700;color:#237a3b';
+     note.textContent=inStock?'✓ Stokta Var olarak kaydedildi':'✓ Stokta Yok olarak kaydedildi';
+     sel.parentElement.appendChild(note);
+   }catch(e){
+     alert('Stok durumu kaydedilemedi: '+(e?.message||'Bilinmeyen hata'));
+     console.error(e);
+   }
+ });
+});
 </script>
 
 </body>
