@@ -4801,5 +4801,54 @@ function sultanzadeFormatMoney(value,currency){
 })();
 </script>
 
+
+<script>
+/* Guest/default-language consistency: default is Turkish until user explicitly chooses another language. */
+(function(){
+  const VALID=['tr','en','ru','ar'];
+
+  function getSavedLanguage(){
+    try{
+      const saved=localStorage.getItem('sultanzade_language');
+      return VALID.includes(saved)?saved:null;
+    }catch(e){ return null; }
+  }
+  function saveLanguage(lang){
+    try{localStorage.setItem('sultanzade_language',lang)}catch(e){}
+  }
+
+  const previousChange=window.changeLanguage;
+  if(typeof previousChange==='function'){
+    window.changeLanguage=function(lang){
+      lang=VALID.includes(lang)?lang:'tr';
+      window.currentLang=lang;
+      saveLanguage(lang);
+      const r=previousChange.call(this,lang);
+      setTimeout(()=>{
+        try{window.sultanzadeApplyGlobalI18n?.()}catch(e){}
+        try{window.translateProductFormUI?.()}catch(e){}
+        try{window.applyFullI18n?.()}catch(e){}
+      },0);
+      return r;
+    };
+  }
+
+  function initializeGuestLanguage(){
+    // If the visitor has never selected a language, show ONE complete language: Turkish.
+    const lang=getSavedLanguage() || 'tr';
+    window.currentLang=lang;
+    if(typeof window.changeLanguage==='function') window.changeLanguage(lang);
+    document.documentElement.lang=lang;
+    document.documentElement.dir=lang==='ar'?'rtl':'ltr';
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',()=>setTimeout(initializeGuestLanguage,0));
+  }else{
+    setTimeout(initializeGuestLanguage,0);
+  }
+})();
+</script>
+
 </body>
 </html>
