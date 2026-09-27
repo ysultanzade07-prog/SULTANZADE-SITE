@@ -3546,14 +3546,8 @@ Pazar: Kapalı"></textarea></div>
                         material: document.getElementById('pMaterialAr')?.value.trim() || '', color: document.getElementById('pColorAr')?.value.trim() || '', production: document.getElementById('pProductionAr')?.value.trim() || '',
                         sizeNames: Array.from({length:getActiveSizeCount()},(_,k) => document.getElementById(`pSize${k+1}NameAr`)?.value.trim() || '') }
                 };
-                ['en','ru','ar'].forEach(lang => {
-                    if (!translationsData[lang].title) translationsData[lang].title = title;
-                    if (!translationsData[lang].desc) translationsData[lang].desc = desc;
-                    if (!translationsData[lang].material) translationsData[lang].material = translationsData.tr.material;
-                    if (!translationsData[lang].color) translationsData[lang].color = translationsData.tr.color;
-                    if (!translationsData[lang].production) translationsData[lang].production = translationsData.tr.production;
-                    translationsData[lang].sizeNames = translationsData[lang].sizeNames.map((x,i)=>x || translationsData.tr.sizeNames[i] || '');
-                });
+                // EN/RU/AR values are saved exactly as entered in the admin form.
+                // Display-time fallback to Turkish is handled separately for older products.
                 const sizeCount = getActiveSizeCount();
                 const sizes = Array.from({length:sizeCount},(_,k)=>readSizeOption(k+1));
                 if (sizes.some(s => !s.name || !s.price)) throw new Error(`Lütfen seçtiğiniz ${sizeCount} ölçünün adını ve fiyatını doldurun.`);
@@ -4563,6 +4557,24 @@ function sultanzadeFormatMoney(value,currency){
   const symbols={USD:'$',EUR:'€',TRY:'₺',GBP:'£'};
   return `${symbols[code]||code+' '}${raw}`;
 }
+</script>
+
+
+<script>
+(function(){
+  const originalChangeLanguage = window.changeLanguage;
+  if (typeof originalChangeLanguage === 'function' && !window.__sultanzadeProductLangPatched) {
+    window.__sultanzadeProductLangPatched = true;
+    window.changeLanguage = function(lang){
+      const result = originalChangeLanguage.apply(this, arguments);
+      try { renderCategories(); } catch(e) {}
+      if (window.activeDetailProduct) {
+        try { openDetailModal(window.activeDetailProduct.id); } catch(e) {}
+      }
+      return result;
+    };
+  }
+})();
 </script>
 
 </body>
