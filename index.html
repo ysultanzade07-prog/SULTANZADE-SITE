@@ -1448,6 +1448,11 @@ body.sultanzade-owner .owner-product-actions{display:flex}
 .owner-product-actions .owner-delete-product{border-color:#9d4b4b;background:#5a1f25}
 @media(max-width:700px){.owner-product-actions{gap:5px}.owner-product-actions button{font-size:10px;padding:7px 9px}}
 </style>
+
+<style>
+.currency-select{margin-top:7px;min-width:120px}
+</style>
+
 </head>
 <body>
 
@@ -1593,7 +1598,12 @@ body.sultanzade-owner .owner-product-actions{display:flex}
                         <div class="size-form-card">
                             <h4>1. Ölçü</h4>
                             <div class="form-group"><label>Seçenek adı *</label><input type="text" id="pSize1Name" class="form-control" placeholder="Örn: Küçük"></div>
-                            <div class="form-group"><label>Fiyat *</label><input type="text" id="pSize1Price" class="form-control" placeholder="Örn: 12.500 ₺"></div>
+                            <div class="form-group"><label>Fiyat *</label><input type="text" id="pSize1Price" class="form-control" placeholder="Örn: 12.500 ₺"><select id="pSize1Currency" class="form-control currency-select" aria-label="Para birimi">
+<option value="USD">USD ($)</option>
+<option value="EUR">EUR (€)</option>
+<option value="TRY">TRY (₺)</option>
+<option value="GBP">GBP (£)</option>
+</select></div>
                             <div class="form-group"><label>En</label><input type="text" id="pSize1Width" class="form-control" placeholder="35 cm"></div>
                             <div class="form-group"><label>Boy</label><input type="text" id="pSize1Length" class="form-control" placeholder="50 cm"></div>
                             <div class="form-group"><label>Yükseklik</label><input type="text" id="pSize1Height" class="form-control" placeholder="12 cm"></div>
@@ -1602,7 +1612,12 @@ body.sultanzade-owner .owner-product-actions{display:flex}
                         <div class="size-form-card">
                             <h4>2. Ölçü</h4>
                             <div class="form-group"><label>Seçenek adı *</label><input type="text" id="pSize2Name" class="form-control" placeholder="Örn: Orta"></div>
-                            <div class="form-group"><label>Fiyat *</label><input type="text" id="pSize2Price" class="form-control" placeholder="Örn: 15.500 ₺"></div>
+                            <div class="form-group"><label>Fiyat *</label><input type="text" id="pSize2Price" class="form-control" placeholder="Örn: 15.500 ₺"><select id="pSize2Currency" class="form-control currency-select" aria-label="Para birimi">
+<option value="USD">USD ($)</option>
+<option value="EUR">EUR (€)</option>
+<option value="TRY">TRY (₺)</option>
+<option value="GBP">GBP (£)</option>
+</select></div>
                             <div class="form-group"><label>En</label><input type="text" id="pSize2Width" class="form-control" placeholder="40 cm"></div>
                             <div class="form-group"><label>Boy</label><input type="text" id="pSize2Length" class="form-control" placeholder="60 cm"></div>
                             <div class="form-group"><label>Yükseklik</label><input type="text" id="pSize2Height" class="form-control" placeholder="14 cm"></div>
@@ -1611,7 +1626,12 @@ body.sultanzade-owner .owner-product-actions{display:flex}
                         <div class="size-form-card">
                             <h4>3. Ölçü</h4>
                             <div class="form-group"><label>Seçenek adı *</label><input type="text" id="pSize3Name" class="form-control" placeholder="Örn: Büyük"></div>
-                            <div class="form-group"><label>Fiyat *</label><input type="text" id="pSize3Price" class="form-control" placeholder="Örn: 19.500 ₺"></div>
+                            <div class="form-group"><label>Fiyat *</label><input type="text" id="pSize3Price" class="form-control" placeholder="Örn: 19.500 ₺"><select id="pSize3Currency" class="form-control currency-select" aria-label="Para birimi">
+<option value="USD">USD ($)</option>
+<option value="EUR">EUR (€)</option>
+<option value="TRY">TRY (₺)</option>
+<option value="GBP">GBP (£)</option>
+</select></div>
                             <div class="form-group"><label>En</label><input type="text" id="pSize3Width" class="form-control" placeholder="45 cm"></div>
                             <div class="form-group"><label>Boy</label><input type="text" id="pSize3Length" class="form-control" placeholder="70 cm"></div>
                             <div class="form-group"><label>Yükseklik</label><input type="text" id="pSize3Height" class="form-control" placeholder="16 cm"></div>
@@ -3409,7 +3429,8 @@ Pazar: Kapalı"></textarea></div>
                 width: document.getElementById(`pSize${index}Width`).value.trim(),
                 length: document.getElementById(`pSize${index}Length`).value.trim(),
                 height: document.getElementById(`pSize${index}Height`).value.trim(),
-                weight: document.getElementById(`pSize${index}Weight`).value.trim()
+                weight: document.getElementById(`pSize${index}Weight`).value.trim(),
+                currency: document.getElementById(`pSize${index}Currency`)?.value || 'USD'
             };
         }
 
@@ -3449,7 +3470,7 @@ Pazar: Kapalı"></textarea></div>
             activeDetailSizeIndex = index;
             const selected = sizes[index];
             document.querySelectorAll('.size-option').forEach((btn, i) => btn.classList.toggle('active', i === index));
-            document.getElementById('detailPrice').innerText = selected.price || activeDetailProduct.price || '';
+            document.getElementById('detailPrice').innerText = sultanzadeFormatMoney(selected.price || activeDetailProduct.price || '', selected.currency || 'USD');
 
             const d = activeDetailProduct.details || {};
             const merged = {
@@ -3620,7 +3641,7 @@ Pazar: Kapalı"></textarea></div>
                     <article class="product-card" onclick="openDetailModal('${escapeHTML(String(cat.id))}')">
                         <div class="gallery-container"><img src="${escapeHTML(firstImg)}" alt="${escapeHTML(text.title)}" loading="lazy">${imgCount > 1 ? `<span class="photo-count-badge"><i class="fa-solid fa-camera"></i> ${imgCount}</span>` : ''}</div>
                         <div class="product-info">
-                            <div class="product-header-row"><span class="product-badge">${escapeHTML(cat.badge || 'Özel Seri')}</span><span class="product-price">${escapeHTML(cardPrice)}</span></div>
+                            <div class="product-header-row"><span class="product-badge">${escapeHTML(cat.badge || 'Özel Seri')}</span><span class="product-price">${escapeHTML(sultanzadeFormatMoney(cardPrice, (Array.isArray(cat.sizes)&&cat.sizes.length?cat.sizes[0].currency:"USD")))}</span></div>
                             <h3 class="product-title serif-font">${escapeHTML(text.title || '')}</h3>
                             <p class="product-description">${escapeHTML(text.desc || '')}</p>
                             <div class="product-open-label"><span>${Array.isArray(cat.sizes) && cat.sizes.length > 1 ? (window.sultanzadeUiText?.('sizes',cat.sizes.length) || `${cat.sizes.length} Ölçü Seçeneği`) : (window.sultanzadeUiText?.('detail') || 'Ürün Detayı')}</span><i class="fa-solid fa-arrow-right"></i></div>
@@ -3666,7 +3687,7 @@ Pazar: Kapalı"></textarea></div>
             updateSizeCount();
             for (let i=1;i<=3;i++) {
                 const z=sizes[i-1]||{};
-                setFieldValue(`pSize${i}Name`, z.name||trTR.sizeNames?.[i-1]||''); setFieldValue(`pSize${i}Price`,z.price||''); setFieldValue(`pSize${i}Width`,z.width||''); setFieldValue(`pSize${i}Length`,z.length||''); setFieldValue(`pSize${i}Height`,z.height||''); setFieldValue(`pSize${i}Weight`,z.weight||'');
+                setFieldValue(`pSize${i}Name`, z.name||trTR.sizeNames?.[i-1]||''); setFieldValue(`pSize${i}Price`,z.price||''); setFieldValue(`pSize${i}Currency`,z.currency||'USD'); setFieldValue(`pSize${i}Width`,z.width||''); setFieldValue(`pSize${i}Length`,z.length||''); setFieldValue(`pSize${i}Height`,z.height||''); setFieldValue(`pSize${i}Weight`,z.weight||'');
                 for (const [lang,suffix] of [['en','En'],['ru','Ru'],['ar','Ar']]) setFieldValue(`pSize${i}Name${suffix}`,tr[lang]?.sizeNames?.[i-1]||'');
             }
             currentUploadedImages=(cat.images||[]).map(url=>({url,previewUrl:url})); renderPreviewThumbs();
@@ -3706,13 +3727,13 @@ Pazar: Kapalı"></textarea></div>
                     <button type="button" class="size-option ${idx === 0 ? 'active' : ''}" onclick="selectProductSize(${idx})">
                         <span class="size-option-name">${escapeHTML(getLocalizedSizeName(cat, size, idx))}</span>
                         <span class="size-option-dims">${escapeHTML(getSizeDisplayDimensions(size))}</span>
-                        <span class="size-option-price">${escapeHTML(size.price || cat.price || '')}</span>
+                        <span class="size-option-price">${escapeHTML(sultanzadeFormatMoney(size.price || cat.price || '', size.currency || 'USD'))}</span>
                     </button>
                 `).join('');
             } else {
                 sizeContainer.innerHTML = '';
             }
-            document.getElementById('detailPrice').innerText = (sizes[0]?.price || cat.price || '');
+            document.getElementById('detailPrice').innerText = sultanzadeFormatMoney(sizes[0]?.price || cat.price || '', sizes[0]?.currency || 'USD');
             selectProductSize(0);
             const whatsappButton = document.getElementById('detailWhatsapp');
             if (whatsappButton) {
@@ -4523,6 +4544,25 @@ async function deleteCRMPayment(id){
   document.addEventListener('DOMContentLoaded',()=>{updateSizeCountUI();applyVisibleTranslations();});
   window.applyFullI18n=applyVisibleTranslations;
 })();
+</script>
+
+
+<script>
+function sultanzadeFormatMoney(value,currency){
+  const raw=String(value??'').trim();
+  if(!raw) return '';
+  const numeric=Number(raw.replace(/\s/g,'').replace(',','.').replace(/[^\d.-]/g,''));
+  const code=currency||'USD';
+  if(Number.isFinite(numeric)){
+    try{
+      return new Intl.NumberFormat(currentLang==='tr'?'tr-TR':currentLang==='ru'?'ru-RU':currentLang==='ar'?'ar': 'en-US',{
+        style:'currency',currency:code,minimumFractionDigits:Number.isInteger(numeric)?0:2,maximumFractionDigits:2
+      }).format(numeric);
+    }catch(e){}
+  }
+  const symbols={USD:'$',EUR:'€',TRY:'₺',GBP:'£'};
+  return `${symbols[code]||code+' '}${raw}`;
+}
 </script>
 
 </body>
