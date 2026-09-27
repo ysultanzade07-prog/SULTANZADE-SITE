@@ -1651,7 +1651,7 @@ body.sultanzade-owner .owner-product-actions{display:flex}
             <div class="spec-list" id="detailSpecs"></div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
                 <a id="detailWhatsapp" class="btn-whatsapp" href="#" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp"></i> WhatsApp'tan Bilgi Al</a>
-                <button type="button" class="btn-whatsapp" onclick="openOrderModal()"><i class="fa-solid fa-bag-shopping"></i> Sipariş Ver</button>
+                <button type="button" id="detailOrderButton" class="btn-whatsapp" onclick="openOrderModal()"><i class="fa-solid fa-bag-shopping"></i> Sipariş Ver</button>
             </div>
         </div>
     </div>
@@ -1692,6 +1692,31 @@ body.sultanzade-owner .owner-product-actions{display:flex}
                 </div>
             </form>
         </div>
+    </div>
+
+    <!-- MÜŞTERİ ÖDEME SAYFASI -->
+    <div class="modal-overlay" id="paymentModalOverlay" onclick="closeModalOnOverlay(event, 'paymentModalOverlay')">
+      <div class="modal-card order-card">
+        <button class="modal-close" onclick="closeModal('paymentModalOverlay')"><i class="fa-solid fa-xmark"></i></button>
+        <h3 class="box-title serif-font" id="paymentPageTitle">Ödeme</h3>
+        <p class="box-subtitle" id="paymentPageSubtitle">Siparişinizi tamamlamak için ödeme yöntemini seçin.</p>
+        <div class="order-summary" id="paymentOrderSummary"></div>
+        <div style="border:1px solid var(--border-gold);border-radius:14px;padding:16px;background:var(--accent-gold-soft);margin:12px 0">
+          <h4 id="bankTransferTitle" style="color:var(--accent-coffee);margin-bottom:10px"><i class="fa-solid fa-building-columns"></i> Havale / EFT</h4>
+          <div class="spec-list" style="margin-top:0">
+            <div class="spec-item"><span id="paymentBankLabel">Banka</span><span id="paymentBankName"></span></div>
+            <div class="spec-item"><span id="paymentHolderLabel">Hesap sahibi</span><span id="paymentAccountHolder"></span></div>
+            <div class="spec-item"><span>IBAN</span><span id="paymentIban"></span></div>
+            <div class="spec-item"><span id="paymentNoteLabel">Açıklama</span><span id="paymentNoteValue"></span></div>
+          </div>
+          <button type="button" class="btn-submit" style="margin-top:12px" onclick="copyPaymentIban()"><i class="fa-regular fa-copy"></i> <span id="copyIbanText">IBAN'ı Kopyala</span></button>
+        </div>
+        <div style="border:1px solid var(--border-color);border-radius:14px;padding:16px;margin:12px 0;opacity:.8">
+          <h4 id="cardPaymentTitle" style="color:var(--accent-coffee)"><i class="fa-regular fa-credit-card"></i> Kartla Ödeme</h4>
+          <p id="cardPaymentInfo" style="font-size:.8rem;color:var(--text-muted);margin-top:5px">Kartla online ödeme, ödeme kuruluşu bağlandıktan sonra aktif olacaktır.</p>
+        </div>
+        <button type="button" class="btn-whatsapp" onclick="sendLastOrderWhatsApp()"><i class="fa-brands fa-whatsapp"></i> <span id="paymentWhatsappText">Ödeme / Sipariş Bilgisini WhatsApp'tan Gönder</span></button>
+      </div>
     </div>
 
     <!-- YÖNETİCİ GİRİŞİ -->
@@ -2670,7 +2695,10 @@ Pazar: Kapalı"></textarea></div>
             };
             const ml = orderMsgLabels[currentLang] || orderMsgLabels.tr;
             const msg = [ml.hello,`${ml.product}: ${text.title || ''}`,`${ml.size}: ${order.size}`,`${ml.price}: ${selected.price || activeDetailProduct.price || ''}`,`${ml.country}: ${order.country}`,`${ml.name}: ${order.name}`,`${ml.phone}: ${order.phone}`,`${ml.email}: ${order.email}`,`${ml.city}: ${order.city}`,`${ml.district}: ${order.district}`,`${ml.address}: ${order.address}`,`${ml.note}: ${order.note || '-'}`].join('\n');
-            window.open(`https://wa.me/${String(siteSettings.whatsapp||'').replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
+            window.lastSultanzadeOrder = order;
+            window.lastSultanzadeOrderMessage = msg;
+            closeModal('orderModalOverlay');
+            openPaymentModal(order);
         }
 
 
@@ -4350,5 +4378,6 @@ async function deleteCRMPayment(id){
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initHeroSlider); else initHeroSlider();
 })();
 </script>
+\n<style>\n#paymentModalOverlay .modal-card{max-width:720px}\n#paymentModalOverlay .spec-list{grid-template-columns:1fr}\n</style>\n<script>\n(function(){\n const PAY_I18N={\n tr:{order:'Sipariş Ver',choose:'Ölçü seçin',selected:'Seçilen ölçü',wa:'WhatsApp’tan Bilgi Al',pay:'Ödeme',sub:'Siparişinizi tamamlamak için ödeme yöntemini seçin.',bank:'Havale / EFT',bankLabel:'Banka',holder:'Hesap sahibi',note:'Açıklama',copy:"IBAN’ı Kopyala",card:'Kartla Ödeme',cardInfo:'Kartla online ödeme, ödeme kuruluşu bağlandıktan sonra aktif olacaktır.',send:"Ödeme / Sipariş Bilgisini WhatsApp’tan Gönder",country:'Ülke seçin *'},\n en:{order:'Order Now',choose:'Choose a size',selected:'Selected size',wa:'Ask on WhatsApp',pay:'Payment',sub:'Choose a payment method to complete your order.',bank:'Bank Transfer',bankLabel:'Bank',holder:'Account holder',note:'Description',copy:'Copy IBAN',card:'Card Payment',cardInfo:'Online card payment will be enabled after a payment provider is connected.',send:'Send Payment / Order Details on WhatsApp',country:'Select country *'},\n ru:{order:'Заказать',choose:'Выберите размер',selected:'Выбранный размер',wa:'Связаться в WhatsApp',pay:'Оплата',sub:'Выберите способ оплаты, чтобы завершить заказ.',bank:'Банковский перевод',bankLabel:'Банк',holder:'Владелец счета',note:'Назначение',copy:'Копировать IBAN',card:'Оплата картой',cardInfo:'Онлайн-оплата картой станет доступна после подключения платежного провайдера.',send:'Отправить данные оплаты / заказа в WhatsApp',country:'Выберите страну *'},\n ar:{order:'اطلب الآن',choose:'اختر المقاس',selected:'المقاس المحدد',wa:'تواصل عبر واتساب',pay:'الدفع',sub:'اختر طريقة الدفع لإكمال طلبك.',bank:'تحويل بنكي',bankLabel:'البنك',holder:'صاحب الحساب',note:'البيان',copy:'نسخ IBAN',card:'الدفع بالبطاقة',cardInfo:'سيتم تفعيل الدفع الإلكتروني بالبطاقة بعد ربط مزود دفع.',send:'إرسال بيانات الدفع / الطلب عبر واتساب',country:'اختر الدولة *'}\n };\n function lang(){return window.currentLang||localStorage.getItem('sultanzade_lang')||'tr'}\n function set(id,v){const e=document.getElementById(id);if(e)e.textContent=v}\n window.applyCustomerCheckoutI18n=function(){\n   const t=PAY_I18N[lang()]||PAY_I18N.tr;\n   set('detailSizeTitle',t.choose);\n   const ob=document.getElementById('detailOrderButton');if(ob)ob.innerHTML='<i class="fa-solid fa-bag-shopping"></i> '+t.order;\n   const wb=document.getElementById('detailWhatsapp');if(wb)wb.innerHTML='<i class="fa-brands fa-whatsapp"></i> '+t.wa;\n   set('paymentPageTitle',t.pay);set('paymentPageSubtitle',t.sub);set('bankTransferTitle',t.bank);set('paymentBankLabel',t.bankLabel);set('paymentHolderLabel',t.holder);set('paymentNoteLabel',t.note);set('copyIbanText',t.copy);set('cardPaymentTitle',t.card);set('cardPaymentInfo',t.cardInfo);set('paymentWhatsappText',t.send);\n   const c=document.getElementById('orderCountry');if(c&&c.options.length)c.options[0].textContent=t.country;\n };\n const originalChange=window.changeLanguage;\n if(typeof originalChange==='function') window.changeLanguage=function(l){originalChange(l);setTimeout(()=>{window.applyCustomerCheckoutI18n(); if(window.activeDetailProduct){try{openDetailModal(window.activeDetailProduct.id)}catch(e){}}},20)};\n window.openPaymentModal=function(order){\n   const product=window.activeDetailProduct, sizes=product?legacySizesFromDetails(product):[], sel=sizes[window.activeDetailSizeIndex||0]||{};\n   const text=product?getProductText(product):{title:order?.productTitle||''};\n   const sum=document.getElementById('paymentOrderSummary');if(sum)sum.innerHTML='<strong>'+escapeHTML(text.title||order?.productTitle||'')+'</strong><br>'+escapeHTML(order?.size||getLocalizedSizeName(product,sel,window.activeDetailSizeIndex||0))+' · '+escapeHTML(order?.price||sel.price||product?.price||'');\n   set('paymentBankName',siteSettings.bankName||'-');set('paymentAccountHolder',siteSettings.accountHolder||'-');set('paymentIban',siteSettings.iban||'-');set('paymentNoteValue',siteSettings.paymentNote||'Ürün bedeli');\n   window.applyCustomerCheckoutI18n();document.getElementById('paymentModalOverlay')?.classList.add('active');\n };\n window.copyPaymentIban=function(){const v=document.getElementById('paymentIban')?.textContent||'';navigator.clipboard?.writeText(v)};\n window.sendLastOrderWhatsApp=function(){const phone=String(siteSettings.whatsapp||'').replace(/\D/g,'');if(!phone){alert('WhatsApp numarası yönetici panelinden girilmemiş.');return}const msg=window.lastSultanzadeOrderMessage||'';window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank','noopener')};\n document.addEventListener('DOMContentLoaded',()=>setTimeout(window.applyCustomerCheckoutI18n,50));\n})();\n</script>\n
 </body>
 </html>
