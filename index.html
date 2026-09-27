@@ -4577,5 +4577,148 @@ function sultanzadeFormatMoney(value,currency){
 })();
 </script>
 
+
+<script>
+/* SULTANZADE — complete admin/product-form UI localization */
+(function(){
+ const A={
+  tr:{
+   modalNew:'Yeni Kategori Ekle',modalEdit:'Ürünü Düzenle',save:'Kaydet ve Ekle',saveEdit:'Değişiklikleri Kaydet',
+   productName:'ÜRÜN ADI *',desc:'AÇIKLAMA *',material:'MALZEME',color:'RENK',production:'ÜRETİM / ÖZEL NOT',
+   sizeNames:'ÖLÇÜ ADLARI (1 / 2 / 3)',sizeCount:'KAÇ ÖLÇÜ SEÇENEĞİ VAR?',sizeHint:'Seçtiğiniz sayı kadar ölçü alanı açılır.',
+   price:'FİYAT',currency:'PARA BİRİMİ',width:'EN',length:'BOY',height:'YÜKSEKLİK',weight:'AĞIRLIK',
+   images:'ÜRÜN FOTOĞRAFLARI',badge:'ETİKET / SERİ',
+   phTitle:'Örn: Osmanlı Kahve Seti',phDesc:'Ürün açıklaması...',phMaterial:'Örn: Pirinç, ahşap, kadife',
+   phColor:'Örn: Ceviz / Altın',phProduction:'Üretim, el işçiliği veya özel not...',small:'Küçük',medium:'Orta',large:'Büyük'
+  },
+  en:{
+   modalNew:'Add New Product',modalEdit:'Edit Product',save:'Save Product',saveEdit:'Save Changes',
+   productName:'PRODUCT NAME *',desc:'DESCRIPTION *',material:'MATERIAL',color:'COLOR',production:'PRODUCTION / SPECIAL NOTE',
+   sizeNames:'SIZE NAMES (1 / 2 / 3)',sizeCount:'HOW MANY SIZE OPTIONS?',sizeHint:'Only the selected number of size fields will be shown.',
+   price:'PRICE',currency:'CURRENCY',width:'WIDTH',length:'LENGTH',height:'HEIGHT',weight:'WEIGHT',
+   images:'PRODUCT PHOTOS',badge:'LABEL / SERIES',
+   phTitle:'E.g. Ottoman Coffee Set',phDesc:'A concise product description...',phMaterial:'E.g. Brass, wood, velvet',
+   phColor:'E.g. Walnut / Gold',phProduction:'Production, craftsmanship or special note...',small:'Small',medium:'Medium',large:'Large'
+  },
+  ru:{
+   modalNew:'Добавить товар',modalEdit:'Редактировать товар',save:'Сохранить товар',saveEdit:'Сохранить изменения',
+   productName:'НАЗВАНИЕ ТОВАРА *',desc:'ОПИСАНИЕ *',material:'МАТЕРИАЛ',color:'ЦВЕТ',production:'ПРОИЗВОДСТВО / ОСОБАЯ ЗАМЕТКА',
+   sizeNames:'НАЗВАНИЯ РАЗМЕРОВ (1 / 2 / 3)',sizeCount:'СКОЛЬКО ВАРИАНТОВ РАЗМЕРА?',sizeHint:'Будет показано только выбранное количество полей размеров.',
+   price:'ЦЕНА',currency:'ВАЛЮТА',width:'ШИРИНА',length:'ДЛИНА',height:'ВЫСОТА',weight:'ВЕС',
+   images:'ФОТОГРАФИИ ТОВАРА',badge:'МЕТКА / СЕРИЯ',
+   phTitle:'Напр.: Османский кофейный набор',phDesc:'Краткое описание товара...',phMaterial:'Напр.: латунь, дерево, бархат',
+   phColor:'Напр.: орех / золото',phProduction:'Производство, ручная работа или особая заметка...',small:'Маленький',medium:'Средний',large:'Большой'
+  },
+  ar:{
+   modalNew:'إضافة منتج جديد',modalEdit:'تعديل المنتج',save:'حفظ المنتج',saveEdit:'حفظ التغييرات',
+   productName:'اسم المنتج *',desc:'الوصف *',material:'المادة',color:'اللون',production:'الإنتاج / ملاحظة خاصة',
+   sizeNames:'أسماء المقاسات (1 / 2 / 3)',sizeCount:'كم عدد خيارات المقاس؟',sizeHint:'سيتم عرض عدد حقول المقاسات الذي اخترته فقط.',
+   price:'السعر',currency:'العملة',width:'العرض',length:'الطول',height:'الارتفاع',weight:'الوزن',
+   images:'صور المنتج',badge:'التصنيف / السلسلة',
+   phTitle:'مثال: طقم قهوة عثماني',phDesc:'وصف مختصر للمنتج...',phMaterial:'مثال: نحاس، خشب، مخمل',
+   phColor:'مثال: جوز / ذهبي',phProduction:'الإنتاج أو الحرفية أو ملاحظة خاصة...',small:'صغير',medium:'متوسط',large:'كبير'
+  }
+ };
+
+ function txt(el,v){if(el) el.textContent=v}
+ function ph(id,v){const e=document.getElementById(id);if(e)e.placeholder=v}
+ function labelFor(id,v){
+   const e=document.getElementById(id); if(!e)return;
+   const g=e.closest('.form-group')||e.parentElement;
+   const l=g?.querySelector(':scope > label')||g?.querySelector('label');
+   if(l) l.textContent=v;
+ }
+ function translateProductForm(){
+   const l=A[window.currentLang]||A.tr;
+   const modal=document.getElementById('addModalOverlay'); if(!modal)return;
+
+   const title=document.getElementById('i18n-modal-title');
+   if(title){
+     const editing=window.currentEditingProductId!==null && window.currentEditingProductId!==undefined;
+     title.textContent=editing?l.modalEdit:l.modalNew;
+   }
+
+   // Language-specific content pane: translate the FORM CHROME, not the product content.
+   ['Tr','En','Ru','Ar'].forEach(s=>{
+     labelFor('pTitle'+s,l.productName);
+     labelFor('pDesc'+s,l.desc);
+   });
+   ph('pTitleTr',l.phTitle); ph('pTitleEn',l.phTitle); ph('pTitleRu',l.phTitle); ph('pTitleAr',l.phTitle);
+   ph('pDescTr',l.phDesc); ph('pDescEn',l.phDesc); ph('pDescRu',l.phDesc); ph('pDescAr',l.phDesc);
+
+   [['pMaterial',l.material,l.phMaterial],['pColor',l.color,l.phColor],['pProduction',l.production,l.phProduction],
+    ['pMaterialEn',l.material,l.phMaterial],['pColorEn',l.color,l.phColor],['pProductionEn',l.production,l.phProduction],
+    ['pMaterialRu',l.material,l.phMaterial],['pColorRu',l.color,l.phColor],['pProductionRu',l.production,l.phProduction],
+    ['pMaterialAr',l.material,l.phMaterial],['pColorAr',l.color,l.phColor],['pProductionAr',l.production,l.phProduction]
+   ].forEach(([id,lab,placeholder])=>{labelFor(id,lab);ph(id,placeholder)});
+
+   txt(document.getElementById('sizeCountLabel'),l.sizeCount);
+   txt(document.getElementById('sizeCountHint'),l.sizeHint);
+
+   for(let i=1;i<=3;i++){
+     ['','En','Ru','Ar'].forEach(s=>labelFor(`pSize${i}Name${s}`, i===1?l.sizeNames:''));
+     labelFor(`pSize${i}Price`,l.price);
+     labelFor(`pSize${i}Currency`,l.currency);
+     labelFor(`pSize${i}Width`,l.width);
+     labelFor(`pSize${i}Length`,l.length);
+     labelFor(`pSize${i}Height`,l.height);
+     labelFor(`pSize${i}Weight`,l.weight);
+   }
+
+   // Visible size-name placeholders follow the selected content language.
+   const vals=[l.small,l.medium,l.large];
+   for(let i=1;i<=3;i++){
+     ['','En','Ru','Ar'].forEach(s=>ph(`pSize${i}Name${s}`,vals[i-1]));
+   }
+
+   labelFor('pBadge',l.badge);
+   labelFor('pImageInput',l.images);
+
+   const submit=modal.querySelector('#addCategoryForm .btn-submit');
+   if(submit){
+     const editing=window.currentEditingProductId!==null && window.currentEditingProductId!==undefined;
+     submit.innerHTML='<i class="fa-solid fa-floppy-disk"></i> '+(editing?l.saveEdit:l.save);
+   }
+
+   // Arabic admin UI direction; content inputs remain natural for each language pane.
+   modal.setAttribute('dir',window.currentLang==='ar'?'rtl':'ltr');
+  }
+
+  window.translateProductFormUI=translateProductForm;
+
+  const oldChange=window.changeLanguage;
+  if(typeof oldChange==='function'){
+    window.changeLanguage=function(lang){
+      const r=oldChange.apply(this,arguments);
+      setTimeout(translateProductForm,0);
+      return r;
+    };
+  }
+  const oldShow=window.showProductLanguage;
+  if(typeof oldShow==='function'){
+    window.showProductLanguage=function(lang){
+      const r=oldShow.apply(this,arguments);
+      setTimeout(translateProductForm,0);
+      return r;
+    };
+  }
+  const oldAdd=window.openAddModal;
+  if(typeof oldAdd==='function'){
+    window.openAddModal=async function(){
+      const r=await oldAdd.apply(this,arguments);
+      translateProductForm(); return r;
+    };
+  }
+  const oldEdit=window.openEditProduct;
+  if(typeof oldEdit==='function'){
+    window.openEditProduct=async function(){
+      const r=await oldEdit.apply(this,arguments);
+      translateProductForm(); return r;
+    };
+  }
+  document.addEventListener('DOMContentLoaded',translateProductForm);
+})();
+</script>
+
 </body>
 </html>
