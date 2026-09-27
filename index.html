@@ -3346,6 +3346,8 @@ Pazar: Kapalı"></textarea></div>
             currentUploadedImages = [];
             document.getElementById('previewThumbs').innerHTML = '';
             document.getElementById('addCategoryForm').reset();
+            const sc=document.getElementById('pSizeCount'); if(sc) sc.value='1';
+            updateSizeCountUI();
             showProductLanguage('tr');
         }
 
@@ -4413,6 +4415,113 @@ async function deleteCRMPayment(id){
  window.copyPaymentIban=function(){const v=document.getElementById('paymentIban')?.textContent||'';navigator.clipboard?.writeText(v)};
  window.sendLastOrderWhatsApp=function(){const phone=String(siteSettings.whatsapp||'').replace(/\D/g,'');if(!phone){alert('WhatsApp numarası yönetici panelinden girilmemiş.');return}const msg=window.lastSultanzadeOrderMessage||'';window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank','noopener')};
  document.addEventListener('DOMContentLoaded',()=>setTimeout(window.applyCustomerCheckoutI18n,50));
+})();
+</script>
+
+
+<style>
+.size-hidden-by-count{display:none!important}
+</style>
+<script>
+(function(){
+  const UI={
+    tr:{
+      categories:'Kategorilerimiz', sizeOptions:n=>`${n} Ölçü Seçeneği`, productDetails:'Ürün Detayı',
+      chooseSize:'Ölçü seçin', selectedSize:'Seçilen ölçü', width:'En', length:'Boy', height:'Yükseklik', weight:'Ağırlık',
+      material:'Malzeme', color:'Renk', notes:'Üretim / Not', whatsapp:'WhatsApp’tan Bilgi Al', order:'Sipariş Ver',
+      sizeCount:'Kaç ölçü seçeneği var?', sizeHint:'Seçtiğiniz sayı kadar ölçü alanı açılır.',
+      sizeSection:'Ölçü / Fiyat Seçenekleri', pay:'Ödeme', cardPay:'Kartla Ödeme',
+      cardPending:'Kartla online ödeme, ödeme kuruluşu bağlandıktan sonra aktif olacaktır.'
+    },
+    en:{
+      categories:'Our Categories', sizeOptions:n=>`${n} Size Option${n===1?'':'s'}`, productDetails:'Product Details',
+      chooseSize:'Choose a size', selectedSize:'Selected size', width:'Width', length:'Length', height:'Height', weight:'Weight',
+      material:'Material', color:'Color', notes:'Production / Note', whatsapp:'Ask on WhatsApp', order:'Order Now',
+      sizeCount:'How many size options?', sizeHint:'Only the selected number of size fields will be shown.',
+      sizeSection:'Size / Price Options', pay:'Payment', cardPay:'Card Payment',
+      cardPending:'Online card payment will become available after a payment provider is connected.'
+    },
+    ru:{
+      categories:'Наши категории', sizeOptions:n=>`${n} вариант(а) размера`, productDetails:'Подробнее',
+      chooseSize:'Выберите размер', selectedSize:'Выбранный размер', width:'Ширина', length:'Длина', height:'Высота', weight:'Вес',
+      material:'Материал', color:'Цвет', notes:'Производство / Примечание', whatsapp:'Написать в WhatsApp', order:'Оформить заказ',
+      sizeCount:'Сколько вариантов размера?', sizeHint:'Будет показано только выбранное количество полей размеров.',
+      sizeSection:'Размеры / Цены', pay:'Оплата', cardPay:'Оплата картой',
+      cardPending:'Онлайн-оплата картой станет доступна после подключения платежного провайдера.'
+    },
+    ar:{
+      categories:'فئاتنا', sizeOptions:n=>`${n} خيارات للمقاس`, productDetails:'تفاصيل المنتج',
+      chooseSize:'اختر المقاس', selectedSize:'المقاس المحدد', width:'العرض', length:'الطول', height:'الارتفاع', weight:'الوزن',
+      material:'المادة', color:'اللون', notes:'الإنتاج / ملاحظة', whatsapp:'تواصل عبر واتساب', order:'اطلب الآن',
+      sizeCount:'كم عدد خيارات المقاس؟', sizeHint:'سيتم عرض عدد حقول المقاسات الذي اخترته فقط.',
+      sizeSection:'خيارات المقاس / السعر', pay:'الدفع', cardPay:'الدفع بالبطاقة',
+      cardPending:'سيتم تفعيل الدفع الإلكتروني بالبطاقة بعد ربط مزود خدمة الدفع.'
+    }
+  };
+
+  window.updateSizeCountUI=function(){
+    const count=Math.max(1,Math.min(3,Number(document.getElementById('pSizeCount')?.value||1)));
+    for(let i=1;i<=3;i++){
+      const name=document.getElementById(`pSize${i}Name`);
+      const price=document.getElementById(`pSize${i}Price`);
+      if(!name) continue;
+      let block=name.parentElement;
+      while(block && block!==document.body && !(block.textContent||'').includes(`${i}. Ölçü`) && !block.querySelector?.(`#pSize${i}Price`)) block=block.parentElement;
+      if(!block || block===document.body) block=name.closest('.form-group')?.parentElement || name.parentElement;
+      const visible=i<=count;
+      block.classList.toggle('size-hidden-by-count',!visible);
+      [name,price].forEach(el=>{if(el){el.required=visible;}});
+      ['Width','Length','Height','Weight'].forEach(k=>{const el=document.getElementById(`pSize${i}${k}`);if(el)el.required=false;});
+      ['En','Ru','Ar'].forEach(s=>{const el=document.getElementById(`pSize${i}Name${s}`);if(el)el.required=false;});
+    }
+  };
+
+  function applyVisibleTranslations(){
+    const L=UI[currentLang]||UI.tr;
+    const section=document.getElementById('i18n-section-title'); if(section)section.textContent=L.categories;
+    const st=document.getElementById('detailSizeTitle'); if(st)st.textContent=L.chooseSize;
+    const order=document.getElementById('detailOrderButton'); if(order)order.innerHTML='<i class="fa-solid fa-bag-shopping"></i> '+L.order;
+    const wa=document.getElementById('detailWhatsapp'); if(wa)wa.innerHTML='<i class="fa-brands fa-whatsapp"></i> '+L.whatsapp;
+    const scl=document.getElementById('sizeCountLabel'); if(scl)scl.textContent=L.sizeCount;
+    const sch=document.getElementById('sizeCountHint'); if(sch)sch.textContent=L.sizeHint;
+
+    document.querySelectorAll('.product-open-label span').forEach((el)=>{
+      const card=el.closest('.product-card');
+      const id=card?.getAttribute('onclick')?.match(/openDetailModal\('([^']+)'\)/)?.[1];
+      const cat=(window.categories||categories||[]).find(c=>String(c.id)===String(id));
+      const n=cat?legacySizesFromDetails(cat).length:0;
+      el.textContent=n>1?L.sizeOptions(n):L.productDetails;
+    });
+
+    // Payment modal texts.
+    const pm=document.getElementById('paymentModalOverlay');
+    if(pm){
+      const h=pm.querySelector('h2'); if(h)h.textContent=L.pay;
+      [...pm.querySelectorAll('h3')].forEach(x=>{if(/Kartla Ödeme|Card Payment|Оплата картой|الدفع بالبطاقة/i.test(x.textContent))x.textContent=L.cardPay;});
+      [...pm.querySelectorAll('p')].forEach(x=>{if(/ödeme kuruluşu|payment provider|платежн|مزود/i.test(x.textContent))x.textContent=L.cardPending;});
+    }
+  }
+
+  const oldChange=window.changeLanguage;
+  if(typeof oldChange==='function'){
+    window.changeLanguage=function(lang){
+      const r=oldChange.apply(this,arguments);
+      setTimeout(()=>{applyVisibleTranslations(); updateSizeCountUI(); if(activeDetailProduct) openDetailModal(activeDetailProduct.id);},0);
+      return r;
+    };
+  }
+
+  const oldRender=window.renderCategories;
+  if(typeof oldRender==='function'){
+    window.renderCategories=function(){
+      const r=oldRender.apply(this,arguments);
+      setTimeout(applyVisibleTranslations,0);
+      return r;
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded',()=>{updateSizeCountUI();applyVisibleTranslations();});
+  window.applyFullI18n=applyVisibleTranslations;
 })();
 </script>
 
