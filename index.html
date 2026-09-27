@@ -4850,5 +4850,102 @@ function sultanzadeFormatMoney(value,currency){
 })();
 </script>
 
+
+<script>
+/* OLD PRODUCT CONTENT FALLBACK — translates existing Turkish chess records when their EN/RU/AR fields are empty. */
+(function(){
+ const D={
+  en:{
+   'Sultanzade sedef işlemeli satranç takımı':'Sultanzade Handcrafted Mother-of-Pearl Inlaid Chess Set',
+   'geleneksel el işçiliğinin zarafetini satrançla buluşturan özel bir tasarım. tamamen el yapımı olarak üretilen satranç tahtası ceviz limon ve bağduk ağacı ile yapay renkli sedef kullanılarak işlenmiştir.':'An exclusive handcrafted chess set combining traditional craftsmanship with the elegance of chess. The board is made with walnut, lemon wood, bağduk wood and artificial colored mother-of-pearl.',
+   'standart':'Standard','ceviz limon ve bağduk ağacı':'Walnut, lemon wood and bağduk wood',
+   'kırmızı':'Red','bal sarısı':'Honey Yellow','mor':'Purple',
+   'KIRMIZI SATRANÇ TAKIMI':'RED CHESS SET','BAL SARISI SATRANÇ TAKIMI':'HONEY YELLOW CHESS SET','2026 ÖZEL SERİ':'2026 SPECIAL SERIES'
+  },
+  ru:{
+   'Sultanzade sedef işlemeli satranç takımı':'Шахматный набор Sultanzade ручной работы с перламутровой инкрустацией',
+   'geleneksel el işçiliğinin zarafetini satrançla buluşturan özel bir tasarım. tamamen el yapımı olarak üretilen satranç tahtası ceviz limon ve bağduk ağacı ile yapay renkli sedef kullanılarak işlenmiştir.':'Эксклюзивный шахматный набор ручной работы, сочетающий традиционное мастерство и элегантность шахмат. Доска изготовлена из ореха, лимонного дерева, дерева bağduk и искусственного цветного перламутра.',
+   'standart':'Стандартный','ceviz limon ve bağduk ağacı':'Орех, лимонное дерево и дерево bağduk',
+   'kırmızı':'Красный','bal sarısı':'Медово-жёлтый','mor':'Фиолетовый',
+   'KIRMIZI SATRANÇ TAKIMI':'КРАСНЫЙ ШАХМАТНЫЙ НАБОР','BAL SARISI SATRANÇ TAKIMI':'МЕДОВО-ЖЁЛТЫЙ ШАХМАТНЫЙ НАБОР','2026 ÖZEL SERİ':'СПЕЦИАЛЬНАЯ СЕРИЯ 2026'
+  },
+  ar:{
+   'Sultanzade sedef işlemeli satranç takımı':'طقم شطرنج Sultanzade مصنوع يدوياً ومطعّم بعرق اللؤلؤ',
+   'geleneksel el işçiliğinin zarafetini satrançla buluşturan özel bir tasarım. tamamen el yapımı olarak üretilen satranç tahtası ceviz limon ve bağduk ağacı ile yapay renkli sedef kullanılarak işlenmiştir.':'طقم شطرنج حصري مصنوع يدوياً يجمع بين الحرفية التقليدية وأناقة الشطرنج. صُنعت الرقعة من خشب الجوز وخشب الليمون وخشب bağduk وعرق اللؤلؤ الصناعي الملون.',
+   'standart':'قياسي','ceviz limon ve bağduk ağacı':'خشب الجوز وخشب الليمون وخشب bağduk',
+   'kırmızı':'أحمر','bal sarısı':'أصفر عسلي','mor':'بنفسجي',
+   'KIRMIZI SATRANÇ TAKIMI':'طقم شطرنج أحمر','BAL SARISI SATRANÇ TAKIMI':'طقم شطرنج أصفر عسلي','2026 ÖZEL SERİ':'سلسلة خاصة 2026'
+  }
+ };
+ function norm(s){return String(s??'').trim();}
+ function dict(s,lang){
+   if(lang==='tr'||!s)return s;
+   const d=D[lang]||{};
+   const raw=norm(s);
+   if(d[raw])return d[raw];
+   const low=raw.toLocaleLowerCase('tr-TR');
+   for(const [k,v] of Object.entries(d)) if(k.toLocaleLowerCase('tr-TR')===low)return v;
+   return s;
+ }
+ window.sultanzadeTranslateLegacy=dict;
+
+ const oldGPT=window.getProductText;
+ window.getProductText=function(cat){
+   const lang=window.currentLang||'tr', t=cat?.translations||{}, chosen=t[lang]||{}, tr=t.tr||{};
+   const baseTitle=tr.title||cat?.title||'', baseDesc=tr.desc||cat?.desc||'';
+   return {
+     title: chosen.title || dict(baseTitle,lang),
+     desc: chosen.desc || dict(baseDesc,lang)
+   };
+ };
+ const oldField=window.getLocalizedProductField;
+ window.getLocalizedProductField=function(cat,key){
+   const lang=window.currentLang||'tr',t=cat?.translations||{},tr=t.tr||{};
+   return t[lang]?.[key] || dict(tr[key]||cat?.details?.[key]||'',lang);
+ };
+ const oldSize=window.getLocalizedSizeName;
+ window.getLocalizedSizeName=function(cat,size,index=0){
+   const lang=window.currentLang||'tr',t=cat?.translations||{},tr=t.tr||{};
+   return t[lang]?.sizeNames?.[index] || dict(tr.sizeNames?.[index]||size?.name||'',lang);
+ };
+
+ function translateRenderedLegacy(){
+   const lang=window.currentLang||'tr';
+   if(lang==='tr')return;
+   document.querySelectorAll('.product-card').forEach(card=>{
+     // Translate exact old Turkish text nodes still left by legacy rendering.
+     const walker=document.createTreeWalker(card,NodeFilter.SHOW_TEXT);
+     const nodes=[]; while(walker.nextNode())nodes.push(walker.currentNode);
+     nodes.forEach(n=>{const v=dict(n.nodeValue,lang); if(v!==n.nodeValue)n.nodeValue=v;});
+   });
+   const modal=document.getElementById('detailModalOverlay');
+   if(modal?.classList.contains('active')){
+     const walker=document.createTreeWalker(modal,NodeFilter.SHOW_TEXT);
+     const nodes=[]; while(walker.nextNode())nodes.push(walker.currentNode);
+     nodes.forEach(n=>{const v=dict(n.nodeValue,lang); if(v!==n.nodeValue)n.nodeValue=v;});
+   }
+ }
+ window.translateRenderedLegacy=translateRenderedLegacy;
+
+ const oldChange=window.changeLanguage;
+ if(typeof oldChange==='function'){
+   window.changeLanguage=function(lang){
+     const r=oldChange.apply(this,arguments);
+     setTimeout(translateRenderedLegacy,20);
+     return r;
+   };
+ }
+ const oldRender=window.renderCategories;
+ if(typeof oldRender==='function'){
+   window.renderCategories=function(){
+     const r=oldRender.apply(this,arguments);
+     setTimeout(translateRenderedLegacy,0);
+     return r;
+   };
+ }
+ document.addEventListener('DOMContentLoaded',()=>setTimeout(translateRenderedLegacy,100));
+})();
+</script>
+
 </body>
 </html>
