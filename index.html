@@ -1455,6 +1455,7 @@ body.sultanzade-owner .owner-product-actions{display:flex}
 
 </head>
 <body>
+<button type="button" id="cartHeaderButton" onclick="openCartModal()" style="position:fixed;right:16px;top:16px;z-index:9999;border:1px solid #c99b42;background:#3a0b14;color:white;border-radius:999px;padding:10px 14px;cursor:pointer"><i class="fa-solid fa-cart-shopping"></i> <span id="cartHeaderText">Sepet</span> <b id="cartCountBadge">0</b></button>
 
     <header>
         <a href="#" class="brand-logo">SULTANZADE</a>
@@ -1650,7 +1651,7 @@ body.sultanzade-owner .owner-product-actions{display:flex}
                     <div class="form-group"><label>Renk</label><input type="text" id="pColor" class="form-control" placeholder="Örn: Ceviz / Altın"></div>
                     <div class="form-group full-width"><label>Üretim / Özel Not</label><textarea id="pProduction" class="form-control" rows="2" placeholder="El işçiliği, üretim süresi veya müşterinin bilmesi gereken özel bilgiler..."></textarea></div>
 
-                    <button type="button" id="productSaveButton" class="btn-submit full-width" onclick="handleFormSubmit({preventDefault:function(){},target:document.getElementById('addCategoryForm')})"><i class="fa-solid fa-plus"></i> <span id="i18n-btn-save">Kaydet ve Ekle</span></button>
+                    <button type="submit" class="btn-submit full-width"><i class="fa-solid fa-plus"></i> <span id="i18n-btn-save">Kaydet ve Ekle</span></button>
                 </div>
             </form>
         </div>
@@ -1679,12 +1680,30 @@ body.sultanzade-owner .owner-product-actions{display:flex}
             <div class="spec-list" id="detailSpecs"></div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
                 <a id="detailWhatsapp" class="btn-whatsapp" href="#" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp"></i> WhatsApp'tan Bilgi Al</a>
-                <button type="button" id="detailOrderButton" class="btn-whatsapp" onclick="openOrderModal()"><i class="fa-solid fa-bag-shopping"></i> Sipariş Ver</button>
+                <button type="button" id="detailAddCartButton" class="btn-whatsapp" onclick="addActiveProductToCart()"><i class="fa-solid fa-cart-plus"></i> <span id="detailAddCartText">Sepete Ekle</span></button>
+<button type="button" id="detailOrderButton" class="btn-whatsapp" onclick="openOrderModal()"><i class="fa-solid fa-bag-shopping"></i> Sipariş Ver</button>
             </div>
         </div>
     </div>
 
     <!-- Hero görselleri artık doğrudan Yönetici Paneli > Görünüm bölümünden yönetilir. -->
+<!-- SEPET -->
+<div class="modal-overlay" id="cartModalOverlay" onclick="closeModalOnOverlay(event,'cartModalOverlay')">
+ <div class="modal-card" style="max-width:720px" onclick="event.stopPropagation()">
+  <button class="modal-close" type="button" onclick="closeModal('cartModalOverlay')"><i class="fa-solid fa-xmark"></i></button>
+  <h3 class="box-title serif-font" id="cartTitle">Sepetim</h3>
+  <p class="box-subtitle" id="cartSubtitle">Ürünlerinizi kontrol edin.</p>
+  <div id="cartItems"></div>
+  <div id="cartEmpty" style="text-align:center;padding:30px">Sepetiniz boş.</div>
+  <div id="cartSummary" style="display:none">
+   <div style="display:flex;justify-content:space-between;padding-top:15px"><strong id="cartTotalLabel">Toplam</strong><strong id="cartTotalValue"></strong></div>
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
+    <button type="button" class="btn-outline" onclick="clearCart()"><span id="cartClearText">Sepeti Temizle</span></button>
+    <button type="button" class="btn-submit" onclick="checkoutCart()"><span id="cartCheckoutText">Siparişi Tamamla</span></button>
+   </div>
+  </div>
+ </div>
+</div>
 <!-- SİPARİŞ FORMU -->
     <div class="modal-overlay" id="orderModalOverlay" onclick="closeModalOnOverlay(event, 'orderModalOverlay')">
         <div class="modal-card order-card">
@@ -5332,6 +5351,59 @@ document.addEventListener('DOMContentLoaded',function(){
    }
  });
 });
+</script>
+
+
+<style>
+.sCartRow{display:grid;grid-template-columns:68px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border-color)}
+.sCartRow img{width:68px;height:68px;object-fit:cover;border-radius:10px}.sCartQty{display:flex;gap:7px;align-items:center;margin-top:7px}.sCartQty button{width:30px;height:30px}.sCartRemove{border:0;background:transparent;color:#b20f24;font-size:18px;cursor:pointer}
+@media(max-width:600px){#cartHeaderText{display:none}.sCartRow{grid-template-columns:55px 1fr auto}.sCartRow img{width:55px;height:55px}}
+</style>
+<script id="sultanzade-cart-system">
+(function(){
+ const KEY='sultanzade_cart_v1';
+ const D={
+ tr:{cart:'Sepet',title:'Sepetim',empty:'Sepetiniz boş.',add:'Sepete Ekle',out:'Stokta Yok',total:'Toplam',clear:'Sepeti Temizle',checkout:'Siparişi Tamamla',size:'Ölçü'},
+ en:{cart:'Cart',title:'My Cart',empty:'Your cart is empty.',add:'Add to Cart',out:'Out of Stock',total:'Total',clear:'Clear Cart',checkout:'Checkout',size:'Size'},
+ ru:{cart:'Корзина',title:'Моя корзина',empty:'Корзина пуста.',add:'В корзину',out:'Нет в наличии',total:'Итого',clear:'Очистить корзину',checkout:'Оформить заказ',size:'Размер'},
+ ar:{cart:'السلة',title:'سلة التسوق',empty:'سلة التسوق فارغة.',add:'أضف إلى السلة',out:'غير متوفر',total:'الإجمالي',clear:'إفراغ السلة',checkout:'إتمام الطلب',size:'المقاس'}};
+ let cart=[];try{cart=JSON.parse(localStorage.getItem(KEY)||'[]');if(!Array.isArray(cart))cart=[]}catch(e){}
+ function w(){try{return D[currentLang]||D.tr}catch(e){return D.tr}}
+ function prod(id){try{return categories.find(x=>String(x.id)===String(id))}catch(e){return null}}
+ function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+ function ptext(p){try{return getLocalizedProduct(p)}catch(e){return {title:p.title||''}}}
+ function number(v){let s=String(v||'').replace(/[^\d.,-]/g,'').replace(/\./g,'').replace(',','.');return parseFloat(s)||0}
+ function save(){localStorage.setItem(KEY,JSON.stringify(cart));render()}
+ function render(){
+   cart=cart.filter(x=>prod(x.productId)); const z=w(),count=cart.reduce((a,x)=>a+x.qty,0);
+   let e=document.getElementById('cartCountBadge');if(e)e.textContent=count;
+   const labels={cartHeaderText:z.cart,cartTitle:z.title,cartEmpty:z.empty,detailAddCartText:z.add,cartTotalLabel:z.total,cartClearText:z.clear,cartCheckoutText:z.checkout};
+   Object.entries(labels).forEach(([id,v])=>{let x=document.getElementById(id);if(x)x.textContent=v});
+   const box=document.getElementById('cartItems'),empty=document.getElementById('cartEmpty'),sum=document.getElementById('cartSummary');if(!box)return;
+   if(!cart.length){box.innerHTML='';empty.style.display='block';sum.style.display='none';return}
+   empty.style.display='none';sum.style.display='block';
+   box.innerHTML=cart.map((x,i)=>{let p=prod(x.productId)||{},t=ptext(p),img=Array.isArray(p.images)?p.images[0]:(p.images?.urls?.[0]||'');
+    return `<div class="sCartRow"><img src="${esc(img)}"><div><b>${esc(t.title||p.title)}</b><div style="font-size:.82rem;margin-top:4px">${esc(z.size)}: ${esc(x.sizeName)} · ${esc(x.priceText)} ${p.in_stock===false?'· <b style="color:#b20f24">'+esc(z.out)+'</b>':''}</div><div class="sCartQty"><button onclick="cartQty(${i},-1)">−</button><b>${x.qty}</b><button onclick="cartQty(${i},1)">+</button></div></div><button class="sCartRemove" onclick="removeCartItem(${i})"><i class="fa-solid fa-trash"></i></button></div>`}).join('');
+   let totals={};cart.forEach(x=>{if(prod(x.productId)?.in_stock!==false)totals[x.currency]=(totals[x.currency]||0)+x.unitPrice*x.qty});
+   document.getElementById('cartTotalValue').textContent=Object.entries(totals).map(([c,n])=>n.toLocaleString()+' '+c).join(' + ')||'—';
+ }
+ window.openCartModal=function(){render();openModal('cartModalOverlay')};
+ window.cartQty=function(i,d){if(cart[i]){cart[i].qty=Math.max(1,cart[i].qty+d);save()}};
+ window.removeCartItem=function(i){cart.splice(i,1);save()}; window.clearCart=function(){cart=[];save()};
+ window.addActiveProductToCart=function(){
+   let z=w(),p=prod(activeDetailProduct?.id)||activeDetailProduct;if(!p)return;if(p.in_stock===false){alert(z.out);return}
+   let sizes=Array.isArray(p.sizes)&&p.sizes.length?p.sizes:[{name:'Standard',price:p.price||'',currency:'TRY'}],idx=0;
+   let checked=document.querySelector('#detailSizeOptions input:checked');if(checked)idx=Number(checked.value)||0;idx=Math.min(idx,sizes.length-1);
+   let s=sizes[idx]||sizes[0],names=p.translations?.[currentLang]?.sizeNames,sizeName=(Array.isArray(names)&&names[idx])||s.name||'Standard',priceText=s.price||p.price||'',currency=s.currency||'TRY',key=String(p.id)+'|'+idx+'|'+priceText+'|'+currency,old=cart.find(x=>x.key===key);
+   if(old)old.qty++;else cart.push({key,productId:p.id,sizeName,priceText,currency,unitPrice:number(priceText),qty:1});save();openCartModal();
+ };
+ window.checkoutCart=function(){
+   if(!cart.length)return;if(cart.some(x=>prod(x.productId)?.in_stock===false)){alert(w().out);return}
+   window.sultanzadeCartCheckoutItems=cart.map(x=>({...x}));closeModal('cartModalOverlay');openOrderModal();
+   setTimeout(()=>{let s=document.getElementById('orderSummary');if(s)s.innerHTML=cart.map(x=>{let p=prod(x.productId)||{},t=ptext(p);return `<div><b>${esc(t.title||p.title)}</b> — ${esc(x.sizeName)} × ${x.qty} — ${esc(x.priceText)}</div>`}).join('')},20);
+ };
+ document.addEventListener('DOMContentLoaded',render);
+})();
 </script>
 
 </body>
