@@ -1453,9 +1453,51 @@ body.sultanzade-owner .owner-product-actions{display:flex}
 .currency-select{margin-top:7px;min-width:120px}
 </style>
 
+<style id="sultanzade-cart-header-final">
+.sultanzade-header-cart{
+ box-sizing:border-box!important;
+ width:46px!important;min-width:46px!important;height:46px!important;
+ padding:0!important;margin:0!important;
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ position:relative!important;inset:auto!important;z-index:auto!important;
+ border:1px solid var(--border-gold)!important;border-radius:50%!important;
+ background:transparent!important;color:var(--text-dark)!important;
+ cursor:pointer!important;flex:0 0 46px!important;
+ font-size:16px!important;
+}
+.sultanzade-header-cart i{color:var(--text-dark)!important;opacity:1!important}
+.sultanzade-header-cart #cartCountBadge{
+ position:absolute!important;top:-5px!important;right:-7px!important;
+ min-width:19px!important;height:19px!important;padding:0 5px!important;
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ border-radius:999px!important;background:#a31222!important;color:#fff!important;
+ border:2px solid var(--bg-cream,#f4eee8)!important;
+ font-size:10px!important;font-weight:800!important;line-height:1!important;
+}
+html[dir="rtl"] .sultanzade-header-cart #cartCountBadge{right:auto!important;left:-7px!important}
+.header-actions{align-items:center!important}
+@media(max-width:768px){
+ .sultanzade-header-cart{width:42px!important;min-width:42px!important;height:42px!important;flex-basis:42px!important}
+}
+</style>
+
+<style id="sultanzade-cart-icon-visible-fix">
+.sultanzade-header-cart .sultanzade-cart-glyph{
+ display:block!important;
+ font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif!important;
+ font-size:20px!important;
+ line-height:1!important;
+ opacity:1!important;
+ visibility:visible!important;
+ filter:none!important;
+}
+</style>
+
+
+    <link rel="icon" type="image/png" sizes="512x512" href="favicon.png">
+    <link rel="shortcut icon" href="favicon.ico">
 </head>
 <body>
-<button type="button" id="cartHeaderButton" onclick="openCartModal()" style="position:fixed;right:16px;top:16px;z-index:9999;border:1px solid #c99b42;background:#3a0b14;color:white;border-radius:999px;padding:10px 14px;cursor:pointer"><i class="fa-solid fa-cart-shopping"></i> <span id="cartHeaderText">Sepet</span> <b id="cartCountBadge">0</b></button>
 
     <header>
         <a href="#" class="brand-logo">SULTANZADE</a>
@@ -1470,6 +1512,11 @@ body.sultanzade-owner .owner-product-actions{display:flex}
                 <option value="ru">RU</option>
                 <option value="ar">AR</option>
             </select>
+
+            <button type="button" id="cartHeaderButton" class="sultanzade-header-cart" onclick="openCartModal()" aria-label="Sepet" title="Sepet">
+                <span class="sultanzade-cart-glyph" aria-hidden="true">🛒</span>
+                <b id="cartCountBadge">0</b>
+            </button>
 
             <div class="profile-menu-container">
                 <button class="btn-profile-trigger" onclick="toggleProfileMenu(event)">
@@ -1597,10 +1644,10 @@ body.sultanzade-owner .owner-product-actions{display:flex}
                     
 <div class="form-group" id="stockStatusGroup">
   <label for="pInStock">Stok Durumu</label>
-  <select id="pInStock">
+  <select id="pInStock" aria-describedby="stockSaveHint">
     <option value="true">Stokta Var</option>
     <option value="false">Stokta Yok</option>
-  </select>
+  </select><div id="stockSaveHint" style="font-size:12px;margin-top:5px;opacity:.75">Stok değişikliği yalnızca “Değişiklikleri Kaydet” düğmesine bastığınızda kaydedilir.</div>
 </div>
 <div class="form-group full-width" style="max-width:260px"><label>Kaç ölçü seçeneği var?</label><select id="pSizeCount" class="form-control" onchange="updateSizeCount()"><option value="1">1 ölçü</option><option value="2">2 ölçü</option><option value="3" selected>3 ölçü</option></select></div>
                     <div class="size-form-grid" id="sizeFormGrid">
@@ -5316,42 +5363,7 @@ html[dir="rtl"] .sultanzade-stock-badge{right:auto;left:-7px;border-radius:0 8px
 </script>
 
 
-<script id="sultanzade-stock-autosave">
-document.addEventListener('DOMContentLoaded',function(){
- const sel=document.getElementById('pInStock');
- if(!sel)return;
- sel.addEventListener('change',async function(){
-   if(typeof currentEditingProductId==='undefined' || currentEditingProductId===null) return;
-   const id=currentEditingProductId;
-   const inStock=this.value==='true';
-   try{
-     const existing=categories.find(x=>String(x.id)===String(id));
-     if(!existing) throw new Error('Ürün bulunamadı.');
-     if(existing.synced && !String(existing.id).startsWith('local-')){
-       const {data,error}=await supabaseClient.from('categories')
-         .update({in_stock:inStock}).eq('id',existing.id).select().single();
-       if(error) throw error;
-       const updated=normalizeRemoteRow(data);
-       const idx=categories.findIndex(x=>String(x.id)===String(existing.id));
-       if(idx>=0) categories[idx]=updated;
-       await localDeleteProduct(existing.id); await localPutProduct(updated);
-     }else{
-       existing.in_stock=inStock;
-       await localPutProduct(existing);
-     }
-     renderCategories();
-     const note=document.getElementById('sultanzadeStockSaveNote')||document.createElement('div');
-     note.id='sultanzadeStockSaveNote';
-     note.style.cssText='margin-top:8px;font-size:13px;font-weight:700;color:#237a3b';
-     note.textContent=inStock?'✓ Stokta Var olarak kaydedildi':'✓ Stokta Yok olarak kaydedildi';
-     sel.parentElement.appendChild(note);
-   }catch(e){
-     alert('Stok durumu kaydedilemedi: '+(e?.message||'Bilinmeyen hata'));
-     console.error(e);
-   }
- });
-});
-</script>
+
 
 
 <style>
@@ -5363,10 +5375,10 @@ document.addEventListener('DOMContentLoaded',function(){
 (function(){
  const KEY='sultanzade_cart_v1';
  const D={
- tr:{cart:'Sepet',title:'Sepetim',empty:'Sepetiniz boş.',add:'Sepete Ekle',out:'Stokta Yok',total:'Toplam',clear:'Sepeti Temizle',checkout:'Siparişi Tamamla',size:'Ölçü'},
- en:{cart:'Cart',title:'My Cart',empty:'Your cart is empty.',add:'Add to Cart',out:'Out of Stock',total:'Total',clear:'Clear Cart',checkout:'Checkout',size:'Size'},
- ru:{cart:'Корзина',title:'Моя корзина',empty:'Корзина пуста.',add:'В корзину',out:'Нет в наличии',total:'Итого',clear:'Очистить корзину',checkout:'Оформить заказ',size:'Размер'},
- ar:{cart:'السلة',title:'سلة التسوق',empty:'سلة التسوق فارغة.',add:'أضف إلى السلة',out:'غير متوفر',total:'الإجمالي',clear:'إفراغ السلة',checkout:'إتمام الطلب',size:'المقاس'}};
+ tr:{cart:'Sepet',title:'Sepetim',sub:'Ürünlerinizi kontrol edin.',empty:'Sepetiniz boş.',add:'Sepete Ekle',out:'Stokta Yok',total:'Toplam',clear:'Sepeti Temizle',checkout:'Siparişi Tamamla',size:'Ölçü'},
+ en:{cart:'Cart',title:'My Cart',sub:'Review your products.',empty:'Your cart is empty.',add:'Add to Cart',out:'Out of Stock',total:'Total',clear:'Clear Cart',checkout:'Checkout',size:'Size'},
+ ru:{cart:'Корзина',title:'Моя корзина',sub:'Проверьте товары в корзине.',empty:'Корзина пуста.',add:'В корзину',out:'Нет в наличии',total:'Итого',clear:'Очистить корзину',checkout:'Оформить заказ',size:'Размер'},
+ ar:{cart:'السلة',title:'سلة التسوق',sub:'راجع المنتجات الموجودة في السلة.',empty:'سلة التسوق فارغة.',add:'أضف إلى السلة',out:'غير متوفر',total:'الإجمالي',clear:'إفراغ السلة',checkout:'إتمام الطلب',size:'المقاس'}};
  let cart=[];try{cart=JSON.parse(localStorage.getItem(KEY)||'[]');if(!Array.isArray(cart))cart=[]}catch(e){}
  function w(){try{return D[currentLang]||D.tr}catch(e){return D.tr}}
  function prod(id){try{return categories.find(x=>String(x.id)===String(id))}catch(e){return null}}
@@ -5377,8 +5389,8 @@ document.addEventListener('DOMContentLoaded',function(){
  function render(){
    cart=cart.filter(x=>prod(x.productId)); const z=w(),count=cart.reduce((a,x)=>a+x.qty,0);
    let e=document.getElementById('cartCountBadge');if(e)e.textContent=count;
-   const labels={cartHeaderText:z.cart,cartTitle:z.title,cartEmpty:z.empty,detailAddCartText:z.add,cartTotalLabel:z.total,cartClearText:z.clear,cartCheckoutText:z.checkout};
-   Object.entries(labels).forEach(([id,v])=>{let x=document.getElementById(id);if(x)x.textContent=v});
+   const labels={cartTitle:z.title,cartSubtitle:z.sub,cartEmpty:z.empty,detailAddCartText:z.add,cartTotalLabel:z.total,cartClearText:z.clear,cartCheckoutText:z.checkout};let hb=document.getElementById('cartHeaderButton');if(hb){hb.setAttribute('aria-label',z.cart);hb.title=z.cart;}
+   Object.entries(labels).forEach(([id,v])=>{let x=document.getElementById(id);if(x)x.textContent=v});let cm=document.getElementById('cartModalOverlay');if(cm)cm.setAttribute('dir',(typeof currentLang!=='undefined'&&currentLang==='ar')?'rtl':'ltr');
    const box=document.getElementById('cartItems'),empty=document.getElementById('cartEmpty'),sum=document.getElementById('cartSummary');if(!box)return;
    if(!cart.length){box.innerHTML='';empty.style.display='block';sum.style.display='none';return}
    empty.style.display='none';sum.style.display='block';
@@ -5395,7 +5407,16 @@ document.addEventListener('DOMContentLoaded',function(){
    let sizes=Array.isArray(p.sizes)&&p.sizes.length?p.sizes:[{name:'Standard',price:p.price||'',currency:'TRY'}],idx=0;
    let checked=document.querySelector('#detailSizeOptions input:checked');if(checked)idx=Number(checked.value)||0;idx=Math.min(idx,sizes.length-1);
    let s=sizes[idx]||sizes[0],names=p.translations?.[currentLang]?.sizeNames,sizeName=(Array.isArray(names)&&names[idx])||s.name||'Standard',priceText=s.price||p.price||'',currency=s.currency||'TRY',key=String(p.id)+'|'+idx+'|'+priceText+'|'+currency,old=cart.find(x=>x.key===key);
-   if(old)old.qty++;else cart.push({key,productId:p.id,sizeName,priceText,currency,unitPrice:number(priceText),qty:1});save();openCartModal();
+   if(old)old.qty++;else cart.push({key,productId:p.id,sizeName,priceText,currency,unitPrice:number(priceText),qty:1});
+   save();
+   showSultanzadeFeedback('cartAdded');
+   let addBtn=document.getElementById('detailAddCartButton');
+   if(addBtn){
+     const original=addBtn.innerHTML;
+     addBtn.disabled=true;
+     addBtn.innerHTML='<i class="fa-solid fa-check"></i> '+feedbackText('cartAdded');
+     setTimeout(()=>{addBtn.disabled=false;addBtn.innerHTML=original;try{render()}catch(e){}},1200);
+   }
  };
  window.checkoutCart=function(){
    if(!cart.length)return;if(cart.some(x=>prod(x.productId)?.in_stock===false)){alert(w().out);return}
@@ -5403,6 +5424,42 @@ document.addEventListener('DOMContentLoaded',function(){
    setTimeout(()=>{let s=document.getElementById('orderSummary');if(s)s.innerHTML=cart.map(x=>{let p=prod(x.productId)||{},t=ptext(p);return `<div><b>${esc(t.title||p.title)}</b> — ${esc(x.sizeName)} × ${x.qty} — ${esc(x.priceText)}</div>`}).join('')},20);
  };
  document.addEventListener('DOMContentLoaded',render);
+})();
+</script>
+
+
+<style id="sultanzade-action-feedback-css">
+#sultanzadeActionToast{
+ position:fixed;left:50%;bottom:28px;transform:translate(-50%,25px);
+ z-index:30000;min-width:240px;max-width:min(90vw,520px);
+ padding:13px 18px;border-radius:12px;background:#2f1a10;color:#fff;
+ border:1px solid #cda653;box-shadow:0 10px 30px rgba(0,0,0,.25);
+ font-weight:800;text-align:center;opacity:0;pointer-events:none;
+ transition:.22s ease;
+}
+#sultanzadeActionToast.show{opacity:1;transform:translate(-50%,0)}
+#sultanzadeActionToast.error{background:#8f1325}
+button.sultanzade-working{opacity:.72!important;pointer-events:none!important}
+</style>
+<div id="sultanzadeActionToast" role="status" aria-live="polite"></div>
+<script id="sultanzade-action-feedback-js">
+(function(){
+ const M={
+  tr:{cartAdded:'✓ Sepete eklendi',saving:'Kaydediliyor...',saved:'✓ Kaydedildi',error:'İşlem tamamlanamadı'},
+  en:{cartAdded:'✓ Added to cart',saving:'Saving...',saved:'✓ Saved',error:'Action could not be completed'},
+  ru:{cartAdded:'✓ Добавлено в корзину',saving:'Сохранение...',saved:'✓ Сохранено',error:'Не удалось выполнить действие'},
+  ar:{cartAdded:'✓ تمت الإضافة إلى السلة',saving:'جارٍ الحفظ...',saved:'✓ تم الحفظ',error:'تعذر إكمال العملية'}
+ };
+ window.feedbackText=function(key){
+   let l='tr';try{l=currentLang||'tr'}catch(e){}
+   return (M[l]||M.tr)[key]||key;
+ };
+ let timer;
+ window.showSultanzadeFeedback=function(key,isError){
+   const el=document.getElementById('sultanzadeActionToast');if(!el)return;
+   el.textContent=feedbackText(key);el.classList.toggle('error',!!isError);el.classList.add('show');
+   clearTimeout(timer);timer=setTimeout(()=>el.classList.remove('show'),1800);
+ };
 })();
 </script>
 
