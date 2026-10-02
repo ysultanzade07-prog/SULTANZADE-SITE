@@ -5203,27 +5203,7 @@ html[dir="rtl"] .sultanzade-stock-badge{right:auto;left:12px}
   }
 }
 </style>
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-  const b = document.getElementById('managerSaveSettingsBtn');
-  if (!b) return;
 
-  // Tek olay yolu: masaüstü tıklaması + mobil dokunma click olayına dönüşür.
-  // Önceki touchend + onclick ikilisi bazı telefonlarda iki kez çalışıyor veya
-  // birbirini iptal ediyordu.
-  b.addEventListener('click', async function(e){
-    e.preventDefault();
-    e.stopPropagation();
-    if (b.dataset.saving === '1') return;
-    b.dataset.saving = '1';
-    try {
-      await saveSiteSettings(e);
-    } finally {
-      b.dataset.saving = '0';
-    }
-  });
-});
-</script>
 
 
 <style id="sultanzade-hero-manager-fix">
@@ -5473,5 +5453,6 @@ button.sultanzade-working{opacity:.72!important;pointer-events:none!important}
 })();
 </script>
 
+\n<script id="sultanzade-manager-save-final-fix">\n(function(){\n  let busy=false;\n  async function runSave(e){\n    if(e){ e.preventDefault(); e.stopPropagation(); }\n    if(busy) return;\n    busy=true;\n    const b=document.getElementById('managerSaveSettingsBtn');\n    const old=b?b.innerHTML:'';\n    if(b){ b.disabled=true; b.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Kaydediliyor...'; }\n    try{\n      if(typeof window.saveSiteSettings!=='function') throw new Error('saveSiteSettings fonksiyonu yüklenmedi');\n      await window.saveSiteSettings(null);\n    }catch(err){\n      console.error('Kaydet butonu çalıştırma hatası:',err);\n      alert('Kaydetme başlatılamadı: '+(err?.message||err));\n    }finally{\n      busy=false;\n      if(b){ b.disabled=false; if(b.innerHTML.includes('Kaydediliyor')) b.innerHTML=old; }\n    }\n  }\n  document.addEventListener('click',function(e){\n    const b=e.target.closest?.('#managerSaveSettingsBtn');\n    if(b) runSave(e);\n  },true);\n  document.addEventListener('keydown',function(e){\n    if((e.key==='Enter'||e.key===' ') && document.activeElement?.id==='managerSaveSettingsBtn') runSave(e);\n  },true);\n})();\n</script>\n
 </body>
 </html>\n<script>\n/* SULTANZADE PRODUCT BADGE I18N FINAL FIX */\n(function(){\n  const COLORS={\n    en:{'mavi':'Blue','kırmızı':'Red','kirmizi':'Red','bal sarısı':'Honey Yellow','bal sarisi':'Honey Yellow','mor':'Purple','yeşil':'Green','yesil':'Green','siyah':'Black','beyaz':'White','kahverengi':'Brown','kahve':'Coffee Brown','ceviz kahve':'Walnut Brown','turkuaz':'Turquoise','turuncu':'Orange','pembe':'Pink','sarı':'Yellow','sari':'Yellow'},\n    ru:{'mavi':'Синий','kırmızı':'Красный','kirmizi':'Красный','bal sarısı':'Медово-жёлтый','bal sarisi':'Медово-жёлтый','mor':'Фиолетовый','yeşil':'Зелёный','yesil':'Зелёный','siyah':'Чёрный','beyaz':'Белый','kahverengi':'Коричневый','kahve':'Кофейный','ceviz kahve':'Орехово-коричневый','turkuaz':'Бирюзовый','turuncu':'Оранжевый','pembe':'Розовый','sarı':'Жёлтый','sari':'Жёлтый'},\n    ar:{'mavi':'أزرق','kırmızı':'أحمر','kirmizi':'أحمر','bal sarısı':'أصفر عسلي','bal sarisi':'أصفر عسلي','mor':'بنفسجي','yeşil':'أخضر','yesil':'أخضر','siyah':'أسود','beyaz':'أبيض','kahverengi':'بني','kahve':'بني قهوي','ceviz kahve':'بني جوزي','turkuaz':'فيروزي','turuncu':'برتقالي','pembe':'وردي','sarı':'أصفر','sari':'أصفر'}\n  };\n  function trLower(v){return String(v||'').trim().toLocaleLowerCase('tr-TR')}\n  function badge(v,lang){\n    if(!v||lang==='tr') return v||'';\n    if(window.sultanzadeTranslateLegacy){const x=window.sultanzadeTranslateLegacy(v,lang);if(x!==v)return x;}\n    let low=trLower(v);\n    const special={\n      en:{'özel seri':'Special Series','2026 özel seri':'2026 Special Series'},\n      ru:{'özel seri':'Специальная серия','2026 özel seri':'Специальная серия 2026'},\n      ar:{'özel seri':'سلسلة خاصة','2026 özel seri':'سلسلة خاصة 2026'}\n    };\n    if(special[lang]?.[low]) return special[lang][low];\n    const suffixes=[' satranç takımı',' satranc takimi',' chess set'];\n    for(const suffix of suffixes){\n      if(low.endsWith(suffix)){\n        const color=low.slice(0,-suffix.length).trim();\n        const c=COLORS[lang]?.[color];\n        if(c){\n          if(lang==='en') return (c+' Chess Set').toUpperCase();\n          if(lang==='ru') return (c+' шахматный набор').toUpperCase();\n          if(lang==='ar') return 'طقم شطرنج '+c;\n        }\n      }\n    }\n    return v;\n  }\n  window.sultanzadeTranslateBadge=badge;\n  function apply(){\n    const lang=window.currentLang||'tr';\n    document.querySelectorAll('.product-card').forEach(card=>{\n      const raw=card.getAttribute('onclick')||'';\n      const id=(raw.match(/openDetailModal\\('([^']+)'\\)/)||[])[1];\n      const cat=(window.categories||[]).find(x=>String(x.id)===String(id));\n      const el=card.querySelector('.product-badge');\n      if(cat&&el) el.textContent=badge(cat.badge||'',lang);\n    });\n  }\n  window.sultanzadeApplyBadgeI18n=apply;\n  const prevChange=window.changeLanguage;\n  if(typeof prevChange==='function') window.changeLanguage=function(lang){const r=prevChange.apply(this,arguments);setTimeout(apply,30);return r};\n  const prevRender=window.renderCategories;\n  if(typeof prevRender==='function') window.renderCategories=function(){const r=prevRender.apply(this,arguments);setTimeout(apply,10);return r};\n  document.addEventListener('DOMContentLoaded',()=>setTimeout(apply,250));\n})();\n</script>\n
