@@ -2016,7 +2016,7 @@ Pazar: Kapalı"></textarea></div>
 </section>
 <div class="manager-footer-actions">
                     <span><i class="fa-solid fa-lock"></i> Değişiklikler yalnızca yetkili yöneticiye açıktır.</span>
-                    <button type="button" id="managerSaveSettingsBtn" class="btn-submit" onclick="saveSiteSettings(event)"><i class="fa-solid fa-floppy-disk"></i> Değişiklikleri Kaydet</button>
+                    <button type="button" id="managerSaveSettingsBtn" class="btn-submit"><i class="fa-solid fa-floppy-disk"></i> Değişiklikleri Kaydet</button>
                 </div>
             </main>
         </div>
@@ -5205,13 +5205,23 @@ html[dir="rtl"] .sultanzade-stock-badge{right:auto;left:12px}
 </style>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
-  const b=document.getElementById('managerSaveSettingsBtn');
-  if(b){
-    b.addEventListener('touchend', function(e){
-      e.preventDefault();
-      saveSiteSettings(e);
-    }, {passive:false});
-  }
+  const b = document.getElementById('managerSaveSettingsBtn');
+  if (!b) return;
+
+  // Tek olay yolu: masaüstü tıklaması + mobil dokunma click olayına dönüşür.
+  // Önceki touchend + onclick ikilisi bazı telefonlarda iki kez çalışıyor veya
+  // birbirini iptal ediyordu.
+  b.addEventListener('click', async function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    if (b.dataset.saving === '1') return;
+    b.dataset.saving = '1';
+    try {
+      await saveSiteSettings(e);
+    } finally {
+      b.dataset.saving = '0';
+    }
+  });
 });
 </script>
 
