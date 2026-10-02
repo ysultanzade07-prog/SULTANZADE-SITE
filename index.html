@@ -2016,7 +2016,7 @@ Pazar: Kapalı"></textarea></div>
 </section>
 <div class="manager-footer-actions">
                     <span><i class="fa-solid fa-lock"></i> Değişiklikler yalnızca yetkili yöneticiye açıktır.</span>
-                    <button type="button" id="managerSaveSettingsBtn" class="btn-submit"><i class="fa-solid fa-floppy-disk"></i> Değişiklikleri Kaydet</button>
+                    <button type="button" id="managerSaveSettingsBtn" class="btn-submit" onclick="saveSiteSettings(event)"><i class="fa-solid fa-floppy-disk"></i> Değişiklikleri Kaydet</button>
                 </div>
             </main>
         </div>
@@ -2393,7 +2393,8 @@ Pazar: Kapalı"></textarea></div>
             email: '',
             shipping: '',
             delivery: '',
-            countries: ''
+            countries: '',
+            visibility: {}
         };
         const COUNTRY_CODES = 'AF AL DZ AD AO AG AR AM AU AT AZ BS BH BD BB BY BE BZ BJ BT BO BA BW BR BN BG BF BI CV KH CM CA CF TD CL CN CO KM CG CD CR CI HR CU CY CZ DK DJ DM DO EC EG SV GQ ER EE SZ ET FJ FI FR GA GM GE DE GH GR GD GT GN GW GY HT HN HU IS IN ID IR IQ IE IT JM JP JO KZ KE KI KP KR KW KG LA LV LB LS LR LY LI LT LU MG MW MY MV ML MT MH MR MU MX FM MD MC MN ME MA MZ MM NA NR NP NL NZ NI NE NG MK NO OM PK PW PS PA PG PY PE PH PL PT QA RO RU RW KN LC VC WS SM ST SA SN RS SC SL SG SK SI SB SO ZA SS ES LK SD SR SE CH SY TJ TZ TH TL TG TO TT TN TR TM TV UG UA AE GB US UY UZ VU VA VE VN YE ZM ZW'.split(' ');
 
@@ -2554,6 +2555,7 @@ Pazar: Kapalı"></textarea></div>
             const phone = document.getElementById('sitePhoneLink'); if (phone) phone.href = `tel:${String(siteSettings.phone || '').replace(/[^0-9+]/g,'')}`;
             const wa = document.getElementById('siteWhatsappLink'); if (wa) wa.href = `https://wa.me/${String(siteSettings.whatsapp || '').replace(/\D/g,'')}`;
             const email = document.getElementById('siteEmailLink'); if (email) email.href = siteSettings.email ? `mailto:${siteSettings.email}` : '#';
+            if (typeof window.applyManagerVisibility === 'function') window.applyManagerVisibility();
         }
 
         function populateCountries() {
@@ -2695,8 +2697,13 @@ Pazar: Kapalı"></textarea></div>
                 const detailHours = document.getElementById('setHoursDetailed');
                 if (detailHours) siteSettings.hoursDetailed = detailHours.value.trim();
 
-                // Always update this browser immediately.
-                await localPutSetting('siteSettings', siteSettings);
+                siteSettings.visibility = siteSettings.visibility || {};
+                document.querySelectorAll('[data-setting-visibility]').forEach(cb => {
+                    siteSettings.visibility[cb.dataset.settingVisibility] = !!cb.checked;
+                });
+
+                // Always update this browser immediately. Local storage failure must not block online save.
+                try { await localPutSetting('siteSettings', { ...siteSettings }); } catch (localError) { console.warn('Yerel ayar kaydı atlandı:', localError); }
                 applySiteSettingsToPage();
 
                 // Then persist for every device/customer via Supabase.
@@ -5496,6 +5503,59 @@ button.sultanzade-working{opacity:.72!important;pointer-events:none!important}
 })();
 </script>
 
-\n<script id="sultanzade-manager-save-final-fix">\n(function(){\n  let busy=false;\n  async function runSave(e){\n    if(e){ e.preventDefault(); e.stopPropagation(); }\n    if(busy) return;\n    busy=true;\n    const b=document.getElementById('managerSaveSettingsBtn');\n    const old=b?b.innerHTML:'';\n    if(b){ b.disabled=true; b.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Kaydediliyor...'; }\n    try{\n      if(typeof window.saveSiteSettings!=='function') throw new Error('saveSiteSettings fonksiyonu yüklenmedi');\n      await window.saveSiteSettings(null);\n    }catch(err){\n      console.error('Kaydet butonu çalıştırma hatası:',err);\n      alert('Kaydetme başlatılamadı: '+(err?.message||err));\n    }finally{\n      busy=false;\n      if(b){ b.disabled=false; if(b.innerHTML.includes('Kaydediliyor')) b.innerHTML=old; }\n    }\n  }\n  document.addEventListener('click',function(e){\n    const b=e.target.closest?.('#managerSaveSettingsBtn');\n    if(b) runSave(e);\n  },true);\n  document.addEventListener('keydown',function(e){\n    if((e.key==='Enter'||e.key===' ') && document.activeElement?.id==='managerSaveSettingsBtn') runSave(e);\n  },true);\n})();\n</script>\n
+
+<style id="sultanzade-manual-control-css">
+.setting-visibility-control{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px;color:#d8c8bb;user-select:none}
+.setting-visibility-control input{width:18px;height:18px;accent-color:#cda653}
+.setting-visibility-control strong{color:#f0d18a}
+#managerSaveStatus{font-size:12px;margin-left:10px;color:#f0d18a}
+</style>
+<script id="sultanzade-manual-control-js">
+(function(){
+ const defs={
+   address:{input:'setAddress',targets:['siteAddress'],label:'Adresi sitede göster'},
+   mapUrl:{input:'setMapUrl',targets:['siteMapLink'],label:'Harita bağlantısını göster'},
+   hours:{input:'setHours',targets:['siteHours'],label:'Çalışma saatlerini göster'},
+   bankName:{input:'setBankName',targets:['siteBankName'],label:'Banka adını göster'},
+   accountHolder:{input:'setAccountHolder',targets:['siteAccountHolder'],label:'Hesap sahibini göster'},
+   iban:{input:'setIban',targets:['siteIban'],label:'IBAN bilgisini göster'},
+   paymentNote:{input:'setPaymentNote',targets:['sitePaymentNote'],label:'Ödeme açıklamasını göster'},
+   shipping:{input:'setShipping',targets:['siteShipping'],label:'Kargo bilgisini göster'},
+   delivery:{input:'setDelivery',targets:['siteDelivery'],label:'Teslim süresini göster'},
+   countries:{input:'setCountries',targets:['siteCountries'],label:'Gönderim ülkelerini göster'},
+   phone:{input:'setPhone',targets:['sitePhoneLink'],label:'Telefonu göster'},
+   whatsapp:{input:'setWhatsapp',targets:['siteWhatsappLink'],label:'WhatsApp bağlantısını göster'},
+   email:{input:'setEmail',targets:['siteEmailLink'],label:'E-postayı göster'}
+ };
+ function defaultVisible(key){return siteSettings?.visibility?.[key] !== false}
+ function hideContainer(id,show){
+   const el=document.getElementById(id); if(!el)return;
+   let target=el;
+   if(['siteAddress','siteHours','siteBankName','siteAccountHolder','siteShipping','siteDelivery','siteCountries'].includes(id)) target=el.closest('.info-row')||el;
+   if(id==='siteIban') target=el.closest('.copy-row')||el;
+   if(id==='sitePaymentNote') target=el.closest('.order-note')||el;
+   target.style.display=show?'':'none';
+ }
+ window.applyManagerVisibility=function(){
+   Object.entries(defs).forEach(([key,d])=>d.targets.forEach(id=>hideContainer(id,defaultVisible(key))));
+ };
+ window.ensureManagerVisibilityControls=function(){
+   Object.entries(defs).forEach(([key,d])=>{
+     const input=document.getElementById(d.input); if(!input)return;
+     const group=input.closest('.form-group'); if(!group||group.querySelector('[data-setting-visibility="'+key+'"]'))return;
+     const label=document.createElement('label'); label.className='setting-visibility-control';
+     label.innerHTML='<input type="checkbox" data-setting-visibility="'+key+'"><span><strong>Göster / Gizle:</strong> '+d.label+'</span>';
+     group.appendChild(label);
+   });
+   document.querySelectorAll('[data-setting-visibility]').forEach(cb=>{cb.checked=defaultVisible(cb.dataset.settingVisibility)});
+ };
+ const oldOpen=window.openManagerPanel;
+ if(typeof oldOpen==='function') window.openManagerPanel=async function(){
+   const r=await oldOpen.apply(this,arguments); window.ensureManagerVisibilityControls(); return r;
+ };
+ document.addEventListener('DOMContentLoaded',()=>{window.ensureManagerVisibilityControls();setTimeout(window.applyManagerVisibility,100)});
+})();
+</script>
+
 </body>
-</html>\n<script>\n/* SULTANZADE PRODUCT BADGE I18N FINAL FIX */\n(function(){\n  const COLORS={\n    en:{'mavi':'Blue','kırmızı':'Red','kirmizi':'Red','bal sarısı':'Honey Yellow','bal sarisi':'Honey Yellow','mor':'Purple','yeşil':'Green','yesil':'Green','siyah':'Black','beyaz':'White','kahverengi':'Brown','kahve':'Coffee Brown','ceviz kahve':'Walnut Brown','turkuaz':'Turquoise','turuncu':'Orange','pembe':'Pink','sarı':'Yellow','sari':'Yellow'},\n    ru:{'mavi':'Синий','kırmızı':'Красный','kirmizi':'Красный','bal sarısı':'Медово-жёлтый','bal sarisi':'Медово-жёлтый','mor':'Фиолетовый','yeşil':'Зелёный','yesil':'Зелёный','siyah':'Чёрный','beyaz':'Белый','kahverengi':'Коричневый','kahve':'Кофейный','ceviz kahve':'Орехово-коричневый','turkuaz':'Бирюзовый','turuncu':'Оранжевый','pembe':'Розовый','sarı':'Жёлтый','sari':'Жёлтый'},\n    ar:{'mavi':'أزرق','kırmızı':'أحمر','kirmizi':'أحمر','bal sarısı':'أصفر عسلي','bal sarisi':'أصفر عسلي','mor':'بنفسجي','yeşil':'أخضر','yesil':'أخضر','siyah':'أسود','beyaz':'أبيض','kahverengi':'بني','kahve':'بني قهوي','ceviz kahve':'بني جوزي','turkuaz':'فيروزي','turuncu':'برتقالي','pembe':'وردي','sarı':'أصفر','sari':'أصفر'}\n  };\n  function trLower(v){return String(v||'').trim().toLocaleLowerCase('tr-TR')}\n  function badge(v,lang){\n    if(!v||lang==='tr') return v||'';\n    if(window.sultanzadeTranslateLegacy){const x=window.sultanzadeTranslateLegacy(v,lang);if(x!==v)return x;}\n    let low=trLower(v);\n    const special={\n      en:{'özel seri':'Special Series','2026 özel seri':'2026 Special Series'},\n      ru:{'özel seri':'Специальная серия','2026 özel seri':'Специальная серия 2026'},\n      ar:{'özel seri':'سلسلة خاصة','2026 özel seri':'سلسلة خاصة 2026'}\n    };\n    if(special[lang]?.[low]) return special[lang][low];\n    const suffixes=[' satranç takımı',' satranc takimi',' chess set'];\n    for(const suffix of suffixes){\n      if(low.endsWith(suffix)){\n        const color=low.slice(0,-suffix.length).trim();\n        const c=COLORS[lang]?.[color];\n        if(c){\n          if(lang==='en') return (c+' Chess Set').toUpperCase();\n          if(lang==='ru') return (c+' шахматный набор').toUpperCase();\n          if(lang==='ar') return 'طقم شطرنج '+c;\n        }\n      }\n    }\n    return v;\n  }\n  window.sultanzadeTranslateBadge=badge;\n  function apply(){\n    const lang=window.currentLang||'tr';\n    document.querySelectorAll('.product-card').forEach(card=>{\n      const raw=card.getAttribute('onclick')||'';\n      const id=(raw.match(/openDetailModal\\('([^']+)'\\)/)||[])[1];\n      const cat=(window.categories||[]).find(x=>String(x.id)===String(id));\n      const el=card.querySelector('.product-badge');\n      if(cat&&el) el.textContent=badge(cat.badge||'',lang);\n    });\n  }\n  window.sultanzadeApplyBadgeI18n=apply;\n  const prevChange=window.changeLanguage;\n  if(typeof prevChange==='function') window.changeLanguage=function(lang){const r=prevChange.apply(this,arguments);setTimeout(apply,30);return r};\n  const prevRender=window.renderCategories;\n  if(typeof prevRender==='function') window.renderCategories=function(){const r=prevRender.apply(this,arguments);setTimeout(apply,10);return r};\n  document.addEventListener('DOMContentLoaded',()=>setTimeout(apply,250));\n})();\n</script>\n
+</html>
