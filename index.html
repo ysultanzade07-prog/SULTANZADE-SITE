@@ -1584,7 +1584,7 @@ html[dir="rtl"] .sultanzade-header-cart #cartCountBadge{right:auto!important;lef
             <h3 class="box-title serif-font" id="i18n-modal-title">Yeni Kategori Ekle</h3>
             <p class="box-subtitle" id="i18n-modal-subtitle">Görsel, fiyat ve kategori detaylarını girin.</p>
 
-            <form id="addCategoryForm" onsubmit="handleFormSubmit(event)">
+            <form id="addCategoryForm" novalidate onsubmit="handleFormSubmit(event)">
                 <div class="form-grid">
                     <div class="form-group full-width">
                         <label id="i18n-lbl-img">Ürün Görselleri * (Çoklu)</label>
@@ -1644,10 +1644,10 @@ html[dir="rtl"] .sultanzade-header-cart #cartCountBadge{right:auto!important;lef
                     
 <div class="form-group" id="stockStatusGroup">
   <label for="pInStock">Stok Durumu</label>
-  <select id="pInStock" aria-describedby="stockSaveHint" onchange="saveStockStatusOnly(this)">
+  <select id="pInStock" aria-describedby="stockSaveHint">
     <option value="true">Stokta Var</option>
     <option value="false">Stokta Yok</option>
-  </select><div id="stockSaveHint" style="font-size:12px;margin-top:5px;opacity:.75">Stok değişikliği yalnızca “Değişiklikleri Kaydet” düğmesine bastığınızda kaydedilir.</div>
+  </select><div id="stockSaveHint" style="font-size:12px;margin-top:5px;opacity:.75">Stok ve diğer ürün değişiklikleri “Değişiklikleri Kaydet” düğmesiyle birlikte kaydedilir.</div>
 </div>
 <div class="form-group full-width" style="max-width:260px"><label>Kaç ölçü seçeneği var?</label><select id="pSizeCount" class="form-control" onchange="updateSizeCount()"><option value="1">1 ölçü</option><option value="2">2 ölçü</option><option value="3" selected>3 ölçü</option></select></div>
                     <div class="size-form-grid" id="sizeFormGrid">
@@ -3663,8 +3663,22 @@ Pazar: Kapalı"></textarea></div>
                 // EN/RU/AR values are saved exactly as entered in the admin form.
                 // Display-time fallback to Turkish is handled separately for older products.
                 const sizeCount = getActiveSizeCount();
-                const sizes = Array.from({length:sizeCount},(_,k)=>readSizeOption(k+1));
-                if (sizes.some(s => !s.name || !s.price)) throw new Error(`Lütfen seçtiğiniz ${sizeCount} ölçünün adını ve fiyatını doldurun.`);
+                let sizes = Array.from({length:sizeCount},(_,k)=>readSizeOption(k+1));
+                // Eski ürünlerde bazı ölçü alanları boş olabilir. Düzenleme sırasında bu durum
+                // Kaydet düğmesini tamamen kilitlemesin; boş alanlarda mevcut veriyi koru.
+                if (currentEditingProductId !== null) {
+                    const oldProductForSizes = categories.find(c => String(c.id) === String(currentEditingProductId));
+                    const oldSizes = oldProductForSizes ? legacySizesFromDetails(oldProductForSizes) : [];
+                    sizes = sizes.map((s, i) => ({
+                        ...(oldSizes[i] || {}),
+                        ...s,
+                        name: s.name || oldSizes[i]?.name || `Ölçü ${i+1}`,
+                        price: s.price || oldSizes[i]?.price || oldProductForSizes?.price || '0',
+                        currency: s.currency || oldSizes[i]?.currency || 'USD'
+                    }));
+                } else if (sizes.some(s => !s.name || !s.price)) {
+                    throw new Error(`Lütfen seçtiğiniz ${sizeCount} ölçünün adını ve fiyatını doldurun.`);
+                }
                 const details = {
                     material: document.getElementById('pMaterial').value.trim(),
                     color: document.getElementById('pColor').value.trim(),
