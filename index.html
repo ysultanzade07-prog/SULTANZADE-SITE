@@ -1644,7 +1644,7 @@ html[dir="rtl"] .sultanzade-header-cart #cartCountBadge{right:auto!important;lef
                     
 <div class="form-group" id="stockStatusGroup">
   <label for="pInStock">Stok Durumu</label>
-  <select id="pInStock" aria-describedby="stockSaveHint">
+  <select id="pInStock" aria-describedby="stockSaveHint" onchange="saveStockStatusOnly(this)">
     <option value="true">Stokta Var</option>
     <option value="false">Stokta Yok</option>
   </select><div id="stockSaveHint" style="font-size:12px;margin-top:5px;opacity:.75">Stok değişikliği yalnızca “Değişiklikleri Kaydet” düğmesine bastığınızda kaydedilir.</div>
@@ -3291,7 +3291,8 @@ Pazar: Kapalı"></textarea></div>
                         images: { urls: remoteImages, details: product.details || {}, sizes: product.sizes || [], translations: product.translations || {} },
                         details: product.details || {},
                         sizes: product.sizes || [],
-                        translations: product.translations || {}
+                        translations: product.translations || {},
+                        in_stock: product.in_stock !== false
                     }).select().single();
                     if (error) throw error;
                     const synced = normalizeRemoteRow(data);
@@ -3774,6 +3775,48 @@ Pazar: Kapalı"></textarea></div>
         function setFieldValue(id, value) {
             const el = document.getElementById(id);
             if (el) el.value = value ?? '';
+        }
+
+        async function saveStockStatusOnly(selectEl) {
+            if (currentEditingProductId === null) return;
+            const existing = categories.find(c => String(c.id) === String(currentEditingProductId));
+            if (!existing) { alert('Ürün bulunamadı.'); return; }
+            if (!(await requireOwnerForProductChange())) {
+                alert('Stok değiştirmek için mağaza sahibi olarak giriş yapmalısınız.');
+                selectEl.value = existing.in_stock === false ? 'false' : 'true';
+                return;
+            }
+            const newValue = String(selectEl.value) === 'true';
+            const oldValue = existing.in_stock !== false;
+            selectEl.disabled = true;
+            try {
+                // Önce yalnızca bu ürünü online güncelle. Formdaki diğer alanların dolu olması gerekmez.
+                if (existing.synced && !String(existing.id).startsWith('local-')) {
+                    const { data, error } = await supabaseClient
+                        .from('categories')
+                        .update({ in_stock: newValue })
+                        .eq('id', existing.id)
+                        .select()
+                        .single();
+                    if (error) throw error;
+                    existing.in_stock = data?.in_stock !== false;
+                } else {
+                    existing.in_stock = newValue;
+                }
+                await localPutProduct(existing);
+                const idx = categories.findIndex(c => String(c.id) === String(existing.id));
+                if (idx >= 0) categories[idx] = existing;
+                renderCategories();
+                selectEl.value = existing.in_stock === false ? 'false' : 'true';
+                alert(existing.in_stock === false ? 'Bu ürün STOKTA YOK olarak kaydedildi.' : 'Bu ürün STOKTA VAR olarak kaydedildi.');
+            } catch (e) {
+                existing.in_stock = oldValue;
+                selectEl.value = oldValue ? 'true' : 'false';
+                console.error('Stok kayıt hatası:', e);
+                alert('Stok durumu kaydedilemedi: ' + (e?.message || 'Bilinmeyen hata'));
+            } finally {
+                selectEl.disabled = false;
+            }
         }
 
         async function openEditProduct(id) {
